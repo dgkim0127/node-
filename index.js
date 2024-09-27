@@ -1,13 +1,13 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const path = require('path');
-const firebase = require('firebase/app');
-require('firebase/firestore');
-require('firebase/storage');
+const { initializeApp } = require('firebase/app');
+const { getFirestore } = require('firebase/firestore');
+const { getStorage } = require('firebase/storage');
 
 const app = express();
 
-// Firebase 초기화 (firebaseConfig.js에서 설정)
+// Firebase 초기화
 const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
     authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -17,10 +17,9 @@ const firebaseConfig = {
     appId: "YOUR_APP_ID",
 };
 
-// Firebase 초기화
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const storage = firebase.storage();
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
 
 // 정적 파일 제공
 app.use(express.static('public'));
@@ -33,6 +32,7 @@ app.post('/upload', (req, res) => {
     }
 
     let uploadedFile = req.files.file;
+
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.mp4', '.mov', '.avi', '.wmv'];
     
     if (!allowedExtensions.includes(path.extname(uploadedFile.name).toLowerCase())) {
