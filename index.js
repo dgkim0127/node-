@@ -1,16 +1,29 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const path = require('path');
-const fs = require('fs');
+const firebase = require('firebase/app');
+require('firebase/firestore');
+require('firebase/storage');
+
 const app = express();
 
-// 정적 파일 제공 (public 폴더에 있는 HTML, CSS, JS 파일 제공)
+// Firebase 초기화 (firebaseConfig.js에서 설정)
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID",
+};
+
+// Firebase 초기화
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+// 정적 파일 제공
 app.use(express.static('public'));
-
-// 업로드된 파일을 제공하는 설정
-app.use(express.static(path.join(__dirname, 'uploads')));
-
-// 파일 업로드 미들웨어 설정
 app.use(fileUpload());
 
 // 파일 업로드 처리
@@ -20,26 +33,29 @@ app.post('/upload', (req, res) => {
     }
 
     let uploadedFile = req.files.file;
-
-    // 파일 확장자 확인 (이미지와 동영상만 허용)
-    const fileExtension = path.extname(uploadedFile.name).toLowerCase();
     const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.mp4', '.mov', '.avi', '.wmv'];
-
-    if (!allowedExtensions.includes(fileExtension)) {
+    
+    if (!allowedExtensions.includes(path.extname(uploadedFile.name).toLowerCase())) {
         return res.status(400).send('Only images and videos are allowed.');
     }
 
-    // uploads 폴더가 없으면 생성
-    if (!fs.existsSync(path.join(__dirname, 'uploads'))) {
-        fs.mkdirSync(path.join(__dirname, 'uploads'));
-    }
+    // Firebase Storage에 파일 업로드
+    const storageRef = storage.ref();
+    const fileRef = storageRef.child(uploadedFile.name);
 
-    const uploadPath = path.join(__dirname, 'uploads', uploadedFile.name);
-
-    // 파일을 지정된 경로에 저장
-    uploadedFile.mv(uploadPath, (err) => {
-        if (err) return res.status(500).send(err);
-        res.send(`File uploaded! <a href="/uploads/${uploadedFile.name}">View File</a>`);
+    fileRef.put(uploadedFile).then(() => {
+        return fileRef.getDownloadURL();
+    }).then((fileUrl) => {
+        // Firestore에 메타데이터 저장
+        return db.collection('uploads').add({
+            name: uploadedFile.name,
+            url: fileUrl,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+    }).then(() => {
+        res.send(`File uploaded! <a href="${fileUrl}">View File</a>`);
+    }).catch((error) => {
+        res.status(500).send(error);
     });
 });
 
