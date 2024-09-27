@@ -1,3 +1,4 @@
+// Firebase 설정 정보
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
@@ -18,4 +19,3 @@ const db = getFirestore(firebaseApp); // Firestore 초기화
 const storage = getStorage(firebaseApp); // Storage 초기화
 
 export { db, storage };
-
