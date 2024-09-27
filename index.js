@@ -14,7 +14,7 @@ const firebaseConfig = {
     projectId: "jjji-4240b",
     storageBucket: "jjji-4240b.appspot.com",
     messagingSenderId: "876101785840",
-    appId: "1:876101785840:web:6e58681ea9c9780e454a35",
+    appId: "1:876101785840:web:6e58681ea9c9780e454a35"
 };
 
 const firebaseApp = initializeApp(firebaseConfig);
@@ -40,11 +40,11 @@ app.post('/upload', (req, res) => {
     }
 
     // Firebase Storage에 파일 업로드
-    const storageRef = storage.ref();
-    const fileRef = storageRef.child(uploadedFile.name);
+    const storageRef = ref(storage); // 수정된 부분
+    const fileRef = ref(storageRef, uploadedFile.name); // 수정된 부분
 
-    fileRef.put(uploadedFile).then(() => {
-        return fileRef.getDownloadURL();
+    uploadBytes(fileRef, uploadedFile).then(() => { // 수정된 부분
+        return getDownloadURL(fileRef); // 수정된 부분
     }).then((fileUrl) => {
         // Firestore에 메타데이터 저장
         return db.collection('uploads').add({
