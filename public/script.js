@@ -1,5 +1,5 @@
-// firebaseConfig.js에서 db와 storage 가져오기
 import { db, storage } from './firebaseConfig.js';
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const form = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
@@ -16,15 +16,15 @@ form.addEventListener('submit', async (e) => {
     }
 
     // Firebase Storage에 파일 업로드
-    const storageRef = storage.ref();
-    const fileRef = storageRef.child(file.name);
+    const storageRef = ref(storage); // 수정된 부분
+    const fileRef = ref(storageRef, file.name); // 수정된 부분
     
     try {
-        await fileRef.put(file);
+        await uploadBytes(fileRef, file); // uploadBytes로 파일 업로드
         message.textContent = "File uploaded successfully!";
 
         // Firestore에 메타데이터 저장
-        const fileUrl = await fileRef.getDownloadURL();
+        const fileUrl = await getDownloadURL(fileRef); // 수정된 부분
         await db.collection('uploads').add({
             name: file.name,
             url: fileUrl,
