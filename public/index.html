@@ -4,12 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>File Upload</title>
+    <link rel="stylesheet" href="style.css"> <!-- CSS 파일 연결 -->
 </head>
 <body>
-    <h1>Upload a File</h1>
-    <form action="/upload" method="POST" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <button type="submit">Upload</button>
-    </form>
+    <div class="container">
+        <h1>Upload a File</h1>
+        <form id="uploadForm" enctype="multipart/form-data">
+            <input type="file" id="fileInput" name="file">
+            <button type="submit">Upload</button>
+        </form>
+        <div id="message"></div>
+        <div id="uploadedFiles"></div>
+    </div>
+
+    <script src="script.js"></script> <!-- JavaScript 파일 연결 -->
 </body>
 </html>
