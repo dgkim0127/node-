@@ -10,6 +10,7 @@ const firebaseConfig = {
 };
 
 // Firebase 초기화
-const firebaseApp = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore(firebaseApp); // Firestore 초기화
-const storage = firebase.storage(firebaseApp); // Storage 초기화
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();  // Firestore 초기화
+const storage = firebase.storage();  // Firebase Storage 초기화
+
