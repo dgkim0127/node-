@@ -61,6 +61,21 @@ button:hover {
 }
 
 #uploadedFiles {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
     margin-top: 20px;
-    text-align: left;
+}
+
+.uploaded-file {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.uploaded-file img {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 10px;
 }
