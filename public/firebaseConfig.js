@@ -1,9 +1,8 @@
-// Firebase 설정 정보
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
-// Firebase 초기화
+// Firebase 설정 정보
 const firebaseConfig = {
     apiKey: "AIzaSyDFysg8I_qKtDqDJLWg1_npTPBWRMM_5WY",
     authDomain: "jjji-4240b.firebaseapp.com",
@@ -18,5 +17,5 @@ const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp); // Firestore 초기화
 const storage = getStorage(firebaseApp); // Storage 초기화
 
-// db와 storage 변수를 내보냄
 export { db, storage };
+
