@@ -79,3 +79,16 @@ button:hover {
     height: auto;
     margin-bottom: 10px;
 }
+
+.uploaded-file button {
+    padding: 5px 10px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.uploaded-file button:hover {
+    background-color: #c82333;
+}
