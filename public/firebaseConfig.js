@@ -17,3 +17,6 @@ const firebaseConfig = {
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp); // Firestore 초기화
 const storage = getStorage(firebaseApp); // Storage 초기화
+
+// db와 storage 변수를 내보냄
+export { db, storage };
