@@ -1,6 +1,7 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const path = require('path');
+const fs = require('fs');
 const app = express();
 
 // 정적 파일 제공 (public 폴더에 있는 HTML, CSS, JS 파일 제공)
@@ -26,6 +27,11 @@ app.post('/upload', (req, res) => {
 
     if (!allowedExtensions.includes(fileExtension)) {
         return res.status(400).send('Only images and videos are allowed.');
+    }
+
+    // uploads 폴더가 없으면 생성
+    if (!fs.existsSync(path.join(__dirname, 'uploads'))) {
+        fs.mkdirSync(path.join(__dirname, 'uploads'));
     }
 
     const uploadPath = path.join(__dirname, 'uploads', uploadedFile.name);
