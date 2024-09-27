@@ -4,7 +4,7 @@ const message = document.getElementById('message');
 const uploadedFiles = document.getElementById('uploadedFiles');
 
 form.addEventListener('submit', async (e) => {
-    e.preventDefault(); // 페이지 새로고침 방지
+    e.preventDefault();
     const file = fileInput.files[0];
 
     if (!file) {
@@ -12,43 +12,34 @@ form.addEventListener('submit', async (e) => {
         return;
     }
 
-    const formData = new FormData();
-    formData.append('file', file);
-
-    // 파일 업로드 요청
+    // Firebase Storage에 파일 업로드
+    const storageRef = storage.ref();
+    const fileRef = storageRef.child(file.name);
+    
     try {
-        const response = await fetch('/upload', {
-            method: 'POST',
-            body: formData
+        await fileRef.put(file);
+        message.textContent = "File uploaded successfully!";
+
+        // Firestore에 메타데이터 저장
+        const fileUrl = await fileRef.getDownloadURL();
+        await db.collection('uploads').add({
+            name: file.name,
+            url: fileUrl,
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
         });
 
-        if (response.ok) {
-            const result = await response.text();
-            message.textContent = "File uploaded successfully!";
-            displayUploadedFile(file.name); // 업로드된 파일 표시
-        } else {
-            message.textContent = "File upload failed.";
-        }
+        displayUploadedFile(file.name, fileUrl);
     } catch (error) {
-        message.textContent = "There was an error uploading the file.";
+        message.textContent = "Error uploading file: " + error.message;
     }
 });
 
 // 업로드된 파일을 표시하는 함수
-function displayUploadedFile(fileName) {
-    const fileExtension = fileName.split('.').pop().toLowerCase();
-    let fileElement;
-
-    if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
-        fileElement = document.createElement('img');
-        fileElement.src = `/uploads/${fileName}`;
-    } else if (['mp4', 'webm', 'ogg', 'mov', 'avi', 'wmv'].includes(fileExtension)) {
-        fileElement = document.createElement('video');
-        fileElement.src = `/uploads/${fileName}`;
-        fileElement.controls = true;
-    }
-
-    if (fileElement) {
-        uploadedFiles.appendChild(fileElement); // 미리보기 표시
-    }
+function displayUploadedFile(fileName, fileUrl) {
+    const fileElement = document.createElement('a');
+    fileElement.textContent = fileName;
+    fileElement.href = fileUrl;
+    fileElement.target = "_blank"; // 새 탭에서 열기
+    uploadedFiles.appendChild(fileElement);
+    uploadedFiles.appendChild(document.createElement('br'));
 }
