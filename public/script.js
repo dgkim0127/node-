@@ -42,7 +42,7 @@ function displayUploadedFile(fileName) {
     if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
         fileElement = document.createElement('img');
         fileElement.src = `/uploads/${fileName}`;
-    } else if (['mp4', 'webm', 'ogg'].includes(fileExtension)) {
+    } else if (['mp4', 'webm', 'ogg', 'mov', 'avi', 'wmv'].includes(fileExtension)) {
         fileElement = document.createElement('video');
         fileElement.src = `/uploads/${fileName}`;
         fileElement.controls = true;
