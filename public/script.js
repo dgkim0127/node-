@@ -25,7 +25,7 @@ form.addEventListener('submit', async (e) => {
         if (response.ok) {
             const result = await response.text();
             message.textContent = "File uploaded successfully!";
-            displayUploadedFile(file.name); // 파일 이름을 이용해 업로드된 파일 표시
+            displayUploadedFile(file.name); // 업로드된 파일 표시
         } else {
             message.textContent = "File upload failed.";
         }
@@ -49,6 +49,6 @@ function displayUploadedFile(fileName) {
     }
 
     if (fileElement) {
-        uploadedFiles.appendChild(fileElement);
+        uploadedFiles.appendChild(fileElement); // 미리보기 표시
     }
 }
