@@ -1,5 +1,6 @@
 import { db, storage } from './firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 const form = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
@@ -16,19 +17,19 @@ form.addEventListener('submit', async (e) => {
     }
 
     // Firebase Storage에 파일 업로드
-    const storageRef = ref(storage); // 수정된 부분
-    const fileRef = ref(storageRef, file.name); // 수정된 부분
+    const storageRef = ref(storage);
+    const fileRef = ref(storageRef, file.name);
     
     try {
-        await uploadBytes(fileRef, file); // uploadBytes로 파일 업로드
+        await uploadBytes(fileRef, file);
         message.textContent = "File uploaded successfully!";
 
         // Firestore에 메타데이터 저장
-        const fileUrl = await getDownloadURL(fileRef); // 수정된 부분
-        await db.collection('uploads').add({
+        const fileUrl = await getDownloadURL(fileRef);
+        await addDoc(collection(db, 'uploads'), { // Firestore에 문서를 추가
             name: file.name,
             url: fileUrl,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            createdAt: new Date() // 서버 시간을 사용하지 않으므로 Date 사용
         });
 
         displayUploadedFile(file.name, fileUrl);
@@ -37,7 +38,6 @@ form.addEventListener('submit', async (e) => {
     }
 });
 
-// 업로드된 파일을 표시하는 함수
 function displayUploadedFile(fileName, fileUrl) {
     const fileElement = document.createElement('a');
     fileElement.textContent = fileName;
