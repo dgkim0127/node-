@@ -1,3 +1,6 @@
+// script.js의 상단에 storage와 db 변수를 firebaseConfig.js에서 가져옵니다.
+import { storage, db } from './firebaseConfig.js'; // firebaseConfig.js에서 storage와 db 가져오기
+
 const form = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
 const message = document.getElementById('message');
