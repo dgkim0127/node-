@@ -1,5 +1,5 @@
 import { db, storage } from './firebaseConfig.js';
-import { collection, getDocs, addDoc, doc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { collection, getDocs, query, where, doc, deleteDoc, addDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const loginForm = document.getElementById('loginForm');
@@ -23,22 +23,22 @@ loginForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        // Firestore에서 아이디로 사용자 정보 찾기
+        // Firestore에서 사용자 정보를 찾음
         const q = query(collection(db, 'users'), where('username', '==', username));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
 
-            // 입력된 비밀번호와 Firestore에 저장된 비밀번호 비교
+            // 비밀번호 확인
             if (userData.password === password) {
                 loginMessage.textContent = "로그인 성공!";
                 loginMessage.style.color = "green";
 
-                // 사용자 권한 및 추가 작업 처리
+                // 관리자 여부 확인
                 currentUser = userData;
                 isAdmin = userData.isAdmin;
-                showUploadSection();  // 관리자만 접근 가능한 업로드 섹션 활성화
+                showUploadSection(); // 관리자 전용 섹션 표시
             } else {
                 loginMessage.textContent = "비밀번호가 틀렸습니다.";
                 loginMessage.style.color = "red";
