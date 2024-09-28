@@ -1,20 +1,17 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
-const { initializeApp, applicationDefault } = require('firebase-admin/app');
-const { getStorage } = require('firebase-admin/storage');
 const path = require('path');
 const fs = require('fs');
 const admin = require('firebase-admin');
 
 // Firebase Admin SDK 초기화
 const serviceAccount = require('./path/to/your/firebase-service-account.json'); // 서비스 계정 키 파일 경로
-initializeApp({
+admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: 'your-firebase-project.appspot.com' // Firebase Storage 버킷 이름
 });
 
-const bucket = getStorage().bucket();
-
+const bucket = admin.storage().bucket();
 const app = express();
 
 // 파일 업로드 미들웨어 사용
@@ -38,22 +35,24 @@ app.post('/upload', async (req, res) => {
 
         // Firebase Storage에 파일 업로드
         const uploadToFirebase = async () => {
-            await bucket.upload(tempFilePath, {
-                destination: `uploads/${uploadedFile.name}`,
-                metadata: {
-                    contentType: uploadedFile.mimetype,
-                },
-            });
-            // 파일 업로드 후 로컬 파일 삭제
-            fs.unlinkSync(tempFilePath);
+            try {
+                await bucket.upload(tempFilePath, {
+                    destination: `uploads/${uploadedFile.name}`,
+                    metadata: {
+                        contentType: uploadedFile.mimetype,
+                    },
+                });
+                // 파일 업로드 후 로컬 파일 삭제
+                fs.unlinkSync(tempFilePath);
 
-            res.send('File uploaded successfully to Firebase Storage!');
+                res.send('File uploaded successfully to Firebase Storage!');
+            } catch (error) {
+                console.error('Error uploading to Firebase:', error);
+                res.status(500).send('Error uploading to Firebase');
+            }
         };
 
-        uploadToFirebase().catch((error) => {
-            console.error('Error uploading to Firebase:', error);
-            res.status(500).send('Error uploading to Firebase');
-        });
+        uploadToFirebase();
     });
 });
 
