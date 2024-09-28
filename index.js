@@ -1,67 +1,63 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
-const path = require('path');
 const admin = require('firebase-admin');
+const firebase = require('firebase/app');
+require('firebase/firestore');
+require('firebase/storage');
 
-// Firebase 관리자 SDK 초기화
-const serviceAccount = require('./path-to-your-firebase-service-account-key.json');
+// Firebase 서비스 계정 키를 사용하여 초기화
+const serviceAccount = require('./serviceAccountKey.json');
+
+// Firebase Admin SDK 초기화
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: 'your-project-id.appspot.com'
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: "YOUR_PROJECT_ID.appspot.com"
 });
 
-const bucket = admin.storage().bucket();
+// Firebase Firestore와 Storage 초기화
 const db = admin.firestore();
+const bucket = admin.storage().bucket();
 
-// Express 애플리케이션 설정
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
-app.use(express.static('public')); // 정적 파일 제공
-app.use(fileUpload()); // 파일 업로드 미들웨어
+// 파일 업로드 미들웨어 설정
+app.use(fileUpload());
 
-// 파일 업로드 처리
+// 정적 파일 제공
+app.use(express.static('public'));
+
+// 파일 업로드 API
 app.post('/upload', async (req, res) => {
-  if (!req.files || Object.keys(req.files).length === 0) {
-    return res.status(400).send('No files were uploaded.');
-  }
+    if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).send('No files were uploaded.');
+    }
 
-  const file = req.files.file;
-  const fileName = file.name;
-  const filePath = path.join(__dirname, 'uploads', fileName);
+    const file = req.files.file;
+    const fileName = `${Date.now()}_${file.name}`;
 
-  try {
-    // Firebase Storage에 파일 업로드
-    const blob = bucket.file(fileName);
-    const blobStream = blob.createWriteStream({
-      resumable: false
-    });
+    try {
+        // Firebase Storage에 파일 업로드
+        const fileRef = bucket.file(fileName);
+        await fileRef.save(file.data);
 
-    blobStream.on('error', (err) => {
-      res.status(500).send(err.message);
-    });
+        // 파일 URL 얻기
+        const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
 
-    blobStream.on('finish', async () => {
-      // 파일 URL 가져오기
-      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+        // Firestore에 파일 메타데이터 저장
+        await db.collection('uploads').add({
+            name: fileName,
+            url: fileUrl,
+            createdAt: new Date()
+        });
 
-      // Firestore에 파일 정보 저장
-      await db.collection('uploads').add({
-        name: fileName,
-        url: publicUrl,
-        createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
-
-      res.status(200).send({ fileName, fileUrl: publicUrl });
-    });
-
-    blobStream.end(file.data);
-  } catch (error) {
-    res.status(500).send('Error uploading file: ' + error.message);
-  }
+        res.send({ message: 'File uploaded successfully', url: fileUrl });
+    } catch (error) {
+        res.status(500).send({ message: 'Error uploading file', error });
+    }
 });
 
 // 서버 시작
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
