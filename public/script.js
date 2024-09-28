@@ -1,16 +1,16 @@
-import { db, storage, auth } from './firebaseConfig.js';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
-import { collection, addDoc, getDocs, deleteDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { db, auth } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
 const signupForm = document.getElementById('signupForm');
+const signupUsername = document.getElementById('signupUsername');
 const signupEmail = document.getElementById('signupEmail');
 const signupPassword = document.getElementById('signupPassword');
 const signupMessage = document.getElementById('signupMessage');
 
 const loginForm = document.getElementById('loginForm');
-const emailInput = document.getElementById('emailInput');
-const passwordInput = document.getElementById('passwordInput');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
 
 const uploadSection = document.querySelector('.upload-section');
@@ -19,31 +19,55 @@ const uploadedFilesSection = document.querySelector('.uploaded-files-section');
 // 회원가입 처리
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    const username = signupUsername.value;
     const email = signupEmail.value;
     const password = signupPassword.value;
 
     try {
-        await createUserWithEmailAndPassword(auth, email, password);
+        // Firebase Authentication을 통해 사용자 생성
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // Firestore에 아이디와 이메일 저장
+        await addDoc(collection(db, 'users'), {
+            username: username,
+            email: email
+        });
+        
         signupMessage.textContent = "Sign up successful!";
         signupMessage.style.color = "green";
-        showUploadSection();
     } catch (error) {
         signupMessage.textContent = `Error: ${error.message}`;
         signupMessage.style.color = "red";
     }
 });
 
-// 로그인 처리
+// 로그인 처리 (아이디로 이메일 조회 후 로그인)
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const email = emailInput.value;
-    const password = passwordInput.value;
+    const username = loginUsername.value;
+    const password = loginPassword.value;
 
     try {
-        await signInWithEmailAndPassword(auth, email, password);
-        loginMessage.textContent = "Login successful!";
-        loginMessage.style.color = "green";
-        showUploadSection();
+        // Firestore에서 아이디에 해당하는 이메일 찾기
+        const q = query(collection(db, 'users'), where('username', '==', username));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
+            const email = userData.email;
+
+            // 이메일로 Firebase Auth 로그인
+            await signInWithEmailAndPassword(auth, email, password);
+            loginMessage.textContent = "Login successful!";
+            loginMessage.style.color = "green";
+
+            // 파일 업로드 및 파일 목록 섹션 보이기
+            showUploadSection();
+        } else {
+            loginMessage.textContent = "Username not found.";
+            loginMessage.style.color = "red";
+        }
     } catch (error) {
         loginMessage.textContent = `Error: ${error.message}`;
         loginMessage.style.color = "red";
@@ -58,18 +82,6 @@ function showUploadSection() {
     uploadedFilesSection.style.display = "block";
     loadUploadedFiles();  // 파일 목록 로드
 }
-
-// 현재 로그인 상태를 감지
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        showUploadSection();
-    } else {
-        signupForm.style.display = "block";
-        loginForm.style.display = "block";
-        uploadSection.style.display = "none";
-        uploadedFilesSection.style.display = "none";
-    }
-});
 
 // 업로드된 파일 목록 불러오기
 async function loadUploadedFiles() {
