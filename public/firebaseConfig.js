@@ -1,6 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';  // Auth 추가
 
     // Firebase 설정 정보
   const firebaseConfig = {
@@ -12,9 +13,9 @@ import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-st
     appId: "1:876101785840:web:6e58681ea9c9780e454a35"
 };
 
-// Firebase 초기화
 const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp); // Firestore 초기화
-const storage = getStorage(firebaseApp); // Storage 초기화
+const db = getFirestore(firebaseApp);
+const storage = getStorage(firebaseApp);
+const auth = getAuth(firebaseApp);  // Auth 초기화
 
-export { db, storage };
+export { db, storage, auth };
