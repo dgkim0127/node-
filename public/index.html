@@ -5,10 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document Management System</title>
     <link rel="stylesheet" href="style.css">
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
-    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js"></script>
-    <script type="module" src="firebaseConfig.js"></script>
 </head>
 <body>
     <header class="header">
@@ -16,7 +12,17 @@
     </header>
 
     <main class="main-content">
-        <section class="upload-section">
+        <section class="login-section">
+            <h2>Login</h2>
+            <form id="loginForm">
+                <input type="email" id="emailInput" placeholder="Email" required>
+                <input type="password" id="passwordInput" placeholder="Password" required>
+                <button type="submit" class="login-button">Login</button>
+                <p id="loginMessage"></p>
+            </form>
+        </section>
+
+        <section class="upload-section" style="display: none;">
             <h2>Upload Files</h2>
             <form id="uploadForm" class="upload-form">
                 <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input">
@@ -25,7 +31,7 @@
             <div id="message" class="message"></div>
         </section>
 
-        <section class="uploaded-files-section">
+        <section class="uploaded-files-section" style="display: none;">
             <h2>Uploaded Files</h2>
             <div id="uploadedFiles" class="uploaded-files"></div>
         </section>
@@ -35,6 +41,7 @@
         <p>&copy; 2024 Document Management System</p>
     </footer>
 
+    <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="script.js"></script>
 </body>
 </html>
