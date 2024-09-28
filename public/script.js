@@ -15,24 +15,39 @@ async function getIPAddress() {
     }
 }
 
-// 회원가입 및 로그인 폼
-const signupForm = document.getElementById('signupForm');
-const signupUsername = document.getElementById('signupUsername');
-const signupEmail = document.getElementById('signupEmail');
-const signupPassword = document.getElementById('signupPassword');
-const signupMessage = document.getElementById('signupMessage');
+// Firestore에서 로그인 기록을 불러와 웹 페이지에 표시하는 함수
+async function displayLoginRecords() {
+    const recordsContainer = document.getElementById('loginRecords');  // 데이터를 표시할 HTML 요소
 
-const loginForm = document.getElementById('loginForm');
-const loginUsername = document.getElementById('loginUsername');
-const loginPassword = document.getElementById('loginPassword');
-const loginMessage = document.getElementById('loginMessage');
+    try {
+        const querySnapshot = await getDocs(collection(db, 'login_records'));
+        
+        // 가져온 데이터를 순회하며 웹 페이지에 추가
+        querySnapshot.forEach((doc) => {
+            const record = doc.data();
+            const recordElement = document.createElement('div');
+            recordElement.innerHTML = `
+                <p><strong>User ID:</strong> ${record.userId}</p>
+                <p><strong>Email:</strong> ${record.email}</p>
+                <p><strong>IP Address:</strong> ${record.ipAddress}</p>
+                <p><strong>Login Time:</strong> ${record.loginTime}</p>
+                <hr>
+            `;
+            recordsContainer.appendChild(recordElement);  // 기록을 웹 페이지에 추가
+        });
+    } catch (error) {
+        console.error("Error fetching login records: ", error);
+    }
+}
 
 // 회원가입 처리
+const signupForm = document.getElementById('signupForm');
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = signupUsername.value.trim();
-    const email = signupEmail.value.trim();
-    const password = signupPassword.value.trim();
+    const username = document.getElementById('signupUsername').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const password = document.getElementById('signupPassword').value.trim();
+    const signupMessage = document.getElementById('signupMessage');
 
     if (!username || !email || !password) {
         signupMessage.textContent = "All fields are required!";
@@ -59,10 +74,12 @@ signupForm.addEventListener('submit', async (e) => {
 });
 
 // 로그인 처리 및 IP 기록
+const loginForm = document.getElementById('loginForm');
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = loginUsername.value.trim();
-    const password = loginPassword.value.trim();
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const loginMessage = document.getElementById('loginMessage');
 
     if (!username || !password) {
         loginMessage.textContent = "Both fields are required!";
@@ -83,7 +100,6 @@ loginForm.addEventListener('submit', async (e) => {
             await signInWithEmailAndPassword(auth, email, password);
             loginMessage.textContent = "Login successful!";
             loginMessage.style.color = "green";
-            showUploadSection();
 
             // IP 주소와 로그인 시간 기록
             const ipAddress = await getIPAddress();
@@ -98,6 +114,7 @@ loginForm.addEventListener('submit', async (e) => {
             });
 
             console.log('Login record saved successfully');
+            displayLoginRecords();  // 로그인 기록 표시
         } else {
             loginMessage.textContent = "Username not found.";
             loginMessage.style.color = "red";
@@ -108,73 +125,12 @@ loginForm.addEventListener('submit', async (e) => {
     }
 });
 
-// 로그인 후 업로드 및 파일 목록 섹션을 보여줌
-function showUploadSection() {
-    signupForm.style.display = "none";
-    loginForm.style.display = "none";
-    document.querySelector('.upload-section').style.display = "block";
-    document.querySelector('.uploaded-files-section').style.display = "block";
-    loadUploadedFiles();  // 파일 목록 로드
-}
-
-// 업로드된 파일 목록 불러오기
-async function loadUploadedFiles() {
-    const querySnapshot = await getDocs(collection(db, 'uploads'));
-    querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        displayUploadedFile(data.name, data.url, doc.id, data.storagePath);
-    });
-}
-
-// 업로드된 파일을 화면에 표시하는 함수
-function displayUploadedFile(fileName, fileUrl, docId, storagePath) {
-    const fileElement = document.createElement('div');
-    fileElement.className = 'uploaded-file';
-
-    const imgElement = document.createElement('img');
-    imgElement.src = fileUrl;
-    imgElement.alt = fileName;
-    imgElement.style.width = '200px';
-
-    const nameElement = document.createElement('p');
-    nameElement.textContent = fileName;
-
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = "Delete";
-    deleteButton.onclick = () => deleteFile(docId, storagePath, fileElement);
-
-    fileElement.appendChild(imgElement);
-    fileElement.appendChild(nameElement);
-    fileElement.appendChild(deleteButton);
-    document.getElementById('uploadedFiles').appendChild(fileElement);
-}
-
-// 파일 삭제 처리
-async function deleteFile(docId, storagePath, fileElement) {
-    try {
-        // Firestore에서 문서 삭제
-        await deleteDoc(doc(db, 'uploads', docId));
-
-        // Firebase Storage에서 파일 삭제
-        const fileRef = ref(storage, storagePath);
-        await deleteObject(fileRef);
-
-        // 화면에서 파일 삭제
-        fileElement.remove();
-        document.getElementById('message').textContent = "File deleted successfully!";
-    } catch (error) {
-        document.getElementById('message').textContent = "Error deleting file: " + error.message;
-    }
-}
-
-// 파일 업로드 처리
+// 파일 업로드 및 업로드 목록 표시
 const uploadForm = document.getElementById('uploadForm');
-const fileInput = document.getElementById('fileInput');
-const message = document.getElementById('message');
-
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const file = fileInput.files[0];
+    const file = document.getElementById('fileInput').files[0];
+    const message = document.getElementById('message');
 
     if (!file) {
         message.textContent = "Please select a file!";
@@ -193,7 +149,6 @@ uploadForm.addEventListener('submit', async (e) => {
             createdAt: new Date()
         });
         message.textContent = "File uploaded successfully!";
-        loadUploadedFiles(); // 파일 목록 새로고침
     } catch (error) {
         message.textContent = "Error uploading file: " + error.message;
     }
