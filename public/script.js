@@ -1,5 +1,5 @@
 import { db, auth, storage } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { collection, addDoc, getDocs, query, where, getDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
@@ -13,6 +13,9 @@ const loginForm = document.getElementById('loginForm');
 const loginUsername = document.getElementById('loginUsername');
 const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
+
+let currentUser = null;
+let isAdmin = false;
 
 // 회원가입 처리
 signupForm.addEventListener('submit', async (e) => {
@@ -31,10 +34,11 @@ signupForm.addEventListener('submit', async (e) => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Firestore에 아이디와 이메일 저장
+        // Firestore에 아이디와 이메일, isAdmin 플래그 저장
         await addDoc(collection(db, 'users'), {
             username: username,
-            email: email
+            email: email,
+            isAdmin: false  // 회원가입 시 기본값은 일반 사용자
         });
 
         signupMessage.textContent = "Sign up successful!";
@@ -70,7 +74,15 @@ loginForm.addEventListener('submit', async (e) => {
             await signInWithEmailAndPassword(auth, email, password);
             loginMessage.textContent = "Login successful!";
             loginMessage.style.color = "green";
-            showUploadSection();
+            
+            currentUser = userData;
+
+            // 사용자 권한 확인
+            const userDocRef = doc(db, 'users', querySnapshot.docs[0].id);
+            const userDoc = await getDoc(userDocRef);
+            isAdmin = userDoc.data().isAdmin;  // 관리자인지 확인
+
+            showUploadSection();  // 업로드 섹션 표시
         } else {
             loginMessage.textContent = "Username not found.";
             loginMessage.style.color = "red";
@@ -85,7 +97,12 @@ loginForm.addEventListener('submit', async (e) => {
 function showUploadSection() {
     signupForm.style.display = "none";
     loginForm.style.display = "none";
-    document.querySelector('.upload-section').style.display = "block";
+    
+    if (isAdmin) {
+        document.querySelector('.upload-section').style.display = "block";
+    } else {
+        alert("You are not authorized to upload files. Only admins can upload files.");
+    }
     document.querySelector('.uploaded-files-section').style.display = "block";
     loadUploadedFiles();  // 파일 목록 로드
 }
@@ -125,14 +142,11 @@ function displayUploadedFile(fileName, fileUrl, docId, storagePath) {
 // 파일 삭제 처리
 async function deleteFile(docId, storagePath, fileElement) {
     try {
-        // Firestore에서 문서 삭제
         await deleteDoc(doc(db, 'uploads', docId));
 
-        // Firebase Storage에서 파일 삭제
         const fileRef = ref(storage, storagePath);
         await deleteObject(fileRef);
 
-        // 화면에서 파일 삭제
         fileElement.remove();
         document.getElementById('message').textContent = "File deleted successfully!";
     } catch (error) {
@@ -147,6 +161,12 @@ const message = document.getElementById('message');
 
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!isAdmin) {
+        message.textContent = "You are not authorized to upload files!";
+        message.style.color = "red";
+        return;
+    }
+
     const file = fileInput.files[0];
 
     if (!file) {
