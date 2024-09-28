@@ -13,6 +13,7 @@ const firebaseConfig = {
   measurementId: "G-03999XR4JS"
 };
 
+// Firebase 초기화
 const firebaseApp = initializeApp(firebaseConfig);
 const db = getFirestore(firebaseApp);
 const storage = getStorage(firebaseApp);
