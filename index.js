@@ -1,65 +1,64 @@
 const express = require('express');
 const fileUpload = require('express-fileupload');
+const { initializeApp, applicationDefault } = require('firebase-admin/app');
+const { getStorage } = require('firebase-admin/storage');
 const path = require('path');
-const { initializeApp } = require('firebase/app');
-const { getFirestore } = require('firebase/firestore');
-const { getStorage } = require('firebase/storage');
+const fs = require('fs');
+const admin = require('firebase-admin');
+
+// Firebase Admin SDK 초기화
+const serviceAccount = require('./path/to/your/firebase-service-account.json'); // 서비스 계정 키 파일 경로
+initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    storageBucket: 'your-firebase-project.appspot.com' // Firebase Storage 버킷 이름
+});
+
+const bucket = getStorage().bucket();
 
 const app = express();
 
-// Firebase 초기화
-const firebaseConfig = {
-    apiKey: "AIzaSyDFysg8I_qKtDqDJLWg1_npTPBWRMM_5WY",
-    authDomain: "jjji-4240b.firebaseapp.com",
-    projectId: "jjji-4240b",
-    storageBucket: "jjji-4240b.appspot.com",
-    messagingSenderId: "876101785840",
-    appId: "1:876101785840:web:6e58681ea9c9780e454a35"
-};
-
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-const storage = getStorage(firebaseApp);
-
-// 정적 파일 제공
-app.use(express.static('public'));
+// 파일 업로드 미들웨어 사용
 app.use(fileUpload());
+app.use(express.static('public')); // 정적 파일 서빙 (HTML, CSS 등)
 
-// 파일 업로드 처리
-app.post('/upload', (req, res) => {
+// 파일 업로드 경로
+app.post('/upload', async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
         return res.status(400).send('No files were uploaded.');
     }
 
-    let uploadedFile = req.files.file;
+    const uploadedFile = req.files.file;
 
-    const allowedExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.mp4', '.mov', '.avi', '.wmv'];
-    
-    if (!allowedExtensions.includes(path.extname(uploadedFile.name).toLowerCase())) {
-        return res.status(400).send('Only images and videos are allowed.');
-    }
+    // 파일을 임시 경로에 저장
+    const tempFilePath = path.join(__dirname, 'uploads', uploadedFile.name);
+    uploadedFile.mv(tempFilePath, (err) => {
+        if (err) {
+            return res.status(500).send(err);
+        }
 
-    // Firebase Storage에 파일 업로드
-    const storageRef = ref(storage); // 수정된 부분
-    const fileRef = ref(storageRef, uploadedFile.name); // 수정된 부분
+        // Firebase Storage에 파일 업로드
+        const uploadToFirebase = async () => {
+            await bucket.upload(tempFilePath, {
+                destination: `uploads/${uploadedFile.name}`,
+                metadata: {
+                    contentType: uploadedFile.mimetype,
+                },
+            });
+            // 파일 업로드 후 로컬 파일 삭제
+            fs.unlinkSync(tempFilePath);
 
-    uploadBytes(fileRef, uploadedFile).then(() => { // 수정된 부분
-        return getDownloadURL(fileRef); // 수정된 부분
-    }).then((fileUrl) => {
-        // Firestore에 메타데이터 저장
-        return db.collection('uploads').add({
-            name: uploadedFile.name,
-            url: fileUrl,
-            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            res.send('File uploaded successfully to Firebase Storage!');
+        };
+
+        uploadToFirebase().catch((error) => {
+            console.error('Error uploading to Firebase:', error);
+            res.status(500).send('Error uploading to Firebase');
         });
-    }).then(() => {
-        res.send(`File uploaded! <a href="${fileUrl}">View File</a>`);
-    }).catch((error) => {
-        res.status(500).send(error);
     });
 });
 
-// 서버 실행
-app.listen(process.env.PORT || 3000, () => {
-    console.log('Server is running on port 3000');
+// 포트 설정
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
