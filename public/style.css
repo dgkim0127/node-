@@ -3,134 +3,86 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    transition: all 0.3s ease; /* 부드러운 애니메이션 */
+    transition: all 0.3s ease;
 }
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
+    background-color: white;
     color: #333;
-    line-height: 1.6;
     margin: 0;
 }
 
-/* 전체 좌측 정렬 */
 .main-content {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    align-items: flex-start; /* 좌측 정렬 */
-    justify-content: flex-start; /* 상단 정렬 */
-    gap: 40px;
-    position: relative;
-    left: 10%; /* 좌측으로 위치 이동 */
-    max-width: 90%; /* 최대 너비 */
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
 }
 
-/* Header */
 .header {
-    background-color: #4A90E2;
-    color: white;
+    background-color: white;
+    color: #333;
     padding: 20px;
-    text-align: left; /* 좌측 정렬 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     position: relative;
-    left: 10%; /* 좌측으로 이동 */
 }
 
 .header h1 {
     font-size: 24px;
-    font-weight: bold;
 }
 
-/* Upload Section */
-.upload-section {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 600px;
-    text-align: left; /* 좌측 정렬 */
-    opacity: 0; /* 처음에는 투명 */
-    transform: translateX(-20px); /* 처음에 살짝 왼쪽으로 이동된 상태 */
-    animation: fadeIn 0.8s forwards; /* 서서히 등장 */
-}
-
-.upload-section h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
-}
-
-.upload-form {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start; /* 좌측 정렬 */
-}
-
-.file-input {
-    padding: 10px;
-    margin-bottom: 15px;
-    width: 100%;
-    max-width: 400px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-}
-
-.upload-button {
+/* Upload (+) Button */
+.post-button {
     background-color: #4A90E2;
     color: white;
     border: none;
-    padding: 10px 20px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 24px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     cursor: pointer;
-    border-radius: 4px;
-    transition: background-color 0.3s ease;
-    width: 100%;
-    max-width: 200px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
 }
 
-.upload-button:hover {
+.post-button:hover {
     background-color: #357ABD;
 }
 
-.message {
-    margin-top: 15px;
-    color: green;
-    font-size: 14px;
-}
-
 /* Uploaded Files Section */
-.uploaded-files-section {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 800px;
-    opacity: 0;
-    transform: translateX(-20px);
-    animation: fadeIn 0.8s forwards 0.3s; /* 지연 효과 추가 */
-}
-
-.uploaded-files-section h2 {
-    font-size: 20px;
-    margin-bottom: 15px;
-}
-
 .uploaded-files {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 20px;
+    gap: 20px; /* 게시물 간 간격 추가 */
+    width: 100%;
 }
 
+/* 게시물에 마우스 호버 효과 */
 .uploaded-file {
     background-color: #f9f9f9;
     padding: 10px;
     border-radius: 8px;
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.8s forwards;
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    margin-bottom: 20px; /* 게시물 하단 여백 */
+}
+
+/* 마우스 올렸을 때 어두워지고 확대되는 효과 */
+.uploaded-file:hover {
+    background-color: rgba(0, 0, 0, 0.1); /* 어두워짐 */
+    transform: scale(1.05); /* 확대 */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* 그림자 강화 */
 }
 
 .uploaded-file img {
@@ -140,66 +92,100 @@ body {
     border-radius: 4px;
 }
 
-.uploaded-file button {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+/* 이미지 간의 간격 추가 */
+.uploaded-file img:not(:last-child) {
+    margin-right: 10px; /* 여러 이미지 간격 */
 }
 
-.uploaded-file button:hover {
-    background-color: #c82333;
+/* Modal Styling */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
 }
 
-/* Footer */
-.footer {
+.modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    text-align: left;
+}
+
+.post-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+input[type="text"], textarea, input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.submit-button {
     background-color: #4A90E2;
     color: white;
     padding: 10px;
-    text-align: left;
-    position: relative;
-    left: 10%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-/* Fade-in Animation */
-@keyframes fadeIn {
-    0% {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateX(0);
-    }
+.submit-button:hover {
+    background-color: #357ABD;
 }
 
-/* Fade-in Up Animation */
-@keyframes fadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.close-button {
+    margin-top: 10px;
+    background-color: #dc3545;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+.close-button:hover {
+    background-color: #c82333;
+}
+
+/* 반응형 그리드: 최소 2개, 최대 6개 */
+@media (min-width: 576px) {
     .uploaded-files {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
+}
 
-    .main-content {
-        left: 0; /* 모바일에서는 중앙 정렬 */
-        max-width: 100%;
+@media (min-width: 768px) {
+    .uploaded-files {
+        grid-template-columns: repeat(3, 1fr);
     }
+}
 
-    .header, .footer {
-        left: 0;
+@media (min-width: 992px) {
+    .uploaded-files {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+@media (min-width: 1200px) {
+    .uploaded-files {
+        grid-template-columns: repeat(5, 1fr);
+    }
+}
+
+@media (min-width: 1400px) {
+    .uploaded-files {
+        grid-template-columns: repeat(6, 1fr);
     }
 }
