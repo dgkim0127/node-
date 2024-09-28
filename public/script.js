@@ -1,5 +1,6 @@
-import { db, auth, storage } from './firebaseConfig.js';
-import { collection, getDocs, query, where, getDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { db, storage } from './firebaseConfig.js';
+import { collection, getDocs, addDoc, doc, deleteDoc, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const loginForm = document.getElementById('loginForm');
 const loginUsername = document.getElementById('loginUsername');
@@ -68,8 +69,15 @@ function showUploadSection() {
 // 업로드된 파일 목록 불러오기
 async function loadUploadedFiles() {
     const querySnapshot = await getDocs(collection(db, 'uploads'));
+    
+    if (querySnapshot.empty) {
+        console.log("No uploaded files found.");
+        return;
+    }
+    
     querySnapshot.forEach((doc) => {
         const data = doc.data();
+        console.log("File data:", data);  // 데이터 로그 출력
         displayUploadedFile(data.name, data.url, doc.id, data.storagePath);
     });
 }
