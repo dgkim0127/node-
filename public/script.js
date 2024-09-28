@@ -1,8 +1,9 @@
 import { db, auth, storage } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
+// 회원가입 및 로그인 폼
 const signupForm = document.getElementById('signupForm');
 const signupUsername = document.getElementById('signupUsername');
 const signupEmail = document.getElementById('signupEmail');
@@ -13,6 +14,18 @@ const loginForm = document.getElementById('loginForm');
 const loginUsername = document.getElementById('loginUsername');
 const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
+
+// IP 주소 가져오는 함수
+async function getIPAddress() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        const data = await response.json();
+        return data.ip;
+    } catch (error) {
+        console.error('Error fetching IP address:', error);
+        return null;
+    }
+}
 
 // 회원가입 처리
 signupForm.addEventListener('submit', async (e) => {
@@ -45,7 +58,7 @@ signupForm.addEventListener('submit', async (e) => {
     }
 });
 
-// 로그인 처리
+// 로그인 처리 및 IP 기록
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = loginUsername.value.trim();
@@ -71,6 +84,20 @@ loginForm.addEventListener('submit', async (e) => {
             loginMessage.textContent = "Login successful!";
             loginMessage.style.color = "green";
             showUploadSection();
+
+            // IP 주소와 로그인 시간 기록
+            const ipAddress = await getIPAddress(); // IP 주소 가져오기
+            const loginTime = new Date().toISOString(); // 로그인 시간
+
+            // Firestore에 로그인 기록 저장
+            await addDoc(collection(db, 'login_records'), {
+                userId: auth.currentUser.uid,
+                email: auth.currentUser.email,
+                ipAddress: ipAddress,
+                loginTime: loginTime
+            });
+
+            console.log('Login record saved successfully');
         } else {
             loginMessage.textContent = "Username not found.";
             loginMessage.style.color = "red";
