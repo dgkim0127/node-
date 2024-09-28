@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload with Firebase</title>
+    <title>Category</title>
     <link rel="stylesheet" href="style.css">
     <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script type="module" src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
@@ -12,28 +12,35 @@
 </head>
 <body>
     <header class="header">
-        <h1>Document Management System</h1>
+        <h1>Category</h1>
+        <!-- 업로드 버튼 -->
+        <button id="postButton" class="post-button">+</button>
     </header>
 
     <main class="main-content">
-        <section class="upload-section">
-            <h2>Upload Files</h2>
-            <form id="uploadForm" class="upload-form">
-                <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input">
-                <button type="submit" class="upload-button">Upload</button>
-            </form>
-            <div id="message" class="message"></div>
-        </section>
-
-        <section class="uploaded-files-section">
-            <h2>Uploaded Files</h2>
-            <div id="uploadedFiles" class="uploaded-files"></div>
-        </section>
+        <!-- 게시물 목록 -->
+        <div id="uploadedFiles" class="uploaded-files"></div>
     </main>
 
-    <footer class="footer">
-        <p>&copy; 2024 Document Management System</p>
-    </footer>
+    <!-- 게시물 작성 페이지 -->
+    <div id="postFormModal" class="modal">
+        <div class="modal-content">
+            <h2>Create a New Post</h2>
+            <form id="postForm" class="post-form">
+                <label for="postTitle">Post Title:</label>
+                <input type="text" id="postTitle" name="postTitle" required>
+
+                <label for="postContent">Post Content:</label>
+                <textarea id="postContent" name="postContent" rows="5" required></textarea>
+
+                <label for="fileInput">Upload Image or Video:</label>
+                <input type="file" id="fileInput" name="file" accept="image/*,video/*" multiple required>
+
+                <button type="submit" class="submit-button">Submit Post</button>
+            </form>
+            <button id="closeModal" class="close-button">Close</button>
+        </div>
+    </div>
 
     <script type="module" src="script.js"></script>
 </body>
