@@ -1,0 +1,13 @@
+# Node.js 관련
+node_modules/
+npm-debug.log
+
+# Firebase API 키 포함된 설정 파일
+firebaseConfig.js
+
+# IDE 관련 파일
+.vscode/
+.idea/
+
+# macOS 관련
+.DS_Store
