@@ -1,5 +1,3 @@
-// Express.js 및 Firebase 초기 설정
-
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const path = require('path');
@@ -7,7 +5,7 @@ const fs = require('fs');
 const admin = require('firebase-admin');
 
 // Firebase Admin SDK 초기화
-const serviceAccount = require('./path/to/your/firebase-service-account.json'); // 서비스 계정 키 파일 경로
+const serviceAccount = require('./path/to/your/firebase-service-account.json'); // Firebase 서비스 계정 키 파일 경로
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
     storageBucket: 'your-firebase-project.appspot.com' // Firebase Storage 버킷 이름
