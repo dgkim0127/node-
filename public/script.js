@@ -1,6 +1,7 @@
-import { db, auth } from './firebaseConfig.js';
+import { db, auth, storage } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const signupForm = document.getElementById('signupForm');
 const signupUsername = document.getElementById('signupUsername');
@@ -13,27 +14,29 @@ const loginUsername = document.getElementById('loginUsername');
 const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
 
-const uploadSection = document.querySelector('.upload-section');
-const uploadedFilesSection = document.querySelector('.uploaded-files-section');
-
 // 회원가입 처리
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = signupUsername.value;
-    const email = signupEmail.value;
-    const password = signupPassword.value;
+    const username = signupUsername.value.trim();
+    const email = signupEmail.value.trim();
+    const password = signupPassword.value.trim();
+
+    if (!username || !email || !password) {
+        signupMessage.textContent = "All fields are required!";
+        signupMessage.style.color = "red";
+        return;
+    }
 
     try {
-        // Firebase Authentication을 통해 사용자 생성
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-        
+
         // Firestore에 아이디와 이메일 저장
         await addDoc(collection(db, 'users'), {
             username: username,
             email: email
         });
-        
+
         signupMessage.textContent = "Sign up successful!";
         signupMessage.style.color = "green";
     } catch (error) {
@@ -42,11 +45,17 @@ signupForm.addEventListener('submit', async (e) => {
     }
 });
 
-// 로그인 처리 (아이디로 이메일 조회 후 로그인)
+// 로그인 처리
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = loginUsername.value;
-    const password = loginPassword.value;
+    const username = loginUsername.value.trim();
+    const password = loginPassword.value.trim();
+
+    if (!username || !password) {
+        loginMessage.textContent = "Both fields are required!";
+        loginMessage.style.color = "red";
+        return;
+    }
 
     try {
         // Firestore에서 아이디에 해당하는 이메일 찾기
@@ -61,8 +70,6 @@ loginForm.addEventListener('submit', async (e) => {
             await signInWithEmailAndPassword(auth, email, password);
             loginMessage.textContent = "Login successful!";
             loginMessage.style.color = "green";
-
-            // 파일 업로드 및 파일 목록 섹션 보이기
             showUploadSection();
         } else {
             loginMessage.textContent = "Username not found.";
@@ -78,8 +85,8 @@ loginForm.addEventListener('submit', async (e) => {
 function showUploadSection() {
     signupForm.style.display = "none";
     loginForm.style.display = "none";
-    uploadSection.style.display = "block";
-    uploadedFilesSection.style.display = "block";
+    document.querySelector('.upload-section').style.display = "block";
+    document.querySelector('.uploaded-files-section').style.display = "block";
     loadUploadedFiles();  // 파일 목록 로드
 }
 
@@ -115,7 +122,7 @@ function displayUploadedFile(fileName, fileUrl, docId, storagePath) {
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
 
-// 파일 삭제 함수
+// 파일 삭제 처리
 async function deleteFile(docId, storagePath, fileElement) {
     try {
         // Firestore에서 문서 삭제
