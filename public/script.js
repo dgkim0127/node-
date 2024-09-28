@@ -68,7 +68,7 @@ loginForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        // Firestore에서 아이디에 해당하는 이메일 찾기
+        // Firestore에서 사용자 문서 가져오기
         const q = query(collection(db, 'users'), where('username', '==', username));
         const querySnapshot = await getDocs(q);
 
