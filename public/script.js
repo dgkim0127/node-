@@ -42,7 +42,7 @@ form.addEventListener('submit', async (e) => {
             fileUrls.push(fileUrl); // 각 파일의 URL 저장
         }
 
-        // Firestore에 게시물 정보 저장 (제목, 내용은 포함하되, 화면에선 표시하지 않음)
+        // Firestore에 게시물 정보 저장
         const docRef = await addDoc(collection(db, 'uploads'), {
             title: postTitle,
             content: postContent,
@@ -52,32 +52,38 @@ form.addEventListener('submit', async (e) => {
 
         alert("Post uploaded successfully!");
         postFormModal.style.display = 'none'; // 모달 닫기
-        displayUploadedFiles(fileUrls, docRef.id);
+        displayUploadedFile(postTitle, postContent, fileUrls, docRef.id);
     } catch (error) {
         alert("Error uploading post: " + error.message);
     }
 });
 
-// 업로드된 파일 목록 불러오기 (사진만 표시)
+// 업로드된 파일 목록 불러오기
 async function loadUploadedFiles() {
     const querySnapshot = await getDocs(collection(db, 'uploads'));
     querySnapshot.forEach((doc) => {
         const data = doc.data();
-        displayUploadedFiles(data.fileUrls, doc.id);
+        displayUploadedFile(data.title, data.content, data.fileUrls, doc.id);
     });
 }
 
-// 업로드된 파일을 화면에 표시하는 함수 (사진만 표시)
-function displayUploadedFiles(fileUrls, docId) {
+// 업로드된 파일을 화면에 표시하는 함수
+function displayUploadedFile(title, content, fileUrls, docId) {
     const fileElement = document.createElement('div');
     fileElement.className = 'uploaded-file';
+
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = title;
+
+    const contentElement = document.createElement('p');
+    contentElement.textContent = content;
 
     // 여러 이미지 표시
     const imageContainer = document.createElement('div');
     fileUrls.forEach((fileUrl) => {
         const imgElement = document.createElement('img');
         imgElement.src = fileUrl;
-        imgElement.alt = "Uploaded Image";
+        imgElement.alt = title;
         imgElement.style.width = '100px';
         imgElement.style.marginRight = '10px'; // 이미지 간 간격
         imageContainer.appendChild(imgElement);
@@ -87,6 +93,8 @@ function displayUploadedFiles(fileUrls, docId) {
     deleteButton.textContent = "Delete";
     deleteButton.onclick = () => deleteFile(docId, fileUrls, fileElement);
 
+    fileElement.appendChild(titleElement);
+    fileElement.appendChild(contentElement);
     fileElement.appendChild(imageContainer);
     fileElement.appendChild(deleteButton);
     uploadedFiles.appendChild(fileElement);
