@@ -1,16 +1,15 @@
 {
-  "name": "node-express-app",
+  "name": "firebase-integration",
   "version": "1.0.0",
-  "description": "A Node.js app with Firebase integration on Cloudtype",
+  "description": "Node.js app integrated with Firebase",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "express-fileupload": "^1.2.1",
-    "firebase": "^9.6.1",
-    "firebase-admin": "^9.12.0"
+    "firebase-admin": "^9.12.0",
+    "body-parser": "^1.19.0"
   },
   "engines": {
     "node": ">=16"
