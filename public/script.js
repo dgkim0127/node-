@@ -1,11 +1,8 @@
 import { db, auth, storage } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where, getDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const signupForm = document.getElementById('signupForm');
 const signupUsername = document.getElementById('signupUsername');
-const signupEmail = document.getElementById('signupEmail');
 const signupPassword = document.getElementById('signupPassword');
 const signupMessage = document.getElementById('signupMessage');
 
@@ -21,36 +18,26 @@ let isAdmin = false;
 signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const username = signupUsername.value.trim();
-    const email = signupEmail.value.trim();
     const password = signupPassword.value.trim();
 
-    if (!username || !email || !password) {
-        signupMessage.textContent = "All fields are required!";
+    if (!username || !password) {
+        signupMessage.textContent = "아이디와 비밀번호를 입력해주세요.";
         signupMessage.style.color = "red";
         return;
     }
 
     try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        // 특정 이메일을 가진 사용자에게 관리자 권한 부여
-        let isAdmin = false;
-        if (email === "admin@example.com") {  // 이 이메일로 가입한 사용자는 관리자
-            isAdmin = true;
-        }
-
-        // Firestore에 사용자 정보와 관리자 권한 저장
+        // Firestore에 사용자 정보 저장 (아이디와 비밀번호)
         await addDoc(collection(db, 'users'), {
             username: username,
-            email: email,
-            isAdmin: isAdmin  // 관리자 여부 저장
+            password: password,
+            isAdmin: false  // 기본값은 관리자 아님
         });
 
-        signupMessage.textContent = "Sign up successful!";
+        signupMessage.textContent = "회원가입이 완료되었습니다!";
         signupMessage.style.color = "green";
     } catch (error) {
-        signupMessage.textContent = `Error: ${error.message}`;
+        signupMessage.textContent = `에러: ${error.message}`;
         signupMessage.style.color = "red";
     }
 });
@@ -62,44 +49,43 @@ loginForm.addEventListener('submit', async (e) => {
     const password = loginPassword.value.trim();
 
     if (!username || !password) {
-        loginMessage.textContent = "Both fields are required!";
+        loginMessage.textContent = "아이디와 비밀번호를 입력해주세요.";
         loginMessage.style.color = "red";
         return;
     }
 
     try {
-        // Firestore에서 사용자 문서 가져오기
+        // Firestore에서 아이디로 사용자 정보 찾기
         const q = query(collection(db, 'users'), where('username', '==', username));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
-            const email = userData.email;
 
-            // 이메일로 Firebase Auth 로그인
-            await signInWithEmailAndPassword(auth, email, password);
-            loginMessage.textContent = "Login successful!";
-            loginMessage.style.color = "green";
+            // 입력된 비밀번호와 Firestore에 저장된 비밀번호 비교
+            if (userData.password === password) {
+                loginMessage.textContent = "로그인 성공!";
+                loginMessage.style.color = "green";
 
-            currentUser = userData;
-
-            // 사용자 권한 확인
-            const userDocRef = doc(db, 'users', querySnapshot.docs[0].id);
-            const userDoc = await getDoc(userDocRef);
-            isAdmin = userDoc.data().isAdmin;  // 관리자인지 확인
-
-            showUploadSection();  // 업로드 섹션 표시
+                // 사용자 권한 및 추가 작업 처리
+                currentUser = userData;
+                isAdmin = userData.isAdmin;
+                showUploadSection();  // 관리자만 접근 가능한 업로드 섹션 활성화
+            } else {
+                loginMessage.textContent = "비밀번호가 틀렸습니다.";
+                loginMessage.style.color = "red";
+            }
         } else {
-            loginMessage.textContent = "Username not found.";
+            loginMessage.textContent = "아이디를 찾을 수 없습니다.";
             loginMessage.style.color = "red";
         }
     } catch (error) {
-        loginMessage.textContent = `Error: ${error.message}`;
+        loginMessage.textContent = `에러: ${error.message}`;
         loginMessage.style.color = "red";
     }
 });
 
-// 로그인 후 업로드 및 파일 목록 섹션을 보여줌
+// 로그인 후 업로드 섹션 활성화
 function showUploadSection() {
     signupForm.style.display = "none";
     loginForm.style.display = "none";
@@ -107,10 +93,10 @@ function showUploadSection() {
     if (isAdmin) {
         document.querySelector('.upload-section').style.display = "block";
     } else {
-        alert("You are not authorized to upload files. Only admins can upload files.");
+        alert("관리자만 파일을 업로드할 수 있습니다.");
     }
     document.querySelector('.uploaded-files-section').style.display = "block";
-    loadUploadedFiles();  // 파일 목록 로드
+    loadUploadedFiles();  // 업로드된 파일 목록 불러오기
 }
 
 // 업로드된 파일 목록 불러오기
@@ -168,7 +154,7 @@ const message = document.getElementById('message');
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     if (!isAdmin) {
-        message.textContent = "You are not authorized to upload files!";
+        message.textContent = "관리자만 파일을 업로드할 수 있습니다!";
         message.style.color = "red";
         return;
     }
@@ -176,7 +162,7 @@ uploadForm.addEventListener('submit', async (e) => {
     const file = fileInput.files[0];
 
     if (!file) {
-        message.textContent = "Please select a file!";
+        message.textContent = "파일을 선택해주세요!";
         return;
     }
 
@@ -191,9 +177,9 @@ uploadForm.addEventListener('submit', async (e) => {
             storagePath: storageRef.fullPath,
             createdAt: new Date()
         });
-        message.textContent = "File uploaded successfully!";
+        message.textContent = "파일이 성공적으로 업로드되었습니다!";
         loadUploadedFiles(); // 파일 목록 새로고침
     } catch (error) {
-        message.textContent = "Error uploading file: " + error.message;
+        message.textContent = `파일 업로드 오류: ${error.message}`;
     }
 });
