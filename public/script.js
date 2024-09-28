@@ -83,7 +83,8 @@ function showUploadSection() {
     loginForm.style.display = "none";
     signupForm.style.display = "none";
 
-    if (isAdmin) {    document.querySelector('.upload-section').style.display = "block";
+    if (isAdmin) {
+        document.querySelector('.upload-section').style.display = "block";
     } else {
         alert("관리자만 파일을 업로드할 수 있습니다.");
     }
