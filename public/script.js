@@ -34,11 +34,17 @@ signupForm.addEventListener('submit', async (e) => {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Firestore에 아이디와 이메일, isAdmin 플래그 저장
+        // 특정 이메일을 가진 사용자에게 관리자 권한 부여
+        let isAdmin = false;
+        if (email === "admin@example.com") {  // 이 이메일로 가입한 사용자는 관리자
+            isAdmin = true;
+        }
+
+        // Firestore에 사용자 정보와 관리자 권한 저장
         await addDoc(collection(db, 'users'), {
             username: username,
             email: email,
-            isAdmin: false  // 회원가입 시 기본값은 일반 사용자
+            isAdmin: isAdmin  // 관리자 여부 저장
         });
 
         signupMessage.textContent = "Sign up successful!";
@@ -74,7 +80,7 @@ loginForm.addEventListener('submit', async (e) => {
             await signInWithEmailAndPassword(auth, email, password);
             loginMessage.textContent = "Login successful!";
             loginMessage.style.color = "green";
-            
+
             currentUser = userData;
 
             // 사용자 권한 확인
