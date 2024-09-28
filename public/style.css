@@ -19,12 +19,12 @@ body {
     display: flex;
     flex-direction: column;
     padding: 20px;
-    align-items: flex-start; /* 좌측 정렬 */
-    justify-content: flex-start; /* 상단 정렬 */
+    align-items: flex-start;
+    justify-content: flex-start;
     gap: 40px;
     position: relative;
-    left: 10%; /* 좌측으로 위치 이동 */
-    max-width: 90%; /* 최대 너비 */
+    left: 10%;
+    max-width: 90%;
 }
 
 /* Header */
@@ -32,9 +32,9 @@ body {
     background-color: #4A90E2;
     color: white;
     padding: 20px;
-    text-align: left; /* 좌측 정렬 */
+    text-align: left;
     position: relative;
-    left: 10%; /* 좌측으로 이동 */
+    left: 10%;
 }
 
 .header h1 {
@@ -150,10 +150,9 @@ body {
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 600px;
-    text-align: left; /* 좌측 정렬 */
-    opacity: 0; /* 처음에는 투명 */
-    transform: translateX(-20px); /* 처음에 살짝 왼쪽으로 이동된 상태 */
-    animation: fadeIn 0.8s forwards; /* 서서히 등장 */
+    opacity: 0;
+    transform: translateX(-20px);
+    animation: fadeIn 0.8s forwards;
 }
 
 .upload-section h2 {
@@ -164,7 +163,7 @@ body {
 .upload-form {
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* 좌측 정렬 */
+    align-items: flex-start;
 }
 
 .file-input {
@@ -208,7 +207,7 @@ body {
     max-width: 800px;
     opacity: 0;
     transform: translateX(-20px);
-    animation: fadeIn 0.8s forwards 0.3s; /* 지연 효과 추가 */
+    animation: fadeIn 0.8s forwards 0.3s;
 }
 
 .uploaded-files-section h2 {
@@ -303,3 +302,4 @@ body {
         left: 0;
     }
 }
+
