@@ -1,3 +1,5 @@
+// Express.js 및 Firebase 초기 설정
+
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const path = require('path');
@@ -18,6 +20,12 @@ const app = express();
 app.use(fileUpload());
 app.use(express.static('public')); // 정적 파일 서빙 (HTML, CSS 등)
 
+// 'uploads' 디렉토리 존재 여부 확인 및 생성
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+    fs.mkdirSync(uploadsDir);
+}
+
 // 파일 업로드 경로
 app.post('/upload', async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
@@ -27,7 +35,7 @@ app.post('/upload', async (req, res) => {
     const uploadedFile = req.files.file;
 
     // 파일을 임시 경로에 저장
-    const tempFilePath = path.join(__dirname, 'uploads', uploadedFile.name);
+    const tempFilePath = path.join(uploadsDir, uploadedFile.name);
     uploadedFile.mv(tempFilePath, (err) => {
         if (err) {
             return res.status(500).send(err);
