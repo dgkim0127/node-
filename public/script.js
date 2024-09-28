@@ -1,19 +1,7 @@
 import { db, auth, storage } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
-
-// 회원가입 및 로그인 폼
-const signupForm = document.getElementById('signupForm');
-const signupUsername = document.getElementById('signupUsername');
-const signupEmail = document.getElementById('signupEmail');
-const signupPassword = document.getElementById('signupPassword');
-const signupMessage = document.getElementById('signupMessage');
-
-const loginForm = document.getElementById('loginForm');
-const loginUsername = document.getElementById('loginUsername');
-const loginPassword = document.getElementById('loginPassword');
-const loginMessage = document.getElementById('loginMessage');
 
 // IP 주소 가져오는 함수
 async function getIPAddress() {
@@ -26,6 +14,18 @@ async function getIPAddress() {
         return null;
     }
 }
+
+// 회원가입 및 로그인 폼
+const signupForm = document.getElementById('signupForm');
+const signupUsername = document.getElementById('signupUsername');
+const signupEmail = document.getElementById('signupEmail');
+const signupPassword = document.getElementById('signupPassword');
+const signupMessage = document.getElementById('signupMessage');
+
+const loginForm = document.getElementById('loginForm');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
+const loginMessage = document.getElementById('loginMessage');
 
 // 회원가입 처리
 signupForm.addEventListener('submit', async (e) => {
@@ -86,8 +86,8 @@ loginForm.addEventListener('submit', async (e) => {
             showUploadSection();
 
             // IP 주소와 로그인 시간 기록
-            const ipAddress = await getIPAddress(); // IP 주소 가져오기
-            const loginTime = new Date().toISOString(); // 로그인 시간
+            const ipAddress = await getIPAddress();
+            const loginTime = new Date().toISOString();
 
             // Firestore에 로그인 기록 저장
             await addDoc(collection(db, 'login_records'), {
