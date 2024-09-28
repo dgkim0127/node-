@@ -1,7 +1,7 @@
 {
-  "name": "my-cloudtype-app",
+  "name": "node-express-app",
   "version": "1.0.0",
-  "description": "Node.js app with Firebase integration, deployed on Cloudtype",
+  "description": "A Node.js app with Firebase integration on Cloudtype",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -14,9 +14,5 @@
   },
   "engines": {
     "node": ">=16"
-  },
-  "cloudtype": {
-    "buildCommand": "npm install",
-    "startCommand": "npm start"
   }
 }
