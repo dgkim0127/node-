@@ -1,63 +1,35 @@
 const express = require('express');
-const fileUpload = require('express-fileupload');
 const admin = require('firebase-admin');
-const firebase = require('firebase/app');
-require('firebase/firestore');
-require('firebase/storage');
-
-// Firebase 서비스 계정 키를 사용하여 초기화
-const serviceAccount = require('./serviceAccountKey.json');
+const bodyParser = require('body-parser');
 
 // Firebase Admin SDK 초기화
 admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
+    credential: admin.credential.applicationDefault(),
     storageBucket: "YOUR_PROJECT_ID.appspot.com"
 });
-
-// Firebase Firestore와 Storage 초기화
-const db = admin.firestore();
-const bucket = admin.storage().bucket();
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// 파일 업로드 미들웨어 설정
-app.use(fileUpload());
-
-// 정적 파일 제공
+app.use(bodyParser.json());
 app.use(express.static('public'));
 
-// 파일 업로드 API
+// 파일 업로드 API 예시
 app.post('/upload', async (req, res) => {
-    if (!req.files || Object.keys(req.files).length === 0) {
-        return res.status(400).send('No files were uploaded.');
-    }
-
-    const file = req.files.file;
-    const fileName = `${Date.now()}_${file.name}`;
-
+    const file = req.body.file;
+    const bucket = admin.storage().bucket();
+    
     try {
-        // Firebase Storage에 파일 업로드
-        const fileRef = bucket.file(fileName);
-        await fileRef.save(file.data);
-
-        // 파일 URL 얻기
-        const fileUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
-
-        // Firestore에 파일 메타데이터 저장
-        await db.collection('uploads').add({
-            name: fileName,
-            url: fileUrl,
-            createdAt: new Date()
-        });
-
-        res.send({ message: 'File uploaded successfully', url: fileUrl });
+        const fileRef = bucket.file(file.name);
+        await fileRef.save(Buffer.from(file.data, 'base64'), { contentType: file.type });
+        const fileUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+        
+        res.json({ message: 'File uploaded successfully', url: fileUrl });
     } catch (error) {
-        res.status(500).send({ message: 'Error uploading file', error });
+        res.status(500).json({ error: error.message });
     }
 });
 
-// 서버 시작
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });
