@@ -1,10 +1,5 @@
 import { db, auth, storage } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, getDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-
-const signupForm = document.getElementById('signupForm');
-const signupUsername = document.getElementById('signupUsername');
-const signupPassword = document.getElementById('signupPassword');
-const signupMessage = document.getElementById('signupMessage');
+import { collection, getDocs, query, where, getDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 const loginForm = document.getElementById('loginForm');
 const loginUsername = document.getElementById('loginUsername');
@@ -13,34 +8,6 @@ const loginMessage = document.getElementById('loginMessage');
 
 let currentUser = null;
 let isAdmin = false;
-
-// 회원가입 처리
-signupForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const username = signupUsername.value.trim();
-    const password = signupPassword.value.trim();
-
-    if (!username || !password) {
-        signupMessage.textContent = "아이디와 비밀번호를 입력해주세요.";
-        signupMessage.style.color = "red";
-        return;
-    }
-
-    try {
-        // Firestore에 사용자 정보 저장 (아이디와 비밀번호)
-        await addDoc(collection(db, 'users'), {
-            username: username,
-            password: password,
-            isAdmin: false  // 기본값은 관리자 아님
-        });
-
-        signupMessage.textContent = "회원가입이 완료되었습니다!";
-        signupMessage.style.color = "green";
-    } catch (error) {
-        signupMessage.textContent = `에러: ${error.message}`;
-        signupMessage.style.color = "red";
-    }
-});
 
 // 로그인 처리
 loginForm.addEventListener('submit', async (e) => {
@@ -87,7 +54,6 @@ loginForm.addEventListener('submit', async (e) => {
 
 // 로그인 후 업로드 섹션 활성화
 function showUploadSection() {
-    signupForm.style.display = "none";
     loginForm.style.display = "none";
     
     if (isAdmin) {
