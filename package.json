@@ -1,7 +1,7 @@
 {
-  "name": "my-node-app",
+  "name": "my-cloudtype-app",
   "version": "1.0.0",
-  "description": "Simple Node.js file upload server with Firebase",
+  "description": "Node.js app with Firebase integration, deployed on Cloudtype",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
@@ -9,9 +9,14 @@
   "dependencies": {
     "express": "^4.17.1",
     "express-fileupload": "^1.2.1",
-    "firebase": "^9.6.1"
+    "firebase": "^9.6.1",
+    "firebase-admin": "^9.12.0"
   },
   "engines": {
     "node": ">=16"
+  },
+  "cloudtype": {
+    "buildCommand": "npm install",
+    "startCommand": "npm start"
   }
 }
