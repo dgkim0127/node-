@@ -7,9 +7,17 @@ const loginUsername = document.getElementById('loginUsername');
 const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
 const signupButton = document.getElementById('signupButton');
-const uploadSection = document.querySelector('.upload-section');
-const fileUploadSection = document.querySelector('.file-upload-section');
-const showUploadButton = document.getElementById('showUploadButton');
+const uploadForm = document.getElementById('uploadForm');
+const fileInput = document.getElementById('fileInput');
+const thumbnailSelect = document.getElementById('thumbnailSelect');
+const message = document.getElementById('message');
+
+// 추가 필드
+const partNumberInput = document.getElementById('partNumber');
+const sizeInput = document.getElementById('size');
+const weightInput = document.getElementById('weight');
+const typeInput = document.getElementById('type');
+const descriptionInput = document.getElementById('description');
 
 let currentUser = null;
 let isAdmin = false;
@@ -105,23 +113,120 @@ showUploadButton.addEventListener('click', () => {
     showUploadButton.style.display = 'none';    // 업로드 버튼 숨기기
 });
 
-// 파일 업로드 처리
+
+게시물에 사진 및 영상 외에도 품번, 사이즈, 중량, 종류, 내용을 추가로 입력할 수 있도록 HTML 및 JavaScript를 수정할 수 있습니다. 아래 코드를 통해 이 필드를 추가하고, 업로드할 때 해당 데이터를 함께 저장할 수 있게 구현합니다.
+
+1. HTML 수정:
+업로드 폼에 추가 입력 필드를 넣어 품번, 사이즈, 중량, 종류, 내용을 입력할 수 있도록 합니다.
+
+html
+코드 복사
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Management System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Document Management System</h1>
+    </header>
+
+    <main class="main-content">
+        <!-- 로그인 섹션 및 회원가입 버튼 (생략) -->
+
+        <!-- 파일 업로드 버튼 -->
+        <section class="upload-section" style="display: none;">
+            <button id="showUploadButton" class="upload-button">Upload Files</button>
+        </section>
+
+        <!-- 파일 업로드 섹션 -->
+        <section class="file-upload-section" style="display: none;">
+            <h2>Upload Files</h2>
+            <form id="uploadForm" class="upload-form">
+                <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input" multiple>
+
+                <!-- 추가 입력 필드 -->
+                <input type="text" id="partNumber" placeholder="품번" required>
+                <input type="text" id="size" placeholder="사이즈" required>
+                <input type="text" id="weight" placeholder="중량" required>
+                <input type="text" id="type" placeholder="종류" required>
+                <textarea id="description" placeholder="내용" required></textarea>
+
+                <label for="thumbnailSelect">Select Thumbnail:</label>
+                <select id="thumbnailSelect"></select>
+
+                <button type="submit" class="upload-button">Upload</button>
+            </form>
+            <div id="message" class="message"></div>
+        </section>
+
+        <!-- 업로드된 파일 섹션 (생략) -->
+    </main>
+
+    <footer class="footer">
+        <p>&copy; 2024 Document Management System</p>
+    </footer>
+
+    <script type="module" src="firebaseConfig.js"></script>
+    <script type="module" src="script.js"></script>
+</body>
+</html>
+2. JavaScript 수정:
+업로드할 때 파일뿐만 아니라 추가된 필드도 함께 Firestore에 저장할 수 있도록 코드를 수정합니다.
+
+javascript
+코드 복사
+import { db, storage } from './firebaseConfig.js';
+import { collection, addDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+
 const uploadForm = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
 const thumbnailSelect = document.getElementById('thumbnailSelect');
 const message = document.getElementById('message');
 
+// 추가 필드
+const partNumberInput = document.getElementById('partNumber');
+const sizeInput = document.getElementById('size');
+const weightInput = document.getElementById('weight');
+const typeInput = document.getElementById('type');
+const descriptionInput = document.getElementById('description');
+
+// 파일 선택 시 썸네일 선택 옵션 업데이트
+fileInput.addEventListener('change', () => {
+    const files = fileInput.files;
+    thumbnailSelect.innerHTML = ''; // 기존 옵션 제거
+
+    Array.from(files).forEach((file, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.text = file.name;
+        thumbnailSelect.appendChild(option);
+    });
+});
+
+// 파일 업로드 처리
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const files = fileInput.files;
     const thumbnailIndex = thumbnailSelect.value;
 
-    if (!files.length) {
-        message.textContent = "Please select at least one file!";
+    // 추가된 필드 값 가져오기
+    const partNumber = partNumberInput.value.trim();
+    const size = sizeInput.value.trim();
+    const weight = weightInput.value.trim();
+    const type = typeInput.value.trim();
+    const description = descriptionInput.value.trim();
+
+    if (!files.length || !partNumber || !size || !weight || !type || !description) {
+        message.textContent = "모든 필드를 채워주세요.";
         return;
     }
 
-    const imageUrls = [];
+      const imageUrls = [];
     let thumbnailUrl = '';
 
     try {
@@ -139,10 +244,15 @@ uploadForm.addEventListener('submit', async (e) => {
             }
         }
 
-        // Firestore에 게시물 정보 저장 (대표 이미지와 모든 이미지 URL)
+        // Firestore에 게시물 정보 저장 (파일 정보 및 추가 필드 포함)
         await addDoc(collection(db, 'uploads'), {
             thumbnailUrl: thumbnailUrl,
             imageUrls: imageUrls,  // 모든 이미지 URL
+            partNumber: partNumber,  // 품번
+            size: size,              // 사이즈
+            weight: weight,          // 중량
+            type: type,              // 종류
+            description: description,  // 내용
             createdAt: new Date()
         });
 
