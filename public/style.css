@@ -108,37 +108,49 @@ body {
     animation: fadeIn 0.8s forwards 0.3s;
 }
 
-/* 업로드된 파일 스타일 */
+/* 업로드된 파일 컨테이너 스타일 */
 .uploaded-file {
-    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
     padding: 10px;
+    border: 1px solid #ddd;
     border-radius: 8px;
-    text-align: center;
+    background-color: #f9f9f9;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.8s forwards;
 }
 
-.uploaded-file img, .uploaded-file video {
-    max-width: 100%;
-    height: auto;
+/* 동영상과 이미지 스타일을 구분 */
+.uploaded-file video {
+    width: 100%;
+    max-width: 200px; /* 동영상의 최대 너비 */
+    border-radius: 8px;
     margin-bottom: 10px;
-    border-radius: 4px;
 }
 
+/* 이미지와 동일한 스타일을 동영상에 적용하여 통일성 유지 */
+.uploaded-file img {
+    width: 100%;
+    max-width: 200px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+/* 버튼 스타일 */
 .uploaded-file button {
-    background-color: #dc3545;
+    background-color: #4A90E2;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    margin-top: 5px;
 }
 
 .uploaded-file button:hover {
-    background-color: #c82333;
+    background-color: #357ABD;
 }
 
 /* 상세 페이지에 표시될 이미지 스타일 */
