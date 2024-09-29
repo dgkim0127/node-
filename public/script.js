@@ -1,6 +1,6 @@
 import { db, storage, auth } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const loginForm = document.getElementById('loginForm');
 const loginUsername = document.getElementById('loginUsername');
@@ -27,21 +27,18 @@ loginForm.addEventListener('submit', async (e) => {
     }
 
     try {
-        // Firestore에서 아이디로 사용자 정보 찾기
         const q = query(collection(db, 'users'), where('username', '==', username));
         const querySnapshot = await getDocs(q);
-                if (!querySnapshot.empty) {
-            const userData = querySnapshot.docs[0].data();
 
-            // 입력된 비밀번호와 Firestore에 저장된 비밀번호 비교
+        if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
             if (userData.password === password) {
                 loginMessage.textContent = "로그인 성공!";
                 loginMessage.style.color = "green";
 
-                // 사용자 권한 및 추가 작업 처리
-                currentUser = userData;  // currentUser 변수 초기화
+                currentUser = userData;
                 isAdmin = userData.isAdmin;
-                showUploadSection();  // 관리자만 접근 가능한 업로드 섹션 활성화
+                showUploadSection();
             } else {
                 loginMessage.textContent = "비밀번호가 틀렸습니다.";
                 loginMessage.style.color = "red";
@@ -69,11 +66,10 @@ signupButton.addEventListener('click', () => {
 // 회원가입 함수
 async function signupUser(username, password) {
     try {
-        // Firestore에 사용자 정보 저장 (아이디와 비밀번호)
         await addDoc(collection(db, 'users'), {
             username: username,
             password: password,
-            isAdmin: false  // 기본값은 관리자 아님
+            isAdmin: false
         });
 
         loginMessage.textContent = "회원가입이 완료되었습니다! 로그인하세요.";
@@ -84,24 +80,24 @@ async function signupUser(username, password) {
     }
 }
 
-// 로그인 후 업로드 버튼만 표시
+// 로그인 후 업로드 버튼 표시
 function showUploadSection() {
     loginForm.style.display = "none";
     signupButton.style.display = "none";
 
     if (isAdmin) {
-        uploadSection.style.display = "block";  // 업로드 버튼 표시
+        uploadSection.style.display = "block";
     } else {
         alert("관리자만 파일을 업로드할 수 있습니다.");
     }
     document.querySelector('.uploaded-files-section').style.display = "block";
-    loadUploadedFiles();  // 파일 목록 로드
+    loadUploadedFiles();
 }
 
 // 업로드 버튼 클릭 시 파일 업로드 섹션 표시
 showUploadButton.addEventListener('click', () => {
-    fileUploadSection.style.display = 'block';  // 파일 업로드 섹션 보이기
-    showUploadButton.style.display = 'none';    // 업로드 버튼 숨기기
+    fileUploadSection.style.display = 'block';
+    showUploadButton.style.display = 'none';
 });
 
 // 파일 업로드 처리
@@ -110,13 +106,25 @@ const fileInput = document.getElementById('fileInput');
 const thumbnailSelect = document.getElementById('thumbnailSelect');
 const message = document.getElementById('message');
 
+// 품번, 사이즈, 중량, 종류, 내용 필드
+const partNumberInput = document.getElementById('partNumber');
+const sizeInput = document.getElementById('size');
+const weightInput = document.getElementById('weight');
+const typeInput = document.getElementById('type');
+const descriptionInput = document.getElementById('description');
+
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const files = fileInput.files;
     const thumbnailIndex = thumbnailSelect.value;
+    const partNumber = partNumberInput.value.trim();
+    const size = sizeInput.value.trim();
+    const weight = weightInput.value.trim();
+    const type = typeInput.value.trim();
+    const description = descriptionInput.value.trim();
 
-    if (!files.length) {
-        message.textContent = "Please select at least one file!";
+    if (!files.length || !partNumber || !size || !weight || !type) {
+        message.textContent = "모든 필드를 입력하고 파일을 선택하세요!";
         return;
     }
 
@@ -124,7 +132,6 @@ uploadForm.addEventListener('submit', async (e) => {
     let thumbnailUrl = '';
 
     try {
-        // 각 파일을 Storage에 업로드
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const storageRef = ref(storage, `uploads/${file.name}`);
@@ -132,14 +139,17 @@ uploadForm.addEventListener('submit', async (e) => {
             const fileUrl = await getDownloadURL(storageRef);
             imageUrls.push(fileUrl);
 
-            // 선택된 썸네일 저장
             if (i == thumbnailIndex) {
                 thumbnailUrl = fileUrl;
             }
         }
 
-        // Firestore에 게시물 정보 저장 (대표 이미지와 모든 이미지 URL)
         await addDoc(collection(db, 'uploads'), {
+            partNumber: partNumber,
+            size: size,
+            weight: weight + 'g',
+            type: type,
+            description: description,
             thumbnailUrl: thumbnailUrl,
             imageUrls: imageUrls,  // 모든 이미지 URL
             createdAt: new Date()
@@ -203,7 +213,6 @@ function viewAllImages(imageUrls) {
 async function deleteFile(docId, fileElement) {
     try {
         await deleteDoc(doc(db, 'uploads', docId)); // Firestore에서 문서 삭제
-
         fileElement.remove();
         document.getElementById('message').textContent = "File deleted successfully!";
     } catch (error) {
