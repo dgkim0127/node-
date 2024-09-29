@@ -1,11 +1,12 @@
-import { db } from './firebaseConfig.js';
+import { auth, db } from './firebaseConfig.js';
+import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // Firestore에서 아이디로 사용자 정보 조회
 async function getUserByUserId(userId) {
     const userDoc = await getDoc(doc(db, 'users', userId));
     if (userDoc.exists()) {
-        return userDoc.data(); // 사용자 정보 반환 (비밀번호 포함)
+        return userDoc.data(); // 사용자 정보 반환 (이메일 포함)
     } else {
         throw new Error("존재하지 않는 아이디입니다.");
     }
@@ -21,23 +22,34 @@ loginForm.addEventListener('submit', async (e) => {
     const errorMessage = document.getElementById('errorMessage');
 
     try {
-        // 아이디로 사용자 정보 조회
+        // 아이디로 사용자 이메일 조회
         const user = await getUserByUserId(userId);
+        
+        // 이메일과 비밀번호로 Firebase Authentication에 로그인 시도
+        const userCredential = await signInWithEmailAndPassword(auth, user.email, password);
+        
+        // 로그인 성공
+        const userData = userCredential.user;
+        alert(`로그인 성공: ${userData.email}`);
+        window.location.href = 'dashboard.html'; // 로그인 성공 후 리디렉션
 
-        // 해싱된 비밀번호와 비교 (여기서는 단순 예시, 실제로는 해시된 비밀번호 사용)
-        if (user.password === hashPassword(password)) {
-            alert(`로그인 성공: ${userId}`);
-            window.location.href = 'dashboard.html'; // 로그인 성공 후 리디렉션
-        } else {
-            throw new Error("비밀번호가 일치하지 않습니다.");
-        }
     } catch (error) {
-        errorMessage.textContent = "로그인 실패: " + error.message;
+        // Firebase 인증 오류 처리
+        switch (error.code) {
+            case 'auth/wrong-password':
+                errorMessage.textContent = "비밀번호가 올바르지 않습니다.";
+                break;
+            case 'auth/user-not-found':
+                errorMessage.textContent = "존재하지 않는 사용자입니다.";
+                break;
+            case 'auth/invalid-email':
+                errorMessage.textContent = "잘못된 이메일 형식입니다.";
+                break;
+            case 'auth/too-many-requests':
+                errorMessage.textContent = "너무 많은 시도가 있었습니다. 나중에 다시 시도해주세요.";
+                break;
+            default:
+                errorMessage.textContent = "로그인 실패: " + error.message;
+        }
     }
 });
-
-// 비밀번호 해싱 함수
-function hashPassword(password) {
-    // 간단한 해싱 예시 (실제 해싱 알고리즘은 더 복잡해야 합니다)
-    return btoa(password); // Base64 인코딩을 이용한 해싱
-}
