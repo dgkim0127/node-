@@ -1,4 +1,5 @@
-import { db } from './firebaseConfig.js';
+import { auth, db } from './firebaseConfig.js';
+import { createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // 회원가입 폼 이벤트 핸들러
@@ -8,26 +9,29 @@ registerForm.addEventListener('submit', async (e) => {
 
     const userId = document.getElementById('userId').value;
     const password = document.getElementById('password').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
     const errorMessage = document.getElementById('errorMessage');
 
-    try {
-        // 비밀번호 해싱 (간단한 해싱 예시)
-        const hashedPassword = hashPassword(password);
+    if (password !== confirmPassword) {
+        errorMessage.textContent = "비밀번호가 일치하지 않습니다.";
+        return;
+    }
 
-        // Firestore에 사용자 아이디와 해싱된 비밀번호 저장
+    try {
+        // Firebase Authentication에 새 사용자 등록
+        const userCredential = await createUserWithEmailAndPassword(auth, `${userId}@example.com`, password);
+        const user = userCredential.user;
+
+        // Firestore에 사용자 정보 저장
         await setDoc(doc(db, 'users', userId), {
-            password: hashedPassword
+            uid: user.uid,
+            createdAt: new Date(),
         });
 
-        alert('회원가입 성공! 이제 로그인하세요.');
-        window.location.href = 'index.html'; // 회원가입 성공 후 로그인 페이지로 리디렉션
+        alert('회원가입 성공! 로그인 페이지로 이동합니다.');
+        window.location.href = 'index.html'; // 로그인 페이지로 리디렉션
+
     } catch (error) {
         errorMessage.textContent = '회원가입 실패: ' + error.message;
     }
 });
-
-// 비밀번호 해싱 함수
-function hashPassword(password) {
-    // 간단한 해싱 예시 (실제로는 더 안전한 해싱 알고리즘을 사용해야 합니다)
-    return btoa(password); // Base64 인코딩을 이용한 해싱
-}
