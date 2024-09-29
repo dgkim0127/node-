@@ -38,7 +38,9 @@
         <section class="upload-section" style="display: none;">
             <h2>Upload Files</h2>
             <form id="uploadForm" class="upload-form">
-                <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input">
+                <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input" multiple>
+                <label for="thumbnailSelect">Select Thumbnail:</label>
+                <select id="thumbnailSelect"></select>
                 <button type="submit" class="upload-button">Upload</button>
             </form>
             <div id="message" class="message"></div>
