@@ -1,26 +1,48 @@
 import { db, storage, auth } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+
+const signupForm = document.getElementById('signupForm');
+const signupUsername = document.getElementById('signupUsername');
+const signupPassword = document.getElementById('signupPassword');
+const signupMessage = document.getElementById('signupMessage');
 
 const loginForm = document.getElementById('loginForm');
 const loginUsername = document.getElementById('loginUsername');
 const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
-const signupButton = document.getElementById('signupButton');
-const uploadForm = document.getElementById('uploadForm');
-const fileInput = document.getElementById('fileInput');
-const thumbnailSelect = document.getElementById('thumbnailSelect');
-const message = document.getElementById('message');
-
-// 추가 필드
-const partNumberInput = document.getElementById('partNumber');
-const sizeInput = document.getElementById('size');
-const weightInput = document.getElementById('weight');
-const typeInput = document.getElementById('type');
-const descriptionInput = document.getElementById('description');
 
 let currentUser = null;
 let isAdmin = false;
+
+// 회원가입 처리
+signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = signupUsername.value.trim();
+    const password = signupPassword.value.trim();
+
+    if (!username || !password) {
+        signupMessage.textContent = "아이디와 비밀번호를 입력해주세요.";
+        signupMessage.style.color = "red";
+        return;
+    }
+
+    try {
+        // Firestore에 사용자 정보 저장 (아이디와 비밀번호)
+        await addDoc(collection(db, 'users'), {
+            username: username,
+            password: password,
+            isAdmin: false  // 기본값은 관리자 아님
+        });
+
+        signupMessage.textContent = "회원가입이 완료되었습니다!";
+        signupMessage.style.color = "green";
+    } catch (error) {
+        signupMessage.textContent = `에러: ${error.message}`;
+        signupMessage.style.color = "red";
+    }
+});
 
 // 로그인 처리
 loginForm.addEventListener('submit', async (e) => {
@@ -48,7 +70,7 @@ loginForm.addEventListener('submit', async (e) => {
                 loginMessage.style.color = "green";
 
                 // 사용자 권한 및 추가 작업 처리
-                currentUser = userData;  // currentUser 변수 초기화
+                currentUser = userData;
                 isAdmin = userData.isAdmin;
                 showUploadSection();  // 관리자만 접근 가능한 업로드 섹션 활성화
             } else {
@@ -65,41 +87,13 @@ loginForm.addEventListener('submit', async (e) => {
     }
 });
 
-// 회원가입 버튼 클릭 시 처리
-signupButton.addEventListener('click', () => {
-    const username = prompt("새로운 아이디를 입력하세요:");
-    const password = prompt("새로운 비밀번호를 입력하세요:");
-
-    if (username && password) {
-        signupUser(username, password);
-    }
-});
-
-// 회원가입 함수
-async function signupUser(username, password) {
-    try {
-        // Firestore에 사용자 정보 저장 (아이디와 비밀번호)
-        await addDoc(collection(db, 'users'), {
-            username: username,
-            password: password,
-            isAdmin: false  // 기본값은 관리자 아님
-        });
-
-        loginMessage.textContent = "회원가입이 완료되었습니다! 로그인하세요.";
-        loginMessage.style.color = "green";
-    } catch (error) {
-        loginMessage.textContent = `회원가입 에러: ${error.message}`;
-        loginMessage.style.color = "red";
-    }
-}
-
-// 로그인 후 업로드 버튼만 표시
+// 로그인 후 업로드 및 파일 목록 섹션을 보여줌
 function showUploadSection() {
+    signupForm.style.display = "none";
     loginForm.style.display = "none";
-    signupButton.style.display = "none";
-
+    
     if (isAdmin) {
-        uploadSection.style.display = "block";  // 업로드 버튼 표시
+        document.querySelector('.upload-section').style.display = "block";
     } else {
         alert("관리자만 파일을 업로드할 수 있습니다.");
     }
@@ -107,13 +101,7 @@ function showUploadSection() {
     loadUploadedFiles();  // 파일 목록 로드
 }
 
-// 업로드 버튼 클릭 시 파일 업로드 섹션 표시
-showUploadButton.addEventListener('click', () => {
-    fileUploadSection.style.display = 'block';  // 파일 업로드 섹션 보이기
-    showUploadButton.style.display = 'none';    // 업로드 버튼 숨기기
-});
-
-// 파일 선택 시 썸네일 선택 옵션 업데이트
+// 파일 선택 시 대표 이미지 선택 옵션 업데이트
 fileInput.addEventListener('change', () => {
     const files = fileInput.files;
     thumbnailSelect.innerHTML = ''; // 기존 옵션 제거
@@ -132,19 +120,12 @@ uploadForm.addEventListener('submit', async (e) => {
     const files = fileInput.files;
     const thumbnailIndex = thumbnailSelect.value;
 
-    // 추가된 필드 값 가져오기
-    const partNumber = partNumberInput.value.trim();
-    const size = sizeInput.value.trim();
-    const weight = weightInput.value.trim();
-    const type = typeInput.value.trim();
-    const description = descriptionInput.value.trim();
-
-    if (!files.length || !partNumber || !size || !weight || !type || !description) {
-        message.textContent = "모든 필드를 채워주세요.";
+    if (!files.length) {
+        message.textContent = "Please select at least one file!";
         return;
     }
 
-      const imageUrls = [];
+    const imageUrls = [];
     let thumbnailUrl = '';
 
     try {
@@ -162,15 +143,10 @@ uploadForm.addEventListener('submit', async (e) => {
             }
         }
 
-        // Firestore에 게시물 정보 저장 (파일 정보 및 추가 필드 포함)
+        // Firestore에 게시물 정보 저장 (대표 이미지와 모든 이미지 URL)
         await addDoc(collection(db, 'uploads'), {
             thumbnailUrl: thumbnailUrl,
             imageUrls: imageUrls,  // 모든 이미지 URL
-            partNumber: partNumber,  // 품번
-            size: size,              // 사이즈
-            weight: weight,          // 중량
-            type: type,              // 종류
-            description: description,  // 내용
             createdAt: new Date()
         });
 
