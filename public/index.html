@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>로그인 페이지</title>
+    <title>아이디 기반 로그인</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>로그인</h1>
+        <h1>아이디로 로그인</h1>
     </header>
 
     <main>
         <section id="loginSection">
             <form id="loginForm">
-                <label for="email">이메일</label>
-                <input type="email" id="email" required placeholder="이메일을 입력하세요">
+                <label for="userId">아이디</label>
+                <input type="text" id="userId" required placeholder="아이디를 입력하세요">
                 
                 <label for="password">비밀번호</label>
                 <input type="password" id="password" required placeholder="비밀번호를 입력하세요">
@@ -23,10 +23,6 @@
                 <button type="submit">로그인</button>
             </form>
             <p id="errorMessage" class="error"></p>
-        </section>
-
-        <section id="registerSection">
-            <p>아직 계정이 없으신가요? <a href="register.html">회원가입</a></p>
         </section>
     </main>
 
