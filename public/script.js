@@ -179,12 +179,17 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     fileElement.className = 'uploaded-file';
 
     const imgElement = document.createElement('img');
-    imgElement.src = thumbnailUrl;  // 썸네일 이미지 표시
+    imgElement.src = thumbnailUrl;
     imgElement.style.width = '200px';
+
+    // 파일 클릭 시 상세 페이지로 이동하는 링크 추가
+    fileElement.addEventListener('click', () => {
+        window.location.href = `detail.html?id=${docId}`;
+    });
 
     const viewMoreButton = document.createElement('button');
     viewMoreButton.textContent = "View All Images";
-    viewMoreButton.onclick = () => viewAllImages(imageUrls);  // 모든 이미지 보기
+    viewMoreButton.onclick = () => viewAllImages(imageUrls);
 
     const deleteButton = document.createElement('button');
     deleteButton.textContent = "Delete";
@@ -195,6 +200,7 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
+
 
 // 상세 페이지에서 모든 이미지 표시
 function viewAllImages(imageUrls) {
