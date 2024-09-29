@@ -35,8 +35,36 @@
             <h2>Upload Files</h2>
             <form id="uploadForm" class="upload-form">
                 <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input" multiple>
+
+                <!-- 품번 입력 -->
+                <label for="partNumber">품번:</label>
+                <input type="text" id="partNumber" placeholder="B_0000B" required>
+
+                <!-- 사이즈 입력 -->
+                <label for="size">사이즈:</label>
+                <input type="text" id="size" placeholder="15cm 또는 10호" required>
+
+                <!-- 중량 입력 -->
+                <label for="weight">중량:</label>
+                <input type="number" id="weight" placeholder="중량 (g)" required>
+
+                <!-- 종류 선택 -->
+                <label for="type">종류:</label>
+                <select id="type" required>
+                    <option value="14K">14K</option>
+                    <option value="18K">18K</option>
+                    <option value="24K">24K</option>
+                    <option value="925">925</option>
+                </select>
+
+                <!-- 추가 설명 입력 -->
+                <label for="description">내용:</label>
+                <textarea id="description" placeholder="추가 내용 입력"></textarea>
+
+                <!-- 대표 이미지 선택 -->
                 <label for="thumbnailSelect">Select Thumbnail:</label>
                 <select id="thumbnailSelect"></select>
+
                 <button type="submit" class="upload-button">Upload</button>
             </form>
             <div id="message" class="message"></div>
