@@ -79,16 +79,10 @@ main {
     text-align: center;
 }
 
-.post img, .post video {
+.post img {
     width: 100%;
     height: auto;
     border-radius: 8px;
-}
-
-.post .info {
-    margin-top: 10px;
-    font-size: 14px;
-    text-align: left;
 }
 
 @media (min-width: 600px) {
