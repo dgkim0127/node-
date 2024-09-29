@@ -1,9 +1,30 @@
-import { db } from './firebaseConfig.js';
+import { db, auth } from './firebaseConfig.js';
 import { doc, getDoc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
 // URL에서 게시물 ID 가져오기
 const params = new URLSearchParams(window.location.search);
 const docId = params.get('id');
+
+// 현재 사용자 정보 확인
+let currentUser = null;
+let isAdmin = false;
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        // Firestore에서 해당 사용자의 관리자 권한 확인
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        
+        if (userDocSnap.exists()) {
+            isAdmin = userDocSnap.data().isAdmin;
+            if (isAdmin) {
+                document.getElementById('deleteButton').style.display = 'block';
+            }
+        }
+    }
+});
 
 // 게시물 정보 불러오기 함수
 async function getPostDetails(docId) {
@@ -47,16 +68,20 @@ async function deletePost(docId) {
         return;
     }
 
-    const confirmDelete = confirm("정말로 이 게시물을 삭제하시겠습니까?");
-    if (confirmDelete) {
-        try {
-            await deleteDoc(doc(db, 'uploads', docId)); // Firestore에서 문서 삭제
-            alert("게시물이 삭제되었습니다.");
-            window.location.href = 'index.html'; // 삭제 후 메인 페이지로 이동
-        } catch (error) {
-            console.error("Error deleting document:", error);
-            alert("게시물 삭제 중 에러가 발생했습니다.");
+    if (isAdmin) {
+        const confirmDelete = confirm("정말로 이 게시물을 삭제하시겠습니까?");
+        if (confirmDelete) {
+            try {
+                await deleteDoc(doc(db, 'uploads', docId)); // Firestore에서 문서 삭제
+                alert("게시물이 삭제되었습니다.");
+                window.location.href = 'index.html'; // 삭제 후 메인 페이지로 이동
+            } catch (error) {
+                console.error("Error deleting document:", error);
+                alert("게시물 삭제 중 에러가 발생했습니다.");
+            }
         }
+    } else {
+        alert("삭제 권한이 없습니다.");
     }
 }
 
