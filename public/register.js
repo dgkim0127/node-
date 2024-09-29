@@ -12,6 +12,12 @@ registerForm.addEventListener('submit', async (e) => {
     const confirmPassword = document.getElementById('confirmPassword').value;
     const errorMessage = document.getElementById('errorMessage');
 
+    // 비밀번호 길이 확인 (최소 6자)
+    if (password.length < 6) {
+        errorMessage.textContent = "비밀번호는 최소 6자 이상이어야 합니다.";
+        return;
+    }
+
     if (password !== confirmPassword) {
         errorMessage.textContent = "비밀번호가 일치하지 않습니다.";
         return;
@@ -32,6 +38,11 @@ registerForm.addEventListener('submit', async (e) => {
         window.location.href = 'index.html'; // 로그인 페이지로 리디렉션
 
     } catch (error) {
-        errorMessage.textContent = '회원가입 실패: ' + error.message;
+        // 이메일 중복 에러 처리
+        if (error.code === 'auth/email-already-in-use') {
+            errorMessage.textContent = "이미 사용 중인 아이디입니다.";
+        } else {
+            errorMessage.textContent = '회원가입 실패: ' + error.message;
+        }
     }
 });
