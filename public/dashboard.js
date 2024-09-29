@@ -1,19 +1,42 @@
-import { auth } from './firebaseConfig.js';
+import { auth, db, storage } from './firebaseConfig.js';
 import { onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { ref, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
-// 로그인 상태를 지속적으로 추적
-onAuthStateChanged(auth, (user) => {
-    const welcomeMessage = document.getElementById('welcomeMessage');
+const postsContainer = document.getElementById('postsContainer');
 
+// 로그인 상태를 확인하고 게시물 불러오기
+onAuthStateChanged(auth, async (user) => {
     if (user) {
-        // 사용자가 로그인 상태일 때 환영 메시지 표시
-        welcomeMessage.textContent = `환영합니다, ${user.email}!`;
+        loadPosts();
     } else {
-        // 사용자가 로그인되지 않았을 때 처리
-        welcomeMessage.textContent = '로그인이 필요합니다.';
-        window.location.href = 'index.html'; // 로그인 페이지로 리디렉션
+        window.location.href = 'index.html'; // 로그인 페이지로 이동
     }
 });
+
+// 게시물 불러오기
+async function loadPosts() {
+    const querySnapshot = await getDocs(collection(db, 'posts')); // Firestore에서 'posts' 컬렉션 가져오기
+    postsContainer.innerHTML = ''; // 게시물 목록 초기화
+
+    querySnapshot.forEach(async (doc) => {
+        const post = doc.data();
+        const postElement = document.createElement('div');
+        postElement.classList.add('post');
+        postElement.innerHTML = `
+            <h3>${post.title}</h3>
+            <p>${post.description}</p>
+            <img src="" alt="게시물 이미지" id="postImage-${doc.id}">
+        `;
+
+        // Firebase Storage에서 이미지 URL 불러오기
+        const imageRef = ref(storage, post.imagePath);
+        const imageUrl = await getDownloadURL(imageRef);
+        document.getElementById(`postImage-${doc.id}`).src = imageUrl;
+
+        postsContainer.appendChild(postElement);
+    });
+}
 
 // 로그아웃 기능
 const logoutBtn = document.getElementById('logoutBtn');
