@@ -227,8 +227,6 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
 
-
-
 // 상세 페이지에서 모든 이미지 표시
 function viewAllImages(imageUrls) {
     const modal = document.createElement('div');
