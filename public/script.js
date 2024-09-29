@@ -1,5 +1,5 @@
 import { db, auth, storage } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, getDoc, doc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { collection, addDoc, getDocs, query, where, getDoc, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
@@ -136,11 +136,14 @@ function displayUploadedFile(fileName, fileUrl, docId, storagePath) {
 // 파일 삭제 처리
 async function deleteFile(docId, storagePath, fileElement) {
     try {
+        // Firestore에서 문서 삭제
         await deleteDoc(doc(db, 'uploads', docId));
 
+        // Storage에서 파일 삭제
         const fileRef = ref(storage, storagePath);
         await deleteObject(fileRef);
 
+        // 파일 삭제 후 UI에서 삭제된 게시물 제거
         fileElement.remove();
         document.getElementById('message').textContent = "File deleted successfully!";
     } catch (error) {
