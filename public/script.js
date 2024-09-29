@@ -1,15 +1,12 @@
-import { db, storage, auth } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { db, storage } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const loginForm = document.getElementById('loginForm');
 const loginUsername = document.getElementById('loginUsername');
 const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
 const signupButton = document.getElementById('signupButton');
-const uploadSection = document.querySelector('.upload-section');
-const fileUploadSection = document.querySelector('.file-upload-section');
-const showUploadButton = document.getElementById('showUploadButton');
 
 let currentUser = null;
 let isAdmin = false;
@@ -40,7 +37,7 @@ loginForm.addEventListener('submit', async (e) => {
                 loginMessage.style.color = "green";
 
                 // 사용자 권한 및 추가 작업 처리
-                currentUser = userData;  // currentUser 변수 초기화
+                currentUser = userData;
                 isAdmin = userData.isAdmin;
                 showUploadSection();  // 관리자만 접근 가능한 업로드 섹션 활성화
             } else {
@@ -85,13 +82,13 @@ async function signupUser(username, password) {
     }
 }
 
-// 로그인 후 업로드 버튼만 표시
+// 로그인 후 업로드 섹션 표시
 function showUploadSection() {
     loginForm.style.display = "none";
     signupButton.style.display = "none";
 
     if (isAdmin) {
-        uploadSection.style.display = "block";  // 업로드 버튼 표시
+        document.querySelector('.upload-section').style.display = "block";
     } else {
         alert("관리자만 파일을 업로드할 수 있습니다.");
     }
@@ -99,25 +96,47 @@ function showUploadSection() {
     loadUploadedFiles();  // 파일 목록 로드
 }
 
-// 업로드 버튼 클릭 시 파일 업로드 섹션 표시
-showUploadButton.addEventListener('click', () => {
-    fileUploadSection.style.display = 'block';  // 파일 업로드 섹션 보이기
-    showUploadButton.style.display = 'none';    // 업로드 버튼 숨기기
-});
-
-// 파일 업로드 처리
+// 파일 선택 시 썸네일 선택 옵션 업데이트
 const uploadForm = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
 const thumbnailSelect = document.getElementById('thumbnailSelect');
 const message = document.getElementById('message');
 
+// 추가 필드
+const partNumberInput = document.getElementById('partNumber');
+const sizeInput = document.getElementById('size');
+const weightInput = document.getElementById('weight');
+const typeInput = document.getElementById('type');
+const descriptionInput = document.getElementById('description');
+
+// 파일 선택 시 썸네일 선택 옵션 업데이트
+fileInput.addEventListener('change', () => {
+    const files = fileInput.files;
+    thumbnailSelect.innerHTML = ''; // 기존 옵션 제거
+
+    Array.from(files).forEach((file, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.text = file.name;
+        thumbnailSelect.appendChild(option);
+    });
+});
+
+// 파일 업로드 처리
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const files = fileInput.files;
     const thumbnailIndex = thumbnailSelect.value;
 
-    if (!files.length) {
-        message.textContent = "Please select at least one file!";
+    // 추가된 필드 값 가져오기
+    const partNumber = partNumberInput.value.trim();
+    const size = sizeInput.value.trim();
+    const weight = weightInput.value.trim();
+    const type = typeInput.value.trim();
+    const description = descriptionInput.value.trim();
+
+    if (!files.length || !partNumber || !size || !weight || !type || !description) {
+        message.textContent = "모든 필드를 채워주세요.";
         return;
     }
 
@@ -139,10 +158,15 @@ uploadForm.addEventListener('submit', async (e) => {
             }
         }
 
-        // Firestore에 게시물 정보 저장 (대표 이미지와 모든 이미지 URL)
+        // Firestore에 게시물 정보 저장 (파일 정보 및 추가 필드 포함)
         await addDoc(collection(db, 'uploads'), {
             thumbnailUrl: thumbnailUrl,
             imageUrls: imageUrls,  // 모든 이미지 URL
+            partNumber: partNumber,  // 품번
+            size: size,              // 사이즈
+            weight: weight,          // 중량
+            type: type,              // 종류
+            description: description,  // 내용
             createdAt: new Date()
         });
 
