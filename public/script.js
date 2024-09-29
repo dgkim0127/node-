@@ -188,21 +188,23 @@ async function loadUploadedFiles() {
 }
 
 // 업로드된 파일을 화면에 표시하는 함수
-function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
+function displayUploadedFile(thumbnailUrl, imageUrls, docId, isVideo = false) {
     const fileElement = document.createElement('div');
     fileElement.className = 'uploaded-file';
 
-    // 파일이 동영상인 경우
-    if (thumbnailUrl.endsWith('.mp4') || thumbnailUrl.endsWith('.webm') || thumbnailUrl.endsWith('.ogg')) {
+    if (isVideo) {
+        // 동영상인 경우, poster 속성으로 썸네일을 지정
         const videoElement = document.createElement('video');
         videoElement.src = thumbnailUrl;
-        videoElement.autoplay = true; // 자동 재생
-        videoElement.loop = true;     // 무한 반복
-        videoElement.muted = true;    // 음소거 (자동 재생 브라우저 정책에 따라 음소거 필요)
+        videoElement.controls = true;
+        videoElement.autoplay = true;
+        videoElement.loop = true;
+        videoElement.muted = true;
+        videoElement.poster = "your-thumbnail-image-url"; // 여기서 썸네일 URL을 지정
         videoElement.style.width = '200px';
         fileElement.appendChild(videoElement);
     } else {
-        // 이미지 처리
+        // 이미지인 경우
         const imgElement = document.createElement('img');
         imgElement.src = thumbnailUrl;
         imgElement.style.width = '200px';
@@ -211,7 +213,7 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
 
     // 썸네일 클릭 시 상세 페이지로 이동하는 이벤트 추가
     fileElement.addEventListener('click', () => {
-        window.location.href = `detail.html?id=${docId}`; // 상세 페이지로 이동
+        window.location.href = `detail.html?id=${docId}`;
     });
 
     const viewMoreButton = document.createElement('button');
@@ -226,6 +228,7 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
+
 
 // 상세 페이지에서 모든 이미지 표시
 function viewAllImages(imageUrls) {
