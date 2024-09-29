@@ -15,13 +15,17 @@ async function loadPostDetails() {
     if (docSnap.exists()) {
         const postData = docSnap.data();
         postDetails.innerHTML = `
-            <img src="${postData.thumbnailURL}" alt="썸네일 이미지">
-            <p>품번: ${postData.productNumber}</p>
-            <p>종류: ${postData.type}</p>
-            <p>중량: ${postData.weight}</p>
-            <p>사이즈: ${postData.size}</p>
-            <p>내용: ${postData.content}</p>
-            <p><a href="${postData.fileURL}">파일 보기</a></p>
+            <div class="post">
+                <img src="${postData.thumbnailURL}" alt="썸네일 이미지" />
+                <div class="info">
+                    <p>품번: ${postData.productNumber}</p>
+                    <p>종류: ${postData.type}</p>
+                    <p>중량: ${postData.weight}</p>
+                    <p>사이즈: ${postData.size}</p>
+                    <p>내용: ${postData.content}</p>
+                </div>
+                <a href="${postData.fileURL}" target="_blank">파일 보기</a>
+            </div>
         `;
     } else {
         postDetails.innerHTML = `<p>게시물을 찾을 수 없습니다.</p>`;
