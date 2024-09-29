@@ -7,8 +7,11 @@ const loginUsername = document.getElementById('loginUsername');
 const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
 const signupButton = document.getElementById('signupButton');
+const uploadSection = document.querySelector('.upload-section');
+const fileUploadSection = document.querySelector('.file-upload-section');
+const showUploadButton = document.getElementById('showUploadButton');
 
-let currentUser = null;  // currentUser를 전역 변수로 선언
+let currentUser = null;
 let isAdmin = false;
 
 // 로그인 처리
@@ -37,7 +40,7 @@ loginForm.addEventListener('submit', async (e) => {
                 loginMessage.style.color = "green";
 
                 // 사용자 권한 및 추가 작업 처리
-                currentUser = userData;  // currentUser 변수를 여기서 초기화
+                currentUser = userData;  // currentUser 변수 초기화
                 isAdmin = userData.isAdmin;
                 showUploadSection();  // 관리자만 접근 가능한 업로드 섹션 활성화
             } else {
@@ -82,13 +85,13 @@ async function signupUser(username, password) {
     }
 }
 
-// 로그인 후 업로드 및 파일 목록 섹션을 보여줌
+// 로그인 후 업로드 버튼만 표시
 function showUploadSection() {
     loginForm.style.display = "none";
     signupButton.style.display = "none";
-    
+
     if (isAdmin) {
-        document.querySelector('.upload-section').style.display = "block";
+        uploadSection.style.display = "block";  // 업로드 버튼 표시
     } else {
         alert("관리자만 파일을 업로드할 수 있습니다.");
     }
@@ -96,20 +99,18 @@ function showUploadSection() {
     loadUploadedFiles();  // 파일 목록 로드
 }
 
-// 파일 선택 시 대표 이미지 선택 옵션 업데이트
-fileInput.addEventListener('change', () => {
-    const files = fileInput.files;
-    thumbnailSelect.innerHTML = ''; // 기존 옵션 제거
-
-    Array.from(files).forEach((file, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.text = file.name;
-        thumbnailSelect.appendChild(option);
-    });
+// 업로드 버튼 클릭 시 파일 업로드 섹션 표시
+showUploadButton.addEventListener('click', () => {
+    fileUploadSection.style.display = 'block';  // 파일 업로드 섹션 보이기
+    showUploadButton.style.display = 'none';    // 업로드 버튼 숨기기
 });
 
 // 파일 업로드 처리
+const uploadForm = document.getElementById('uploadForm');
+const fileInput = document.getElementById('fileInput');
+const thumbnailSelect = document.getElementById('thumbnailSelect');
+const message = document.getElementById('message');
+
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const files = fileInput.files;
