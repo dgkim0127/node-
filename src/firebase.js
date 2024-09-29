@@ -3,12 +3,13 @@ import { getAuth } from 'firebase/auth';
 
 // Firebase 설정
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDFysg8I_qKtDqDJLWg1_npTPBWRMM_5WY",
+  authDomain: "jjji-4240b.firebaseapp.com",
+  projectId: "jjji-4240b",
+  storageBucket: "jjji-4240b.appspot.com",
+  messagingSenderId: "876101785840",
+  appId: "1:876101785840:web:6e58681ea9c9780e454a35",
+  measurementId: "G-03999XR4JS"
 };
 
 // Firebase 초기화
