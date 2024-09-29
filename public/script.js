@@ -107,8 +107,10 @@ const fileInput = document.getElementById('fileInput');
 const preview = document.getElementById('preview');
 
 function previewImages() {
-    preview.innerHTML = '';
-    const files = fileInput.files;
+    const preview = document.getElementById('preview');
+    preview.innerHTML = ''; // 미리보기 영역 초기화
+    const files = document.getElementById('fileInput').files;
+
     if (files) {
         Array.from(files).forEach((file) => {
             const reader = new FileReader();
@@ -119,11 +121,10 @@ function previewImages() {
                 img.style.margin = '10px';
                 preview.appendChild(img);
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(file); // 파일을 읽어 미리보기로 변환
         });
     }
 }
-
 // 업로드 처리
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
