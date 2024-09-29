@@ -19,6 +19,26 @@ body {
     animation: fadeIn 1s ease-in-out;
 }
 
+/* 회원가입 링크 스타일 */
+.signup-redirect {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.signup-redirect p {
+    color: white;
+}
+
+.signup-redirect a {
+    color: royalblue;
+    text-decoration: none;
+}
+
+.signup-redirect a:hover {
+    text-decoration: underline;
+}
+
+
 /* 페이드 인 애니메이션 */
 @keyframes fadeIn {
     from {
