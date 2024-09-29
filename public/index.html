@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>로그인</title>
-    <link rel="stylesheet" href="login.css"> <!-- 로그인 전용 CSS -->
+    <link rel="stylesheet" href="login.css"> <!-- 로그인 페이지 전용 CSS -->
 </head>
 <body>
     <div class="login-container">
@@ -16,14 +16,16 @@
             <label for="password">비밀번호</label>
             <input type="password" id="password" required placeholder="비밀번호를 입력하세요">
 
-            <button type="submit">입장</button>
+            <button type="submit">로그인</button>
             <p id="errorMessage" class="error"></p>
         </form>
+
+        <!-- 회원가입으로 가는 버튼 추가 -->
+        <div class="signup-redirect">
+            <p>계정이 없으신가요? <a href="register.html" id="signupLink">회원가입</a></p>
+        </div>
     </div>
-    
-    <!-- login.js를 모듈로 불러오기 -->
-    <script type="module" src="firebaseConfig.js"></script>
+
     <script type="module" src="login.js"></script>
 </body>
 </html>
-
