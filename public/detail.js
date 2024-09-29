@@ -13,29 +13,26 @@ let isAdmin = false;
 // 사용자 인증 상태 확인 및 관리자 권한 확인
 onAuthStateChanged(auth, async (user) => {
     if (user) {
-        currentUser = user;
-        try {
-            // Firestore에서 해당 사용자의 관리자 권한 확인
-            const userDocRef = doc(db, 'users', user.uid);
-            const userDocSnap = await getDoc(userDocRef);
-            
-            if (userDocSnap.exists()) {
-                isAdmin = userDocSnap.data().isAdmin;
-                if (isAdmin) {
-                    document.getElementById('deleteButton').style.display = 'block'; // 관리자에게만 삭제 버튼 표시
-                } else {
-                    console.error("사용자가 관리자 권한이 없습니다.");
-                }
+        console.log("Current User ID:", user.uid); // UID가 제대로 출력되는지 확인
+        const userDocRef = doc(db, 'users', user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        
+        if (userDocSnap.exists()) {
+            isAdmin = userDocSnap.data().isAdmin;
+            console.log("Is Admin:", isAdmin); // isAdmin 필드가 제대로 읽히는지 확인
+            if (isAdmin) {
+                document.getElementById('deleteButton').style.display = 'block'; // 관리자에게만 삭제 버튼 표시
             } else {
-                console.error("사용자 문서를 찾을 수 없습니다.");
+                alert("관리자가 아닙니다.");
             }
-        } catch (error) {
-            console.error("관리자 권한 확인 중 오류:", error);
+        } else {
+            console.error("사용자 문서를 찾을 수 없습니다.");
         }
     } else {
         console.error("사용자가 로그인되지 않았습니다.");
     }
 });
+
 
 // 게시물 정보 불러오기 함수
 async function getPostDetails(docId) {
