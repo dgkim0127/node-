@@ -1,6 +1,11 @@
 import { db } from './firebaseConfig.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
+// 업로드 버튼 클릭 시 페이지 이동
+document.getElementById('uploadButton').addEventListener('click', function() {
+    window.location.href = 'upload.html';  // 올바른 경로로 설정
+});
+
 const postContainer = document.querySelector('.posts');
 
 // Firestore에서 게시물 데이터를 불러오기
