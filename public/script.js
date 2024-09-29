@@ -1,69 +1,63 @@
 import { db } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
-// 로그인 폼 요소 가져오기
 const loginForm = document.getElementById('loginForm');
+const signupButton = document.getElementById('signupButton');
+let currentUser = null;
 
-// 로그인 처리 (아이디 기반)
+// 로그인 처리
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = document.getElementById('loginEmail').value; // 이메일 대신 아이디로 변경
-    const password = document.getElementById('loginPassword').value;
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+
+    if (!username || !password) {
+        document.getElementById('loginMessage').textContent = "아이디와 비밀번호를 입력해주세요.";
+        return;
+    }
 
     try {
-        // Firestore에서 사용자 정보 조회
+        // Firestore에서 해당 아이디를 가진 사용자 찾기
         const q = query(collection(db, 'users'), where('username', '==', username));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
             if (userData.password === password) {
-                // 로그인 성공
-                console.log("로그인 성공:", userData);
-                document.querySelector('.upload-section').style.display = 'block';
                 document.getElementById('loginMessage').textContent = "로그인 성공!";
-                document.getElementById('loginMessage').style.color = 'green';
+                currentUser = userData;  // 로그인된 사용자 정보 저장
+                // 로그인 후 업로드 섹션 표시
+                document.querySelector('.upload-section').style.display = 'block';
             } else {
-                // 비밀번호 불일치
-                document.getElementById('loginMessage').textContent = "비밀번호가 틀렸습니다.";
-                document.getElementById('loginMessage').style.color = 'red';
+                document.getElementById('loginMessage').textContent = "비밀번호가 일치하지 않습니다.";
             }
         } else {
-            // 아이디가 Firestore에 없음
-            document.getElementById('loginMessage').textContent = "아이디를 찾을 수 없습니다.";
-            document.getElementById('loginMessage').style.color = 'red';
+            document.getElementById('loginMessage').textContent = "해당 아이디를 찾을 수 없습니다.";
         }
     } catch (error) {
-        console.error("로그인 실패:", error.message);
-        document.getElementById('loginMessage').textContent = "로그인 실패: " + error.message;
-        document.getElementById('loginMessage').style.color = 'red';
+        document.getElementById('loginMessage').textContent = `로그인 오류: ${error.message}`;
     }
 });
 
-// 회원가입 처리 (아이디와 비밀번호를 Firestore에 저장)
-const signupButton = document.getElementById('signupButton');
-signupButton.addEventListener('click', () => {
-    const username = prompt("아이디를 입력하세요:");
-    const password = prompt("비밀번호를 입력하세요:");
+// 회원가입 처리
+signupButton.addEventListener('click', async () => {
+    const username = prompt("새로운 아이디를 입력하세요:");
+    const password = prompt("새로운 비밀번호를 입력하세요:");
+
     if (username && password) {
-        signupUser(username, password);
+        try {
+            // Firestore에 새로운 사용자 등록
+            await addDoc(collection(db, 'users'), {
+                username: username,
+                password: password,
+                isAdmin: false  // 기본적으로 관리자가 아닌 사용자로 등록
+            });
+            document.getElementById('loginMessage').textContent = "회원가입이 완료되었습니다. 로그인하세요!";
+        } catch (error) {
+            document.getElementById('loginMessage').textContent = `회원가입 오류: ${error.message}`;
+        }
     }
 });
-
-async function signupUser(username, password) {
-    try {
-        await addDoc(collection(db, 'users'), {
-            username: username,
-            password: password
-        });
-        document.getElementById('loginMessage').textContent = "회원가입 성공! 로그인하세요.";
-        document.getElementById('loginMessage').style.color = 'green';
-    } catch (error) {
-        document.getElementById('loginMessage').textContent = `회원가입 실패: ${error.message}`;
-        document.getElementById('loginMessage').style.color = 'red';
-    }
-}
-
 
 // 파일 업로드 및 썸네일 선택 기능
 const uploadForm = document.getElementById('uploadForm');
