@@ -1,0 +1,70 @@
+/* 로그인 페이지 전용 스타일 */
+body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85); /* 어두운 배경 */
+    font-family: Arial, sans-serif;
+}
+
+.login-container {
+    width: 350px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* 페이드 인 효과 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+form input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: none;
+    border-bottom: 1px solid white;
+    background-color: transparent;
+    color: white;
+    font-size: 16px;
+    outline: none;
+}
+
+form input:focus {
+    border-bottom: 1px solid royalblue;
+}
+
+form button {
+    width: 100%;
+    padding: 10px;
+    background-color: royalblue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+form button:hover {
+    background-color: #0047ab;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+}
