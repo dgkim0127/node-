@@ -33,9 +33,9 @@ form label {
     color: white;
 }
 
-/* 텍스트 입력 필드에서 테두리와 배경 제거 */
+/* 텍스트 입력 필드에서 테두리와 배경 제거, 필드 폭 줄이기 */
 form input {
-    width: 100%;
+    width: 70%; /* 폭을 70%로 줄임 (필요에 따라 더 줄일 수 있음) */
     padding: 10px;
     margin-bottom: 15px;
     border: none;
@@ -52,7 +52,7 @@ form input:focus {
 
 /* 로그인 버튼 스타일 */
 form button {
-    width: 100%;
+    width: 70%; /* 버튼 폭도 동일하게 설정 */
     padding: 10px;
     background-color: royalblue;
     color: white;
