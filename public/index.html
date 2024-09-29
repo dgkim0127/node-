@@ -34,16 +34,9 @@
             </form>
         </section>
 
-        <!-- 파일 업로드 섹션 (관리자만 접근 가능) -->
-        <section class="upload-section" style="display: none;">
-            <h2>Upload Files</h2>
-            <form id="uploadForm" class="upload-form">
-                <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input" multiple>
-                <label for="thumbnailSelect">Select Thumbnail:</label>
-                <select id="thumbnailSelect"></select>
-                <button type="submit" class="upload-button">Upload</button>
-            </form>
-            <div id="message" class="message"></div>
+        <!-- 업로드 버튼 -->
+        <section class="upload-button-section">
+            <button id="openUploadModalButton">Upload Files</button>
         </section>
 
         <!-- 업로드된 파일 섹션 -->
@@ -51,6 +44,21 @@
             <h2>Uploaded Files</h2>
             <div id="uploadedFiles" class="uploaded-files"></div>
         </section>
+
+        <!-- 팝업 창 HTML 구조 -->
+        <div id="uploadModal" class="modal" style="display: none;">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Upload Files</h2>
+                <form id="popupUploadForm" class="upload-form">
+                    <input type="file" id="popupFileInput" name="file" accept="image/*,video/*" multiple>
+                    <label for="popupThumbnailSelect">Select Thumbnail:</label>
+                    <select id="popupThumbnailSelect"></select>
+                    <button type="submit" class="upload-button">Upload</button>
+                </form>
+                <div id="popupMessage" class="message"></div>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">
