@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게시물 업로드</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="upload-container">
+        <h1>게시물 업로드</h1>
+        <form id="uploadForm">
+            <label for="productNumber">품번:</label>
+            <input type="text" id="productNumber" placeholder="품번 입력">
+
+            <label for="type">종류:</label>
+            <input type="text" id="type" placeholder="종류 입력">
+
+            <label for="weight">중량:</label>
+            <input type="text" id="weight" placeholder="중량 입력">
+
+            <label for="size">사이즈:</label>
+            <input type="text" id="size" placeholder="사이즈 입력">
+
+            <label for="content">내용:</label>
+            <textarea id="content" placeholder="내용 입력"></textarea>
+
+            <label for="fileUpload">사진 또는 영상 업로드:</label>
+            <input type="file" id="fileUpload">
+
+            <button type="submit">업로드</button>
+        </form>
+    </div>
+
+    <script src="upload.js"></script>
+</body>
+</html>
