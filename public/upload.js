@@ -2,6 +2,25 @@ import { storage, db } from './firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
+// 이미지 미리보기 기능
+const thumbnailUpload = document.getElementById('thumbnailUpload');
+const thumbnailPreview = document.getElementById('thumbnailPreview');
+const thumbnailPreviewContainer = document.getElementById('thumbnailPreviewContainer');
+
+thumbnailUpload.addEventListener('change', function(event) {
+    const file = event.target.files[0];
+
+    if (file) {
+        const fileURL = URL.createObjectURL(file);
+        thumbnailPreview.src = fileURL;
+        thumbnailPreviewContainer.style.display = 'block';  // 미리보기 컨테이너 표시
+    } else {
+        thumbnailPreview.src = '';
+        thumbnailPreviewContainer.style.display = 'none';  // 미리보기 컨테이너 숨김
+    }
+});
+
+// 업로드 폼 제출 처리
 const uploadForm = document.getElementById('uploadForm');
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
