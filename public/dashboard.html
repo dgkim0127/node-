@@ -3,16 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시물 업로드</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="dashboard.css"> <!-- 대시보드 전용 CSS -->
 </head>
 <body>
     <header>
-        <h1>게시물 업로드</h1>
+        <h1>Category</h1>
+        <button id="uploadButton" class="upload-btn">업로드</button> <!-- 우측 상단의 업로드 버튼 -->
     </header>
 
     <main class="dashboard-main">
-        <section class="upload-section">
+        <section id="uploadFormSection" class="upload-section hidden"> <!-- 업로드 창, 기본적으로 숨김 처리 -->
             <form id="uploadForm">
                 <label for="title">제목</label>
                 <input type="text" id="title" required placeholder="게시물 제목을 입력하세요">
