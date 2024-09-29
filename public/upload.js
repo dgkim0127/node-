@@ -11,29 +11,34 @@ uploadForm.addEventListener('submit', async (e) => {
     const weight = document.getElementById('weight').value;
     const size = document.getElementById('size').value;
     const content = document.getElementById('content').value;
-    const file = document.getElementById('fileUpload').files[0];
+    const thumbnailFile = document.getElementById('thumbnailUpload').files[0];
+    const mainFile = document.getElementById('fileUpload').files[0];
 
-    if (!file) {
-        alert('파일을 선택해주세요');
+    if (!thumbnailFile || !mainFile) {
+        alert('모든 파일을 선택해주세요');
         return;
     }
 
     try {
-        // Firebase Storage에 파일 업로드
-        const storageRef = ref(storage, `uploads/${file.name}`);
-        await uploadBytes(storageRef, file);
+        // 1. 썸네일 이미지를 Firebase Storage에 업로드
+        const thumbnailRef = ref(storage, `thumbnails/${thumbnailFile.name}`);
+        await uploadBytes(thumbnailRef, thumbnailFile);
+        const thumbnailURL = await getDownloadURL(thumbnailRef);
 
-        // 업로드된 파일의 다운로드 URL 가져오기
-        const downloadURL = await getDownloadURL(storageRef);
+        // 2. 업로드된 파일(사진 또는 동영상)을 Firebase Storage에 업로드
+        const mainFileRef = ref(storage, `uploads/${mainFile.name}`);
+        await uploadBytes(mainFileRef, mainFile);
+        const mainFileURL = await getDownloadURL(mainFileRef);
 
-        // Firestore에 게시물 정보 저장
+        // 3. Firestore에 게시물 정보 저장
         await addDoc(collection(db, 'posts'), {
             productNumber,
             type,
             weight,
             size,
             content,
-            fileURL: downloadURL,
+            thumbnailURL,  // 썸네일 이미지 URL
+            fileURL: mainFileURL,  // 업로드된 파일(사진 또는 영상)의 URL
             createdAt: new Date()
         });
 
