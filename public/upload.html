@@ -35,6 +35,12 @@
                 <label for="thumbnailUpload">썸네일 이미지 업로드 (사진만):</label>
                 <input type="file" id="thumbnailUpload" accept="image/*" required>
 
+                <!-- 미리보기 이미지 -->
+                <div id="thumbnailPreviewContainer" style="display: none;">
+                    <h3>이미지 미리보기:</h3>
+                    <img id="thumbnailPreview" alt="썸네일 미리보기" style="max-width: 100%; height: auto; border-radius: 5px; margin-top: 10px;">
+                </div>
+
                 <!-- 파일 업로드 (사진 또는 동영상) -->
                 <label for="fileUpload">사진 또는 영상 업로드:</label>
                 <input type="file" id="fileUpload" accept="image/*,video/*" required>
