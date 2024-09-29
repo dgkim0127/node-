@@ -21,23 +21,17 @@
                 <button type="submit" class="login-button">Login</button>
                 <p id="loginMessage"></p>
             </form>
+            <!-- 회원가입 버튼 추가 -->
             <button id="signupButton" class="signup-button">Sign Up</button>
         </section>
 
-        <!-- 파일 업로드 섹션 -->
-        <section class="uploaded-files-section" style="display: none;">
-            <h2>Uploaded Files</h2>
-            <div id="uploadedFiles" class="uploaded-files"></div>
+        <!-- 업로드 버튼 섹션 (관리자만 접근 가능) -->
+        <section class="upload-section" style="display: none;">
+            <button id="showUploadButton" class="upload-button">Upload Files</button>
         </section>
-    </main>
 
-    <!-- 업로드 버튼 -->
-    <button id="openUploadPopup" class="upload-popup-button">Upload Files</button>
-
-    <!-- 파일 업로드 팝업 모달 -->
-    <div id="uploadPopup" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
+        <!-- 파일 업로드 창 (숨김 처리) -->
+        <section class="file-upload-section" style="display: none;">
             <h2>Upload Files</h2>
             <form id="uploadForm" class="upload-form">
                 <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input" multiple>
@@ -46,8 +40,14 @@
                 <button type="submit" class="upload-button">Upload</button>
             </form>
             <div id="message" class="message"></div>
-        </div>
-    </div>
+        </section>
+
+        <!-- 업로드된 파일 섹션 -->
+        <section class="uploaded-files-section" style="display: none;">
+            <h2>Uploaded Files</h2>
+            <div id="uploadedFiles" class="uploaded-files"></div>
+        </section>
+    </main>
 
     <footer class="footer">
         <p>&copy; 2024 Document Management System</p>
