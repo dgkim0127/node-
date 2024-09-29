@@ -1,7 +1,7 @@
 {
   "name": "firebase-file-upload-app",
   "version": "1.0.0",
-  "description": "A simple web application with Firebase for file upload and delete functionality.",
+  "description": "Simple Node.js file upload server with Firebase",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
