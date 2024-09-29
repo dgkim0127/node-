@@ -16,34 +16,57 @@
     <main>
         <section class="upload-container">
             <form id="uploadForm">
+                <!-- 사진 및 동영상 업로드 -->
+                <label for="fileUpload">사진 또는 영상 업로드:</label>
+                <input type="file" id="fileUpload" accept="image/*,video/*" multiple required>
+                <div id="filePreviewContainer"></div> <!-- 미리보기 -->
+
+                <!-- 썸네일 선택 -->
+                <label for="thumbnailSelect">썸네일 이미지 선택:</label>
+                <select id="thumbnailSelect" required>
+                    <!-- 선택한 이미지 중에서 썸네일을 고르기 -->
+                </select>
+
+                <!-- 품번 입력 -->
                 <label for="productNumber">품번:</label>
-                <input type="text" id="productNumber" placeholder="품번 입력" required>
-
-                <label for="type">종류:</label>
-                <input type="text" id="type" placeholder="종류 입력" required>
-
-                <label for="weight">중량:</label>
-                <input type="text" id="weight" placeholder="중량 입력" required>
-
-                <label for="size">사이즈:</label>
-                <input type="text" id="size" placeholder="사이즈 입력" required>
-
-                <label for="content">내용:</label>
-                <textarea id="content" placeholder="내용 입력" required></textarea>
-
-                <!-- 썸네일 업로드 (사진만 허용) -->
-                <label for="thumbnailUpload">썸네일 이미지 업로드 (사진만):</label>
-                <input type="file" id="thumbnailUpload" accept="image/*" required>
-
-                <!-- 미리보기 이미지 -->
-                <div id="thumbnailPreviewContainer" style="display: none;">
-                    <h3>이미지 미리보기:</h3>
-                    <img id="thumbnailPreview" alt="썸네일 미리보기" style="max-width: 100%; height: auto; border-radius: 5px; margin-top: 10px;">
+                <div>
+                    <select id="productCodePrefix">
+                        <option value="B">B</option>
+                        <option value="G">G</option>
+                    </select>
+                    -
+                    <input type="text" id="productNumber" placeholder="0000" pattern="[0-9]{4}" required>
+                    <select id="productCodeSuffix">
+                        <option value="">선택 없음</option>
+                        <option value="E">E</option>
+                        <option value="B">B</option>
+                        <option value="N">N</option>
+                        <option value="R">R</option>
+                    </select>
+                    -
+                    <input type="number" id="optionalNumber" placeholder="선택적 숫자 (생략 가능)">
                 </div>
 
-                <!-- 파일 업로드 (사진 또는 동영상) -->
-                <label for="fileUpload">사진 또는 영상 업로드:</label>
-                <input type="file" id="fileUpload" accept="image/*,video/*" required>
+                <!-- 종류 선택 -->
+                <label for="type">종류:</label>
+                <select id="type" required>
+                    <option value="14K">14K</option>
+                    <option value="18K">18K</option>
+                    <option value="24K">24K</option>
+                    <option value="925">925</option>
+                </select>
+
+                <!-- 사이즈 입력 -->
+                <label for="size">사이즈:</label>
+                <input type="text" id="size" placeholder="숫자 cm 또는 호" required>
+
+                <!-- 중량 입력 -->
+                <label for="weight">중량:</label>
+                <input type="text" id="weight" placeholder="숫자 g" required>
+
+                <!-- 내용 입력 -->
+                <label for="content">내용 (생략 가능):</label>
+                <textarea id="content" placeholder="내용 입력"></textarea>
 
                 <button type="submit">업로드</button>
             </form>
