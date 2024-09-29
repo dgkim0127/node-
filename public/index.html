@@ -16,11 +16,12 @@
         <section class="login-section">
             <h2>Login</h2>
             <form id="loginForm">
-                <input type="text" id="loginUsername" placeholder="아이디" required>
-                <input type="password" id="loginPassword" placeholder="비밀번호" required>
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassword" placeholder="Password" required>
                 <button type="submit" class="login-button">Login</button>
                 <p id="loginMessage"></p>
             </form>
+            <!-- 회원가입 버튼 추가 -->
             <button id="signupButton" class="signup-button">Sign Up</button>
         </section>
 
@@ -29,12 +30,11 @@
             <button id="showUploadButton" class="upload-button">Upload Files</button>
         </section>
 
-        <!-- 파일 업로드 창 -->
+        <!-- 파일 업로드 창 (숨김 처리) -->
         <section class="file-upload-section" style="display: none;">
             <h2>Upload Files</h2>
             <form id="uploadForm" class="upload-form">
-                <input type="file" id="fileInput" name="file" accept="image/*" class="file-input" multiple>
-                <div id="preview"></div>
+                <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input" multiple>
 
                 <!-- 품번 입력 -->
                 <label for="partNumber">품번:</label>
@@ -61,7 +61,7 @@
                 <label for="description">내용:</label>
                 <textarea id="description" placeholder="추가 내용 입력"></textarea>
 
-                <!-- 썸네일 선택 -->
+                <!-- 대표 이미지 선택 -->
                 <label for="thumbnailSelect">Select Thumbnail:</label>
                 <select id="thumbnailSelect"></select>
 
