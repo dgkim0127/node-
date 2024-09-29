@@ -1,12 +1,111 @@
-import { db, storage } from './firebaseConfig.js';
+import { db, auth } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
+// 로그인 및 회원가입 관련 DOM 요소
+const loginForm = document.getElementById('loginForm');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
+const loginMessage = document.getElementById('loginMessage');
+const signupButton = document.getElementById('signupButton');
+const uploadSection = document.querySelector('.upload-section');
+const fileUploadSection = document.querySelector('.file-upload-section');
+const showUploadButton = document.getElementById('showUploadButton');
+
+let currentUser = null;
+let isAdmin = false;
+
+// 로그인 처리
+loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const username = loginUsername.value.trim();
+    const password = loginPassword.value.trim();
+
+    if (!username || !password) {
+        loginMessage.textContent = "아이디와 비밀번호를 입력해주세요.";
+        loginMessage.style.color = "red";
+        return;
+    }
+
+    try {
+        const q = query(collection(db, 'users'), where('username', '==', username));
+        const querySnapshot = await getDocs(q);
+
+        if (!querySnapshot.empty) {
+            const userData = querySnapshot.docs[0].data();
+            if (userData.password === password) {
+                loginMessage.textContent = "로그인 성공!";
+                loginMessage.style.color = "green";
+
+                currentUser = userData;
+                isAdmin = userData.isAdmin;
+                showUploadSection();
+            } else {
+                loginMessage.textContent = "비밀번호가 틀렸습니다.";
+                loginMessage.style.color = "red";
+            }
+        } else {
+            loginMessage.textContent = "아이디를 찾을 수 없습니다.";
+            loginMessage.style.color = "red";
+        }
+    } catch (error) {
+        loginMessage.textContent = `에러: ${error.message}`;
+        loginMessage.style.color = "red";
+    }
+});
+
+// 회원가입 버튼 클릭 시 처리
+signupButton.addEventListener('click', () => {
+    const username = prompt("새로운 아이디를 입력하세요:");
+    const password = prompt("새로운 비밀번호를 입력하세요:");
+
+    if (username && password) {
+        signupUser(username, password);
+    }
+});
+
+// 회원가입 함수
+async function signupUser(username, password) {
+    try {
+        await addDoc(collection(db, 'users'), {
+            username: username,
+            password: password,
+            isAdmin: false
+        });
+
+        loginMessage.textContent = "회원가입이 완료되었습니다! 로그인하세요.";
+        loginMessage.style.color = "green";
+    } catch (error) {
+        loginMessage.textContent = `회원가입 에러: ${error.message}`;
+        loginMessage.style.color = "red";
+    }
+}
+
+// 로그인 후 업로드 버튼만 표시
+function showUploadSection() {
+    loginForm.style.display = "none";
+    signupButton.style.display = "none";
+
+    if (isAdmin) {
+        uploadSection.style.display = "block";  // 업로드 버튼 표시
+    } else {
+        alert("관리자만 파일을 업로드할 수 있습니다.");
+    }
+    document.querySelector('.uploaded-files-section').style.display = "block";
+    loadUploadedFiles();  // 파일 목록 로드
+}
+
+// 업로드 버튼 클릭 시 파일 업로드 섹션 표시
+showUploadButton.addEventListener('click', () => {
+    fileUploadSection.style.display = 'block';  // 파일 업로드 섹션 보이기
+    showUploadButton.style.display = 'none';    // 업로드 버튼 숨기기
+});
+
+// 파일 업로드 및 미리보기 관련 처리 (이전 코드와 동일)
 const uploadForm = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
 const preview = document.getElementById('preview');
 
-// 이미지 미리보기 함수
 function previewImages() {
     preview.innerHTML = '';
     const files = fileInput.files;
@@ -57,7 +156,6 @@ uploadForm.addEventListener('submit', async (e) => {
             const fileUrl = await getDownloadURL(storageRef);
             imageUrls.push(fileUrl);
 
-            // 첫 번째 파일을 대표 이미지로 지정
             if (i === 0) {
                 thumbnailUrl = fileUrl;
             }
@@ -81,7 +179,7 @@ uploadForm.addEventListener('submit', async (e) => {
     }
 });
 
-// 파일 목록 로드 (기존 코드와 동일)
+// 업로드된 파일 목록 로드
 async function loadUploadedFiles() {
     const querySnapshot = await getDocs(collection(db, 'uploads'));
     querySnapshot.forEach((doc) => {
@@ -99,40 +197,15 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     imgElement.style.width = '200px';
 
     const viewMoreButton = document.createElement('button');
-    viewMoreButton.textContent = "View All Images";
-    viewMoreButton.onclick = () => viewAllImages(imageUrls);
-
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = "Delete";
-    deleteButton.onclick = () => deleteFile(docId, fileElement);
+    viewMoreButton.textContent = "View Details";
+    viewMoreButton.onclick = () => viewDetailsPage(docId);  // 상세 페이지로 이동
 
     fileElement.appendChild(imgElement);
     fileElement.appendChild(viewMoreButton);
-    fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
 
-function viewAllImages(imageUrls) {
-    const modal = document.createElement('div');
-    modal.className = 'modal';
-
-    imageUrls.forEach((url) => {
-        const imgElement = document.createElement('img');
-        imgElement.src = url;
-        imgElement.style.width = '200px';
-        modal.appendChild(imgElement);
-    });
-
-    document.body.appendChild(modal);
-}
-
-// 파일 삭제 처리
-async function deleteFile(docId, fileElement) {
-    try {
-        await deleteDoc(doc(db, 'uploads', docId));
-        fileElement.remove();
-        document.getElementById('message').textContent = "File deleted successfully!";
-    } catch (error) {
-        document.getElementById('message').textContent = "Error deleting file: " + error.message;
-    }
+// 상세 페이지로 이동하는 함수
+function viewDetailsPage(docId) {
+    window.location.href = `details.html?id=${docId}`;
 }
