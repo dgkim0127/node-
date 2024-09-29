@@ -10,6 +10,7 @@ const docId = params.get('id');
 let currentUser = null;
 let isAdmin = false;
 
+// 현재 사용자 인증 상태 확인
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
@@ -20,7 +21,7 @@ onAuthStateChanged(auth, async (user) => {
         if (userDocSnap.exists()) {
             isAdmin = userDocSnap.data().isAdmin;
             if (isAdmin) {
-                document.getElementById('deleteButton').style.display = 'block';
+                document.getElementById('deleteButton').style.display = 'block'; // 관리자에게만 삭제 버튼 표시
             }
         }
     }
