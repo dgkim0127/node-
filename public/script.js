@@ -196,9 +196,9 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     imgElement.src = thumbnailUrl;
     imgElement.style.width = '200px';
 
-    // 파일 클릭 시 상세 페이지로 이동하는 링크 추가
+    // 썸네일 클릭 시 상세 페이지로 이동하는 이벤트 추가
     fileElement.addEventListener('click', () => {
-        window.location.href = `detail.html?id=${docId}`;
+        window.location.href = `detail.html?id=${docId}`; // 상세 페이지로 이동
     });
 
     const viewMoreButton = document.createElement('button');
@@ -214,6 +214,7 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
+
 
 
 // 상세 페이지에서 모든 이미지 표시
