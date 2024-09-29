@@ -1,7 +1,7 @@
-import { db, auth, storage } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, getDoc, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { db, storage, auth } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
 const signupForm = document.getElementById('signupForm');
 const signupUsername = document.getElementById('signupUsername');
@@ -101,105 +101,117 @@ function showUploadSection() {
     loadUploadedFiles();  // 파일 목록 로드
 }
 
+// 파일 선택 시 대표 이미지 선택 옵션 업데이트
+fileInput.addEventListener('change', () => {
+    const files = fileInput.files;
+    thumbnailSelect.innerHTML = ''; // 기존 옵션 제거
+
+    Array.from(files).forEach((file, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.text = file.name;
+        thumbnailSelect.appendChild(option);
+    });
+});
+
+// 파일 업로드 처리
+uploadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const files = fileInput.files;
+    const thumbnailIndex = thumbnailSelect.value;
+
+    if (!files.length) {
+        message.textContent = "Please select at least one file!";
+        return;
+    }
+
+    const imageUrls = [];
+    let thumbnailUrl = '';
+
+    try {
+        // 각 파일을 Storage에 업로드
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const storageRef = ref(storage, `uploads/${file.name}`);
+            await uploadBytes(storageRef, file);
+            const fileUrl = await getDownloadURL(storageRef);
+            imageUrls.push(fileUrl);
+
+            // 선택된 썸네일 저장
+            if (i == thumbnailIndex) {
+                thumbnailUrl = fileUrl;
+            }
+        }
+
+        // Firestore에 게시물 정보 저장 (대표 이미지와 모든 이미지 URL)
+        await addDoc(collection(db, 'uploads'), {
+            thumbnailUrl: thumbnailUrl,
+            imageUrls: imageUrls,  // 모든 이미지 URL
+            createdAt: new Date()
+        });
+
+        message.textContent = "Files uploaded successfully!";
+        loadUploadedFiles(); // 파일 목록 새로고침
+    } catch (error) {
+        message.textContent = "Error uploading files: " + error.message;
+    }
+});
+
 // 업로드된 파일 목록 불러오기
 async function loadUploadedFiles() {
     const querySnapshot = await getDocs(collection(db, 'uploads'));
     querySnapshot.forEach((doc) => {
         const data = doc.data();
-        displayUploadedFile(data.name, data.url, doc.id, data.storagePath, data.fileType);
+        displayUploadedFile(data.thumbnailUrl, data.imageUrls, doc.id);
     });
 }
 
 // 업로드된 파일을 화면에 표시하는 함수
-function displayUploadedFile(fileName, fileUrl, docId, storagePath, fileType) {
+function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     const fileElement = document.createElement('div');
     fileElement.className = 'uploaded-file';
 
-    let mediaElement;
+    const imgElement = document.createElement('img');
+    imgElement.src = thumbnailUrl;  // 썸네일 이미지 표시
+    imgElement.style.width = '200px';
 
-    if (fileType === 'image') {
-        mediaElement = document.createElement('img');
-        mediaElement.src = fileUrl;
-        mediaElement.alt = fileName;
-        mediaElement.style.width = '200px';
-    } else if (fileType === 'video') {
-        mediaElement = document.createElement('video');
-        mediaElement.src = fileUrl;
-        mediaElement.controls = true;
-        mediaElement.style.width = '200px';
-    }
-
-    const nameElement = document.createElement('p');
-    nameElement.textContent = fileName;
+    const viewMoreButton = document.createElement('button');
+    viewMoreButton.textContent = "View All Images";
+    viewMoreButton.onclick = () => viewAllImages(imageUrls);  // 모든 이미지 보기
 
     const deleteButton = document.createElement('button');
     deleteButton.textContent = "Delete";
-    deleteButton.onclick = () => deleteFile(docId, storagePath, fileElement);
+    deleteButton.onclick = () => deleteFile(docId, fileElement);
 
-    fileElement.appendChild(mediaElement);
-    fileElement.appendChild(nameElement);
+    fileElement.appendChild(imgElement);
+    fileElement.appendChild(viewMoreButton);
     fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
 
+// 상세 페이지에서 모든 이미지 표시
+function viewAllImages(imageUrls) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+
+    imageUrls.forEach((url) => {
+        const imgElement = document.createElement('img');
+        imgElement.src = url;
+        imgElement.style.width = '200px';
+        modal.appendChild(imgElement);
+    });
+
+    document.body.appendChild(modal);
+}
+
 // 파일 삭제 처리
-async function deleteFile(docId, storagePath, fileElement) {
+async function deleteFile(docId, fileElement) {
     try {
-        // Firestore에서 문서 삭제
-        await deleteDoc(doc(db, 'uploads', docId));
+        await deleteDoc(doc(db, 'uploads', docId)); // Firestore에서 문서 삭제
 
-        // Storage에서 파일 삭제
-        const fileRef = ref(storage, storagePath);
-        await deleteObject(fileRef);
-
-        // 파일 삭제 후 UI에서 삭제된 게시물 제거
         fileElement.remove();
         document.getElementById('message').textContent = "File deleted successfully!";
     } catch (error) {
         document.getElementById('message').textContent = "Error deleting file: " + error.message;
     }
 }
-
-// 파일 업로드 처리
-const uploadForm = document.getElementById('uploadForm');
-const fileInput = document.getElementById('fileInput');
-const message = document.getElementById('message');
-
-uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    if (!isAdmin) {
-        message.textContent = "You are not authorized to upload files!";
-        message.style.color = "red";
-        return;
-    }
-
-    const file = fileInput.files[0];
-
-    if (!file) {
-        message.textContent = "Please select a file!";
-        return;
-    }
-
-    // 파일 확장자 확인
-    const fileType = file.type.split('/')[0];  // 'image' or 'video'
-
-    const storageRef = ref(storage, `uploads/${file.name}`);
-    
-    try {
-        await uploadBytes(storageRef, file);
-        const fileUrl = await getDownloadURL(storageRef);
-        
-        await addDoc(collection(db, 'uploads'), {
-            name: file.name,
-            url: fileUrl,
-            storagePath: storageRef.fullPath,
-            fileType: fileType,  // 파일 유형 저장 (image 또는 video)
-            createdAt: new Date()
-        });
-        
-        message.textContent = "File uploaded successfully!";
-        loadUploadedFiles(); // 파일 목록 새로고침
-    } catch (error) {
-        message.textContent = "Error uploading file: " + error.message;
-    }
-});
