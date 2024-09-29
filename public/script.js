@@ -113,10 +113,23 @@ const weightInput = document.getElementById('weight');
 const typeInput = document.getElementById('type');
 const descriptionInput = document.getElementById('description');
 
+// 파일이 선택될 때 썸네일 선택지를 자동으로 생성하는 함수
+fileInput.addEventListener('change', () => {
+    thumbnailSelect.innerHTML = ''; // 기존 선택지 초기화
+    const files = fileInput.files;
+
+    for (let i = 0; i < files.length; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = files[i].name;
+        thumbnailSelect.appendChild(option);
+    }
+});
+
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const files = fileInput.files;
-    const thumbnailIndex = thumbnailSelect.value;
+    const thumbnailIndex = thumbnailSelect.value; // 선택한 썸네일의 인덱스
     const partNumber = partNumberInput.value.trim();
     const size = sizeInput.value.trim();
     const weight = weightInput.value.trim();
@@ -140,6 +153,7 @@ uploadForm.addEventListener('submit', async (e) => {
             const fileUrl = await getDownloadURL(storageRef);
             imageUrls.push(fileUrl);
 
+            // 선택된 썸네일 저장
             if (i == thumbnailIndex) {
                 thumbnailUrl = fileUrl;
             }
