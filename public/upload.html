@@ -19,13 +19,7 @@
                 <!-- 사진 및 동영상 업로드 -->
                 <label for="fileUpload">사진 또는 영상 업로드:</label>
                 <input type="file" id="fileUpload" accept="image/*,video/*" multiple required>
-                <div id="filePreviewContainer"></div> <!-- 미리보기 -->
-
-                <!-- 썸네일 선택 -->
-                <label for="thumbnailSelect">썸네일 이미지 선택:</label>
-                <select id="thumbnailSelect" required>
-                    <!-- 선택한 이미지 중에서 썸네일을 고르기 -->
-                </select>
+                <div id="filePreviewContainer" class="preview-grid"></div> <!-- 미리보기 -->
 
                 <!-- 품번 입력 -->
                 <label for="productNumber">품번:</label>
