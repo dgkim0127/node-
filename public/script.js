@@ -1,4 +1,4 @@
-import { db, storage, auth } from './firebaseConfig.js';
+import { db, storage } from './firebaseConfig.js';
 import { collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
@@ -117,7 +117,12 @@ uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const files = fileInput.files;
     const thumbnailIndex = thumbnailSelect.value;
-    const partNumber = partNumberInput.value.trim();
+    const partNumberPrefix = partNumberInput.value[0];  // B or G
+    const partNumberDigits = partNumberInput.value.slice(2, 6); // 4자리 숫자
+    const partNumberSuffix = partNumberInput.value.slice(7, 8); // E, R, B, N 중 하나
+    const finalDigit = partNumberInput.value.slice(9); // 마지막 번호 (없을 경우 생략)
+    const partNumber = `${partNumberPrefix}_${partNumberDigits}${partNumberSuffix}${finalDigit ? '-' + finalDigit : ''}`; // 조건에 따른 형식화
+
     const size = sizeInput.value.trim();
     const weight = weightInput.value.trim();
     const type = typeInput.value.trim();
@@ -151,7 +156,7 @@ uploadForm.addEventListener('submit', async (e) => {
             type: type,
             description: description,
             thumbnailUrl: thumbnailUrl,
-            imageUrls: imageUrls,  // 모든 이미지 URL
+            imageUrls: imageUrls,
             createdAt: new Date()
         });
 
@@ -177,12 +182,12 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     fileElement.className = 'uploaded-file';
 
     const imgElement = document.createElement('img');
-    imgElement.src = thumbnailUrl;  // 썸네일 이미지 표시
+    imgElement.src = thumbnailUrl;
     imgElement.style.width = '200px';
 
     const viewMoreButton = document.createElement('button');
     viewMoreButton.textContent = "View All Images";
-    viewMoreButton.onclick = () => viewAllImages(imageUrls);  // 모든 이미지 보기
+    viewMoreButton.onclick = () => viewAllImages(imageUrls);
 
     const deleteButton = document.createElement('button');
     deleteButton.textContent = "Delete";
@@ -212,7 +217,7 @@ function viewAllImages(imageUrls) {
 // 파일 삭제 처리
 async function deleteFile(docId, fileElement) {
     try {
-        await deleteDoc(doc(db, 'uploads', docId)); // Firestore에서 문서 삭제
+        await deleteDoc(doc(db, 'uploads', docId)); 
         fileElement.remove();
         document.getElementById('message').textContent = "File deleted successfully!";
     } catch (error) {
