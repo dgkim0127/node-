@@ -3,18 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>메인 페이지</title>
+    <title>로그인 페이지</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
-        <h1>파일 업로드 목록</h1>
+        <h1>로그인</h1>
     </header>
 
     <main>
-        <section id="uploadedFiles"></section>
+        <section id="loginSection">
+            <form id="loginForm">
+                <label for="email">이메일</label>
+                <input type="email" id="email" required placeholder="이메일을 입력하세요">
+                
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" required placeholder="비밀번호를 입력하세요">
+                
+                <button type="submit">로그인</button>
+            </form>
+            <p id="errorMessage" class="error"></p>
+        </section>
+
+        <section id="registerSection">
+            <p>아직 계정이 없으신가요? <a href="register.html">회원가입</a></p>
+        </section>
     </main>
 
-    <script src="script.js"></script>
+    <script src="login.js"></script>
 </body>
 </html>
