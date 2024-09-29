@@ -192,9 +192,22 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     const fileElement = document.createElement('div');
     fileElement.className = 'uploaded-file';
 
-    const imgElement = document.createElement('img');
-    imgElement.src = thumbnailUrl;
-    imgElement.style.width = '200px';
+    // 파일이 동영상인 경우
+    if (thumbnailUrl.endsWith('.mp4') || thumbnailUrl.endsWith('.webm') || thumbnailUrl.endsWith('.ogg')) {
+        const videoElement = document.createElement('video');
+        videoElement.src = thumbnailUrl;
+        videoElement.autoplay = true; // 자동 재생
+        videoElement.loop = true;     // 무한 반복
+        videoElement.muted = true;    // 음소거 (자동 재생 브라우저 정책에 따라 음소거 필요)
+        videoElement.style.width = '200px';
+        fileElement.appendChild(videoElement);
+    } else {
+        // 이미지 처리
+        const imgElement = document.createElement('img');
+        imgElement.src = thumbnailUrl;
+        imgElement.style.width = '200px';
+        fileElement.appendChild(imgElement);
+    }
 
     // 썸네일 클릭 시 상세 페이지로 이동하는 이벤트 추가
     fileElement.addEventListener('click', () => {
@@ -209,13 +222,10 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     deleteButton.textContent = "Delete";
     deleteButton.onclick = () => deleteFile(docId, fileElement);
 
-    fileElement.appendChild(imgElement);
     fileElement.appendChild(viewMoreButton);
     fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
-
-
 
 // 상세 페이지에서 모든 이미지 표시
 function viewAllImages(imageUrls) {
