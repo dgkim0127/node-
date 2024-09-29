@@ -37,7 +37,7 @@ loginForm.addEventListener('submit', async (e) => {
                 loginMessage.style.color = "green";
 
                 // 사용자 권한 및 추가 작업 처리
-                currentUser = userData;
+                currentUser = userData;  // currentUser 변수를 여기서 초기화
                 isAdmin = userData.isAdmin;
                 showUploadSection();  // 관리자만 접근 가능한 업로드 섹션 활성화
             } else {
