@@ -141,6 +141,29 @@ body {
     background-color: #c82333;
 }
 
+/* 상세 페이지에 표시될 이미지 스타일 */
+#images img {
+    width: 200px;
+    margin: 10px;
+    border-radius: 4px;
+}
+
+/* modal 스타일 (모든 이미지를 보기 위한 상세 페이지에서 사용할 경우) */
+.modal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.modal img {
+    width: 300px;
+    border-radius: 8px;
+}
+
+
 /* Fade-in 애니메이션 */
 @keyframes fadeIn {
     0% {
