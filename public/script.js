@@ -125,6 +125,7 @@ function previewImages() {
         });
     }
 }
+
 // 업로드 처리
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -157,6 +158,7 @@ uploadForm.addEventListener('submit', async (e) => {
             const fileUrl = await getDownloadURL(storageRef);
             imageUrls.push(fileUrl);
 
+            // 첫 번째 파일을 썸네일로 지정
             if (i === 0) {
                 thumbnailUrl = fileUrl;
             }
