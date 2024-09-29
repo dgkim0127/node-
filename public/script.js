@@ -1,102 +1,138 @@
-import { db } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { db, storage } from './firebaseConfig.js';
+import { collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const loginForm = document.getElementById('loginForm');
+const loginUsername = document.getElementById('loginUsername');
+const loginPassword = document.getElementById('loginPassword');
+const loginMessage = document.getElementById('loginMessage');
 const signupButton = document.getElementById('signupButton');
+const uploadSection = document.querySelector('.upload-section');
+const fileUploadSection = document.querySelector('.file-upload-section');
+const showUploadButton = document.getElementById('showUploadButton');
+
 let currentUser = null;
+let isAdmin = false;
 
 // 로그인 처리
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value.trim();
+    const username = loginUsername.value.trim();
+    const password = loginPassword.value.trim();
 
     if (!username || !password) {
-        document.getElementById('loginMessage').textContent = "아이디와 비밀번호를 입력해주세요.";
+        loginMessage.textContent = "아이디와 비밀번호를 입력해주세요.";
+        loginMessage.style.color = "red";
         return;
     }
 
     try {
-        // Firestore에서 해당 아이디를 가진 사용자 찾기
         const q = query(collection(db, 'users'), where('username', '==', username));
         const querySnapshot = await getDocs(q);
 
         if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
             if (userData.password === password) {
-                document.getElementById('loginMessage').textContent = "로그인 성공!";
-                currentUser = userData;  // 로그인된 사용자 정보 저장
-                // 로그인 후 업로드 섹션 표시
-                document.querySelector('.upload-section').style.display = 'block';
+                loginMessage.textContent = "로그인 성공!";
+                loginMessage.style.color = "green";
+
+                currentUser = userData;
+                isAdmin = userData.isAdmin;
+                showUploadSection();
             } else {
-                document.getElementById('loginMessage').textContent = "비밀번호가 일치하지 않습니다.";
+                loginMessage.textContent = "비밀번호가 틀렸습니다.";
+                loginMessage.style.color = "red";
             }
         } else {
-            document.getElementById('loginMessage').textContent = "해당 아이디를 찾을 수 없습니다.";
+            loginMessage.textContent = "아이디를 찾을 수 없습니다.";
+            loginMessage.style.color = "red";
         }
     } catch (error) {
-        document.getElementById('loginMessage').textContent = `로그인 오류: ${error.message}`;
+        loginMessage.textContent = `에러: ${error.message}`;
+        loginMessage.style.color = "red";
     }
 });
 
-// 회원가입 처리
-signupButton.addEventListener('click', async () => {
+// 회원가입 버튼 클릭 시 처리
+signupButton.addEventListener('click', () => {
     const username = prompt("새로운 아이디를 입력하세요:");
     const password = prompt("새로운 비밀번호를 입력하세요:");
 
     if (username && password) {
-        try {
-            // Firestore에 새로운 사용자 등록
-            await addDoc(collection(db, 'users'), {
-                username: username,
-                password: password,
-                isAdmin: false  // 기본적으로 관리자가 아닌 사용자로 등록
-            });
-            document.getElementById('loginMessage').textContent = "회원가입이 완료되었습니다. 로그인하세요!";
-        } catch (error) {
-            document.getElementById('loginMessage').textContent = `회원가입 오류: ${error.message}`;
-        }
+        signupUser(username, password);
     }
 });
 
-// 파일 업로드 및 썸네일 선택 기능
-const uploadForm = document.getElementById('uploadForm');
-const fileInput = document.getElementById('fileInput');
-const thumbnailSelect = document.getElementById('thumbnailSelect');
+// 회원가입 함수
+async function signupUser(username, password) {
+    try {
+        await addDoc(collection(db, 'users'), {
+            username: username,
+            password: password,
+            isAdmin: false
+        });
 
-// 파일 미리보기 및 썸네일 선택 기능
-fileInput.addEventListener('change', () => {
-    const files = fileInput.files;
-    thumbnailSelect.innerHTML = '';  // 기존 목록 비우기
+        loginMessage.textContent = "회원가입이 완료되었습니다! 로그인하세요.";
+        loginMessage.style.color = "green";
+    } catch (error) {
+        loginMessage.textContent = `회원가입 에러: ${error.message}`;
+        loginMessage.style.color = "red";
+    }
+}
 
-    Array.from(files).forEach((file, index) => {
-        const option = document.createElement('option');
-        option.value = index;
-        option.textContent = `Thumbnail ${index + 1}: ${file.name}`;
-        thumbnailSelect.appendChild(option);  // 썸네일 선택 목록에 파일 이름 추가
-    });
+// 로그인 후 업로드 버튼 표시
+function showUploadSection() {
+    loginForm.style.display = "none";
+    signupButton.style.display = "none";
+
+    if (isAdmin) {
+        uploadSection.style.display = "block";
+    } else {
+        alert("관리자만 파일을 업로드할 수 있습니다.");
+    }
+    document.querySelector('.uploaded-files-section').style.display = "block";
+    loadUploadedFiles();
+}
+
+// 업로드 버튼 클릭 시 파일 업로드 섹션 표시
+showUploadButton.addEventListener('click', () => {
+    fileUploadSection.style.display = 'block';
+    showUploadButton.style.display = 'none';
 });
 
 // 파일 업로드 처리
+const uploadForm = document.getElementById('uploadForm');
+const fileInput = document.getElementById('fileInput');
+const thumbnailSelect = document.getElementById('thumbnailSelect');
+const message = document.getElementById('message');
+
+// 품번, 사이즈, 중량, 종류, 내용 필드
+const partNumberInput = document.getElementById('partNumber');
+const sizeInput = document.getElementById('size');
+const weightInput = document.getElementById('weight');
+const typeInput = document.getElementById('type');
+const descriptionInput = document.getElementById('description');
+
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-
     const files = fileInput.files;
-    const partNumber = document.getElementById('partNumber').value;
-    const size = document.getElementById('size').value;
-    const weight = document.getElementById('weight').value;
-    const type = document.getElementById('type').value;
+    const thumbnailIndex = thumbnailSelect.value;
+    const partNumber = partNumberInput.value.trim();
+    const size = sizeInput.value.trim();
+    const weight = weightInput.value.trim();
+    const type = typeInput.value.trim();
+    const description = descriptionInput.value.trim();
 
     if (!files.length || !partNumber || !size || !weight || !type) {
-        document.getElementById('message').textContent = "모든 필드를 입력하고 파일을 선택하세요!";
+        message.textContent = "모든 필드를 입력하고 파일을 선택하세요!";
         return;
     }
 
-    const selectedThumbnailIndex = thumbnailSelect.value;  // 사용자가 선택한 썸네일 인덱스
     const imageUrls = [];
     let thumbnailUrl = '';
 
     try {
+        // 각 파일을 Storage에 업로드
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
             const storageRef = ref(storage, `uploads/${file.name}`);
@@ -104,31 +140,31 @@ uploadForm.addEventListener('submit', async (e) => {
             const fileUrl = await getDownloadURL(storageRef);
             imageUrls.push(fileUrl);
 
-            // 선택한 파일을 썸네일로 지정
-            if (i == selectedThumbnailIndex) {
+            if (i == thumbnailIndex) {
                 thumbnailUrl = fileUrl;
             }
         }
 
+        // Firestore에 게시물 정보 저장
         await addDoc(collection(db, 'uploads'), {
-            partNumber,
-            size,
-            weight: `${weight}g`,
-            type,
-            description: document.getElementById('description').value,
-            thumbnailUrl,
-            imageUrls,
+            partNumber: partNumber,
+            size: size,
+            weight: weight + 'g',
+            type: type,
+            description: description,
+            thumbnailUrl: thumbnailUrl,
+            imageUrls: imageUrls,  // 모든 이미지 URL
             createdAt: new Date()
         });
 
-        document.getElementById('message').textContent = "파일 업로드 성공!";
-        loadUploadedFiles();
+        message.textContent = "Files uploaded successfully!";
+        loadUploadedFiles(); // 파일 목록 새로고침
     } catch (error) {
-        document.getElementById('message').textContent = `파일 업로드 실패: ${error.message}`;
+        message.textContent = "Error uploading files: " + error.message;
     }
 });
 
-// 파일 목록 로드 (기존 파일 불러오기)
+// 업로드된 파일 목록 불러오기
 async function loadUploadedFiles() {
     const querySnapshot = await getDocs(collection(db, 'uploads'));
     querySnapshot.forEach((doc) => {
@@ -143,19 +179,46 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     fileElement.className = 'uploaded-file';
 
     const imgElement = document.createElement('img');
-    imgElement.src = thumbnailUrl;
+    imgElement.src = thumbnailUrl;  // 썸네일 이미지 표시
     imgElement.style.width = '200px';
 
     const viewMoreButton = document.createElement('button');
-    viewMoreButton.textContent = "View Details";
-    viewMoreButton.onclick = () => viewDetailsPage(docId);  // 상세 페이지로 이동
+    viewMoreButton.textContent = "View All Images";
+    viewMoreButton.onclick = () => viewAllImages(imageUrls);  // 모든 이미지 보기
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = "Delete";
+    deleteButton.onclick = () => deleteFile(docId, fileElement);
 
     fileElement.appendChild(imgElement);
     fileElement.appendChild(viewMoreButton);
+    fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
 
-// 상세 페이지로 이동하는 함수
-function viewDetailsPage(docId) {
-    window.location.href = `details.html?id=${docId}`;
+// 상세 페이지에서 모든 이미지 표시
+function viewAllImages(imageUrls) {
+    const modal = document.createElement('div');
+    modal.className = 'modal';
+
+    imageUrls.forEach((url) => {
+        const imgElement = document.createElement('img');
+        imgElement.src = url;
+        imgElement.style.width = '200px';
+        modal.appendChild(imgElement);
+    });
+
+    document.body.appendChild(modal);
+}
+
+// 파일 삭제 처리
+async function deleteFile(docId, fileElement) {
+    try {
+        await deleteDoc(doc(db, 'uploads', docId)); // Firestore에서 문서 삭제
+
+        fileElement.remove();
+        document.getElementById('message').textContent = "File deleted successfully!";
+    } catch (error) {
+        document.getElementById('message').textContent = "Error deleting file: " + error.message;
+    }
 }
