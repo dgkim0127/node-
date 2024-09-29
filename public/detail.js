@@ -10,7 +10,7 @@ const docId = params.get('id');
 let currentUser = null;
 let isAdmin = false;
 
-// 현재 사용자 인증 상태 확인
+// 사용자 인증 상태 확인 및 관리자 권한 확인
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
@@ -23,6 +23,8 @@ onAuthStateChanged(auth, async (user) => {
                 isAdmin = userDocSnap.data().isAdmin;
                 if (isAdmin) {
                     document.getElementById('deleteButton').style.display = 'block'; // 관리자에게만 삭제 버튼 표시
+                } else {
+                    console.error("사용자가 관리자 권한이 없습니다.");
                 }
             } else {
                 console.error("사용자 문서를 찾을 수 없습니다.");
@@ -30,6 +32,8 @@ onAuthStateChanged(auth, async (user) => {
         } catch (error) {
             console.error("관리자 권한 확인 중 오류:", error);
         }
+    } else {
+        console.error("사용자가 로그인되지 않았습니다.");
     }
 });
 
