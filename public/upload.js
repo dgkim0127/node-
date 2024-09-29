@@ -2,36 +2,45 @@ import { storage, db } from './firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
-// 파일 미리보기와 썸네일 선택
 const fileUpload = document.getElementById('fileUpload');
 const filePreviewContainer = document.getElementById('filePreviewContainer');
-const thumbnailSelect = document.getElementById('thumbnailSelect');
+let selectedThumbnail = null;  // 썸네일로 선택된 파일
 
+// 파일 미리보기 및 썸네일 선택 기능
 fileUpload.addEventListener('change', function(event) {
     const files = event.target.files;
-    filePreviewContainer.innerHTML = '';
-    thumbnailSelect.innerHTML = '<option value="">썸네일 선택</option>'; // 초기화
+    filePreviewContainer.innerHTML = ''; // 기존 미리보기 삭제
+    selectedThumbnail = null; // 초기화
 
     Array.from(files).forEach((file, index) => {
         const fileURL = URL.createObjectURL(file);
         
         // 미리보기 이미지 또는 동영상 생성
         const previewElement = document.createElement('div');
-        previewElement.style.marginBottom = '10px';
+        previewElement.classList.add('preview-item');
+        
+        // 이미지 파일일 경우에만 클릭으로 썸네일 설정 가능
         if (file.type.startsWith('image/')) {
-            previewElement.innerHTML = `<img src="${fileURL}" style="max-width: 150px; height: auto; border-radius: 5px;">`;
-            // 썸네일 선택 옵션 추가 (이미지 파일만)
-            const option = document.createElement('option');
-            option.value = index;
-            option.textContent = `이미지 ${index + 1}`;
-            thumbnailSelect.appendChild(option);
+            previewElement.innerHTML = `<img src="${fileURL}" class="preview-image" data-index="${index}" alt="이미지 미리보기">`;
+            previewElement.addEventListener('click', () => selectThumbnail(index, previewElement));
         } else if (file.type.startsWith('video/')) {
-            previewElement.innerHTML = `<video src="${fileURL}" controls style="max-width: 150px; height: auto;"></video>`;
+            previewElement.innerHTML = `<video src="${fileURL}" controls class="preview-image" alt="동영상 미리보기"></video>`;
         }
 
         filePreviewContainer.appendChild(previewElement);
     });
 });
+
+// 썸네일 선택 함수
+function selectThumbnail(index, element) {
+    // 기존 선택된 썸네일 스타일 제거
+    if (selectedThumbnail !== null) {
+        document.querySelectorAll('.preview-item')[selectedThumbnail].classList.remove('selected-thumbnail');
+    }
+    // 새로운 썸네일 선택
+    selectedThumbnail = index;
+    element.classList.add('selected-thumbnail');
+}
 
 // 업로드 처리
 const uploadForm = document.getElementById('uploadForm');
@@ -55,8 +64,7 @@ uploadForm.addEventListener('submit', async (e) => {
         return;
     }
 
-    const thumbnailIndex = thumbnailSelect.value;
-    if (thumbnailIndex === '') {
+    if (selectedThumbnail === null) {
         alert('썸네일 이미지를 선택해주세요');
         return;
     }
@@ -69,7 +77,7 @@ uploadForm.addEventListener('submit', async (e) => {
         });
 
         const uploadedFileURLs = await Promise.all(fileUploads);
-        const thumbnailURL = uploadedFileURLs[thumbnailIndex]; // 선택한 썸네일
+        const thumbnailURL = uploadedFileURLs[selectedThumbnail]; // 선택한 썸네일 URL
 
         // Firestore에 게시물 정보 저장
         await addDoc(collection(db, 'posts'), {
