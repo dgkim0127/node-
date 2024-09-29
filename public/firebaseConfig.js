@@ -6,12 +6,13 @@ import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-st
 
 // Firebase 프로젝트 설정 (Firebase Console에서 복사한 설정 값)
 const firebaseConfig = {
-    apiKey: "your-api-key",                 // Firebase API Key
-    authDomain: "your-auth-domain",         // Firebase Auth 도메인
-    projectId: "your-project-id",           // Firebase 프로젝트 ID
-    storageBucket: "your-storage-bucket",   // Firebase Storage 버킷
-    messagingSenderId: "your-messaging-sender-id", // 메시징 ID
-    appId: "your-app-id"                    // Firebase 앱 ID
+  apiKey: "AIzaSyDFysg8I_qKtDqDJLWg1_npTPBWRMM_5WY",
+  authDomain: "jjji-4240b.firebaseapp.com",
+  projectId: "jjji-4240b",
+  storageBucket: "jjji-4240b.appspot.com",
+  messagingSenderId: "876101785840",
+  appId: "1:876101785840:web:6e58681ea9c9780e454a35",
+  measurementId: "G-03999XR4JS"
 };
 
 // Firebase 앱 초기화
