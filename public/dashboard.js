@@ -12,16 +12,11 @@ async function loadPosts() {
         const postElement = document.createElement('div');
         postElement.classList.add('post');
 
-        // 대시보드에서는 사진(썸네일)만 표시
+        // 게시물 썸네일만 표시, 클릭 시 상세페이지로 이동
         postElement.innerHTML = `
-            <img src="${postData.thumbnailURL}" alt="썸네일 이미지">
-            <div class="info">
-                <p>품번: ${postData.productNumber}</p>
-                <p>종류: ${postData.type}</p>
-                <p>중량: ${postData.weight}</p>
-                <p>사이즈: ${postData.size}</p>
-                <p>내용: ${postData.content}</p>
-            </div>
+            <a href="detail.html?id=${doc.id}">
+                <img src="${postData.thumbnailURL}" alt="썸네일 이미지">
+            </a>
         `;
 
         postContainer.appendChild(postElement);
