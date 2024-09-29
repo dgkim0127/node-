@@ -232,7 +232,7 @@ body {
     animation: fadeInUp 0.8s forwards;
 }
 
-.uploaded-file img {
+.uploaded-file img, .uploaded-file video {
     max-width: 100%;
     height: auto;
     margin-bottom: 10px;
