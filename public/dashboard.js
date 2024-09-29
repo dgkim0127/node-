@@ -1,24 +1,20 @@
 import { db } from './firebaseConfig.js';
 import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
-// 업로드 버튼 클릭 시 페이지 이동
-document.getElementById('uploadButton').addEventListener('click', function() {
-    window.location.href = 'upload.html';  // 업로드 페이지로 이동
-});
-
 const postContainer = document.querySelector('.posts');
 
 // Firestore에서 게시물 데이터를 불러오기
 async function loadPosts() {
     const querySnapshot = await getDocs(collection(db, 'posts'));
-    
+
     querySnapshot.forEach((doc) => {
         const postData = doc.data();
         const postElement = document.createElement('div');
         postElement.classList.add('post');
 
+        // 대시보드에서는 사진(썸네일)만 표시
         postElement.innerHTML = `
-            <img src="${postData.fileURL}" alt="${postData.productNumber}">
+            <img src="${postData.thumbnailURL}" alt="썸네일 이미지">
             <div class="info">
                 <p>품번: ${postData.productNumber}</p>
                 <p>종류: ${postData.type}</p>
