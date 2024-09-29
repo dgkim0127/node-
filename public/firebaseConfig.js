@@ -1,7 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDFysg8I_qKtDqDJLWg1_npTPBWRMM_5WY",
@@ -13,9 +11,8 @@ const firebaseConfig = {
   measurementId: "G-03999XR4JS"
 };
 
+// Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
-const auth = getAuth(app);
-const storage = getStorage(app);
 
-export { db, auth, storage };
+export { db };
