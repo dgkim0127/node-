@@ -1,152 +1,59 @@
-import { db, auth } from './firebaseConfig.js';
-import { collection, addDoc, getDocs, query, where, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { db, auth, storage } from './firebaseConfig.js';  // Firebase 설정 가져오기
+import { signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
+import { collection, addDoc, getDocs, query, where } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
 
-// 로그인 및 회원가입 관련 DOM 요소
-const loginForm = document.getElementById('loginForm');
-const loginUsername = document.getElementById('loginUsername');
-const loginPassword = document.getElementById('loginPassword');
-const loginMessage = document.getElementById('loginMessage');
-const signupButton = document.getElementById('signupButton');
-const uploadSection = document.querySelector('.upload-section');
-const fileUploadSection = document.querySelector('.file-upload-section');
-const showUploadButton = document.getElementById('showUploadButton');
-
-let currentUser = null;
-let isAdmin = false;
-
 // 로그인 처리
+const loginForm = document.getElementById('loginForm');
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const username = loginUsername.value.trim();
-    const password = loginPassword.value.trim();
-
-    if (!username || !password) {
-        loginMessage.textContent = "아이디와 비밀번호를 입력해주세요.";
-        loginMessage.style.color = "red";
-        return;
-    }
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
 
     try {
-        const q = query(collection(db, 'users'), where('username', '==', username));
-        const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
-            const userData = querySnapshot.docs[0].data();
-            if (userData.password === password) {
-                loginMessage.textContent = "로그인 성공!";
-                loginMessage.style.color = "green";
-
-                currentUser = userData;
-                isAdmin = userData.isAdmin;
-                showUploadSection();
-            } else {
-                loginMessage.textContent = "비밀번호가 틀렸습니다.";
-                loginMessage.style.color = "red";
-            }
-        } else {
-            loginMessage.textContent = "아이디를 찾을 수 없습니다.";
-            loginMessage.style.color = "red";
-        }
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        console.log("로그인 성공:", userCredential.user);
+        // 로그인 성공 후, 파일 업로드 섹션 표시
+        document.querySelector('.upload-section').style.display = 'block';
     } catch (error) {
-        loginMessage.textContent = `에러: ${error.message}`;
-        loginMessage.style.color = "red";
+        console.error("로그인 실패:", error.message);
     }
 });
 
-// 회원가입 버튼 클릭 시 처리
-signupButton.addEventListener('click', () => {
-    const username = prompt("새로운 아이디를 입력하세요:");
-    const password = prompt("새로운 비밀번호를 입력하세요:");
-
-    if (username && password) {
-        signupUser(username, password);
-    }
-});
-
-// 회원가입 함수
-async function signupUser(username, password) {
-    try {
-        await addDoc(collection(db, 'users'), {
-            username: username,
-            password: password,
-            isAdmin: false
-        });
-
-        loginMessage.textContent = "회원가입이 완료되었습니다! 로그인하세요.";
-        loginMessage.style.color = "green";
-    } catch (error) {
-        loginMessage.textContent = `회원가입 에러: ${error.message}`;
-        loginMessage.style.color = "red";
-    }
-}
-
-// 로그인 후 업로드 버튼만 표시
-function showUploadSection() {
-    loginForm.style.display = "none";
-    signupButton.style.display = "none";
-
-    if (isAdmin) {
-        uploadSection.style.display = "block";  // 업로드 버튼 표시
-    } else {
-        alert("관리자만 파일을 업로드할 수 있습니다.");
-    }
-    document.querySelector('.uploaded-files-section').style.display = "block";
-    loadUploadedFiles();  // 파일 목록 로드
-}
-
-// 업로드 버튼 클릭 시 파일 업로드 섹션 표시
-showUploadButton.addEventListener('click', () => {
-    fileUploadSection.style.display = 'block';  // 파일 업로드 섹션 보이기
-    showUploadButton.style.display = 'none';    // 업로드 버튼 숨기기
-});
-
-// 파일 업로드 및 미리보기 관련 처리 (이전 코드와 동일)
+// 파일 업로드 및 썸네일 선택 기능
 const uploadForm = document.getElementById('uploadForm');
 const fileInput = document.getElementById('fileInput');
-const preview = document.getElementById('preview');
+const thumbnailSelect = document.getElementById('thumbnailSelect');
 
-function previewImages() {
-    const preview = document.getElementById('preview');
-    preview.innerHTML = ''; // 미리보기 영역 초기화
-    const files = document.getElementById('fileInput').files;
+// 파일 미리보기 및 썸네일 선택 기능
+fileInput.addEventListener('change', () => {
+    const files = fileInput.files;
+    thumbnailSelect.innerHTML = '';  // 기존 목록 비우기
 
-    if (files) {
-        Array.from(files).forEach((file) => {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.width = '100px';
-                img.style.margin = '10px';
-                preview.appendChild(img);
-            };
-            reader.readAsDataURL(file); // 파일을 읽어 미리보기로 변환
-        });
-    }
-}
+    Array.from(files).forEach((file, index) => {
+        const option = document.createElement('option');
+        option.value = index;
+        option.textContent = `Thumbnail ${index + 1}: ${file.name}`;
+        thumbnailSelect.appendChild(option);  // 썸네일 선택 목록에 파일 이름 추가
+    });
+});
 
-// 업로드 처리
+// 파일 업로드 처리
 uploadForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
     const files = fileInput.files;
-    const prefix = document.getElementById('prefix').value;
-    const number = document.getElementById('number').value;
-    const suffix = document.getElementById('suffix').value;
-    const lastNumber = document.getElementById('lastNumber').value;
-    const partNumber = `${prefix}_${number}${suffix}${lastNumber ? '-' + lastNumber : ''}`;
-
-    const size = document.getElementById('size').value.trim();
-    const weight = document.getElementById('weight').value.trim();
-    const type = document.getElementById('type').value.trim();
-    const description = document.getElementById('description').value.trim();
+    const partNumber = document.getElementById('partNumber').value;
+    const size = document.getElementById('size').value;
+    const weight = document.getElementById('weight').value;
+    const type = document.getElementById('type').value;
 
     if (!files.length || !partNumber || !size || !weight || !type) {
         document.getElementById('message').textContent = "모든 필드를 입력하고 파일을 선택하세요!";
         return;
     }
 
+    const selectedThumbnailIndex = thumbnailSelect.value;  // 사용자가 선택한 썸네일 인덱스
     const imageUrls = [];
     let thumbnailUrl = '';
 
@@ -158,31 +65,31 @@ uploadForm.addEventListener('submit', async (e) => {
             const fileUrl = await getDownloadURL(storageRef);
             imageUrls.push(fileUrl);
 
-            // 첫 번째 파일을 썸네일로 지정
-            if (i === 0) {
+            // 선택한 파일을 썸네일로 지정
+            if (i == selectedThumbnailIndex) {
                 thumbnailUrl = fileUrl;
             }
         }
 
         await addDoc(collection(db, 'uploads'), {
-            partNumber: partNumber,
-            size: size,
-            weight: weight + 'g',
-            type: type,
-            description: description,
-            thumbnailUrl: thumbnailUrl,
-            imageUrls: imageUrls,
+            partNumber,
+            size,
+            weight: `${weight}g`,
+            type,
+            description: document.getElementById('description').value,
+            thumbnailUrl,
+            imageUrls,
             createdAt: new Date()
         });
 
-        document.getElementById('message').textContent = "Files uploaded successfully!";
-        loadUploadedFiles(); // 파일 목록 새로고침
+        document.getElementById('message').textContent = "파일 업로드 성공!";
+        loadUploadedFiles();
     } catch (error) {
-        document.getElementById('message').textContent = "Error uploading files: " + error.message;
+        document.getElementById('message').textContent = `파일 업로드 실패: ${error.message}`;
     }
 });
 
-// 업로드된 파일 목록 로드
+// 파일 목록 로드 (기존 파일 불러오기)
 async function loadUploadedFiles() {
     const querySnapshot = await getDocs(collection(db, 'uploads'));
     querySnapshot.forEach((doc) => {
@@ -191,6 +98,7 @@ async function loadUploadedFiles() {
     });
 }
 
+// 업로드된 파일을 화면에 표시하는 함수
 function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     const fileElement = document.createElement('div');
     fileElement.className = 'uploaded-file';
