@@ -1,32 +1,89 @@
-/* 로그인 폼 스타일 */
-form {
+/* 전체 페이지 어둡게 처리 */
+body {
+    margin: 0;
+    padding: 0;
     display: flex;
-    flex-direction: column;
-    width: 300px;
-    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.85); /* 어두운 배경 */
+    font-family: Arial, sans-serif;
 }
 
-input {
-    margin: 10px 0;
+/* 중앙에 위치한 로그인 박스 */
+.login-container {
+    position: relative;
+    width: 350px;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    animation: fadeIn 1s ease-in-out; /* 부드러운 등장 애니메이션 */
+}
+
+/* 부드러운 페이드 인 효과 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 로그인 폼 스타일 */
+form h2 {
+    color: royalblue; /* 포인트 색상: 로얄 블루 */
+    margin-bottom: 20px;
+}
+
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+form input {
+    width: 100%;
     padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
     font-size: 16px;
 }
 
-button {
+form button {
+    width: 100%;
     padding: 10px;
-    background-color: #4A90E2;
+    background-color: royalblue; /* 포인트 색상 */
     color: white;
     border: none;
-    cursor: pointer;
     border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
-button:hover {
-    background-color: #357ABD;
+form button:hover {
+    background-color: #0047ab; /* 로얄 블루의 어두운 톤 */
 }
 
 .error {
     color: red;
     margin-top: 10px;
-    text-align: center;
+    font-size: 14px;
+}
+
+/* 전체 화면에 덮히는 어두운 오버레이 */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: -1; /* 로그인 박스 뒤에 위치 */
 }
