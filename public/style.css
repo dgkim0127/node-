@@ -80,6 +80,12 @@ body {
     background-color: #357ABD;
 }
 
+/* 업로드 섹션 기본적으로 숨김 */
+.upload-section {
+    display: none;
+}
+
+
 /* 파일 업로드 섹션 */
 .file-upload-section {
     display: none;
