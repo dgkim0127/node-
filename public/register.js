@@ -20,7 +20,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
         });
 
         alert('회원가입 성공!');
-        window.location.href = 'login.html'; // 성공 시 로그인 페이지로 이동
+        window.location.href = 'index.html'; // 성공 시 로그인 페이지로 이동
     } catch (error) {
         console.error('회원가입 실패:', error);
         alert('회원가입 중 오류가 발생했습니다.');
