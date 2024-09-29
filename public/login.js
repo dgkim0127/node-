@@ -1,47 +1,40 @@
-import { auth, db } from './firebaseConfig.js'; 
-import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
-// Firestore에서 아이디로 사용자 확인
-async function checkUserExists(userId) {
-    const userDoc = await getDoc(doc(db, 'users', userId));
-    return userDoc.exists(); // 사용자가 존재하면 true, 없으면 false 반환
-}
-
-// 로그인 폼 이벤트 핸들러
+const auth = getAuth();
 const loginForm = document.getElementById('loginForm');
+
+// 로그인 폼 제출 이벤트 처리
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const userId = document.getElementById('userId').value;
+    const email = document.getElementById('userId').value;
     const password = document.getElementById('password').value;
     const errorMessage = document.getElementById('errorMessage');
 
     try {
-        // Firestore에서 아이디 확인
-        const userExists = await checkUserExists(userId);
-
-        if (!userExists) {
-            errorMessage.textContent = "해당 아이디의 사용자를 찾을 수 없습니다.";
-            return;
-        }
-
-        // 아이디가 존재하면 이메일처럼 처리
-        const email = `${userId}@example.com`;
-
-        // Firebase Authentication 로그인 시도
+        // Firebase 인증 로그인 처리
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
 
-        // 로그인 성공 처리
+        // 로그인 성공 후 대시보드로 이동
         alert('로그인 성공!');
-        window.location.href = 'dashboard.html'; // 대시보드로 리디렉션
-
+        window.location.href = 'dashboard.html'; // 로그인 성공 시 대시보드로 리디렉션
     } catch (error) {
-        // Firebase 오류 처리: 비밀번호 오류인 경우 분리
-        if (error.code === 'auth/wrong-password') {
-            errorMessage.textContent = "비밀번호가 잘못되었습니다.";
-        } else {
-            errorMessage.textContent = '로그인 실패: ' + error.message;
+        // 로그인 실패 시 오류 처리
+        switch (error.code) {
+            case 'auth/wrong-password':
+                errorMessage.textContent = "비밀번호가 잘못되었습니다.";
+                break;
+            case 'auth/user-not-found':
+                errorMessage.textContent = "해당 이메일이 존재하지 않습니다.";
+                break;
+            case 'auth/invalid-email':
+                errorMessage.textContent = "유효하지 않은 이메일 형식입니다.";
+                break;
+            case 'auth/too-many-requests':
+                errorMessage.textContent = "로그인 시도가 너무 많습니다. 잠시 후 다시 시도해주세요.";
+                break;
+            default:
+                errorMessage.textContent = "로그인 실패: " + error.message;
         }
     }
 });
