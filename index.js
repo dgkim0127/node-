@@ -1,12 +1,16 @@
 const express = require('express');
 const path = require('path');
-const app = express();
 
-// 정적 파일을 제공
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// 정적 파일 제공
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 서버 시작
-const PORT = process.env.PORT || 3000;
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
