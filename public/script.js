@@ -180,6 +180,11 @@ uploadForm.addEventListener('submit', async (e) => {
 
 // 업로드된 파일 목록 불러오기
 async function loadUploadedFiles() {
+    const uploadedFilesContainer = document.getElementById('uploadedFiles');
+    
+    // 게시물을 추가하기 전에 기존 목록을 초기화
+    uploadedFilesContainer.innerHTML = ''; 
+
     const querySnapshot = await getDocs(collection(db, 'uploads'));
     querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -188,23 +193,21 @@ async function loadUploadedFiles() {
 }
 
 // 업로드된 파일을 화면에 표시하는 함수
-function displayUploadedFile(thumbnailUrl, imageUrls, docId, isVideo = false) {
+function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     const fileElement = document.createElement('div');
     fileElement.className = 'uploaded-file';
 
-    if (isVideo) {
-        // 동영상인 경우, poster 속성으로 썸네일을 지정
+    // 이미지나 동영상 처리
+    if (thumbnailUrl.endsWith('.mp4') || thumbnailUrl.endsWith('.webm') || thumbnailUrl.endsWith('.ogg')) {
         const videoElement = document.createElement('video');
         videoElement.src = thumbnailUrl;
         videoElement.controls = true;
         videoElement.autoplay = true;
         videoElement.loop = true;
         videoElement.muted = true;
-        videoElement.poster = "your-thumbnail-image-url"; // 여기서 썸네일 URL을 지정
         videoElement.style.width = '200px';
         fileElement.appendChild(videoElement);
     } else {
-        // 이미지인 경우
         const imgElement = document.createElement('img');
         imgElement.src = thumbnailUrl;
         imgElement.style.width = '200px';
@@ -213,7 +216,7 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId, isVideo = false) {
 
     // 썸네일 클릭 시 상세 페이지로 이동하는 이벤트 추가
     fileElement.addEventListener('click', () => {
-        window.location.href = `detail.html?id=${docId}`;
+        window.location.href = `detail.html?id=${docId}`; // 상세 페이지로 이동
     });
 
     const viewMoreButton = document.createElement('button');
