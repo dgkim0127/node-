@@ -1,13 +1,14 @@
 {
-  "name": "my-node-app",
+  "name": "firebase-auth-project",
   "version": "1.0.0",
-  "description": "Simple Node.js file upload server with Firebase",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node index.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "firebase": "^9.6.1"
-  }
+    "firebase": "^9.6.1",
+    "body-parser": "^1.19.0"
+  },
+  "type": "module"
 }
