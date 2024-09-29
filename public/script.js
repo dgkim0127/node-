@@ -192,12 +192,12 @@ async function loadUploadedFiles() {
     });
 }
 
-// 업로드된 파일을 화면에 표시하는 함수
+// 업로드된 파일을 화면에 표시하는 함수 (삭제 기능 없이)
 function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
     const fileElement = document.createElement('div');
     fileElement.className = 'uploaded-file';
 
-    // 이미지나 동영상 처리
+    // 동영상 및 이미지 구분하여 표시
     if (thumbnailUrl.endsWith('.mp4') || thumbnailUrl.endsWith('.webm') || thumbnailUrl.endsWith('.ogg')) {
         const videoElement = document.createElement('video');
         videoElement.src = thumbnailUrl;
@@ -216,21 +216,17 @@ function displayUploadedFile(thumbnailUrl, imageUrls, docId) {
 
     // 썸네일 클릭 시 상세 페이지로 이동하는 이벤트 추가
     fileElement.addEventListener('click', () => {
-        window.location.href = `detail.html?id=${docId}`; // 상세 페이지로 이동
+        window.location.href = `detail.html?id=${docId}`;
     });
 
     const viewMoreButton = document.createElement('button');
     viewMoreButton.textContent = "View All Images";
     viewMoreButton.onclick = () => viewAllImages(imageUrls);
 
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = "Delete";
-    deleteButton.onclick = () => deleteFile(docId, fileElement);
-
     fileElement.appendChild(viewMoreButton);
-    fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
 }
+
 
 
 // 상세 페이지에서 모든 이미지 표시
