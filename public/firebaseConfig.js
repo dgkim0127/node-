@@ -1,8 +1,10 @@
+// Firebase 설정 및 초기화
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
+// Firebase 구성 (이 구성 정보는 Firebase 콘솔에서 제공됨)
 const firebaseConfig = {
   apiKey: "AIzaSyDFysg8I_qKtDqDJLWg1_npTPBWRMM_5WY",
   authDomain: "jjji-4240b.firebaseapp.com",
@@ -13,9 +15,12 @@ const firebaseConfig = {
   measurementId: "G-03999XR4JS"
 };
 
-// Firebase 초기화
+// Firebase 앱 초기화
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);  // Firestore 초기화
-const storage = getStorage(app);  // Firebase Storage 초기화
 
-export { db, storage };
+// Firestore, Storage, Auth 서비스 초기화
+const db = getFirestore(app);
+const storage = getStorage(app);
+const auth = getAuth(app);
+
+export { db, storage, auth };
