@@ -104,9 +104,6 @@ function displayUploadedFile(thumbnailUrl, imageUrls) {
     viewMoreButton.textContent = "View All Images";
     viewMoreButton.onclick = () => viewAllImages(imageUrls);  // 모든 이미지 보기
 
-    const fileElement = document.createElement('div');
-    fileElement.className = 'uploaded-file';
-
     fileElement.appendChild(imgElement);
     fileElement.appendChild(viewMoreButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
