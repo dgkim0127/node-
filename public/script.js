@@ -30,8 +30,7 @@ loginForm.addEventListener('submit', async (e) => {
         // Firestore에서 아이디로 사용자 정보 찾기
         const q = query(collection(db, 'users'), where('username', '==', username));
         const querySnapshot = await getDocs(q);
-
-        if (!querySnapshot.empty) {
+                if (!querySnapshot.empty) {
             const userData = querySnapshot.docs[0].data();
 
             // 입력된 비밀번호와 Firestore에 저장된 비밀번호 비교
