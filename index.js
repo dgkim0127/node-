@@ -7,19 +7,14 @@ const PORT = process.env.PORT || 3000;
 // 정적 파일 제공
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 루트 경로로 들어오면 로그인 페이지로 리디렉션
+// 루트 경로로 접속하면 로그인 페이지 제공
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html')); // login.html로 리디렉션
+    res.sendFile(path.join(__dirname, 'public', 'index.html')); // 로그인 페이지
 });
 
-// 회원가입 페이지 라우트
-app.get('/signup', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'signup.html'));
-});
-
-// 메인 페이지 라우트
+// 메인 페이지 경로 설정
 app.get('/main', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'main.html')); // 로그인 후 이동할 메인 페이지
 });
 
 // 서버 실행
