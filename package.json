@@ -1,14 +1,16 @@
 {
-  "name": "firebase-auth-project",
+  "name": "firebase-file-upload-app",
   "version": "1.0.0",
-  "main": "server.js",
+  "description": "A simple web application with Firebase for file upload and delete functionality.",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node index.js"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "firebase": "^9.6.1",
-    "body-parser": "^1.19.0"
+    "firebase": "^9.6.1"
   },
-  "type": "module"
+  "devDependencies": {},
+  "author": "Your Name",
+  "license": "ISC"
 }
