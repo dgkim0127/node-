@@ -25,8 +25,13 @@
             <label for="content">내용:</label>
             <textarea id="content" placeholder="내용 입력" required></textarea>
 
+            <!-- 썸네일 업로드 (항상 사진으로 설정) -->
+            <label for="thumbnailUpload">썸네일 이미지 업로드 (사진만):</label>
+            <input type="file" id="thumbnailUpload" accept="image/*" required>
+
+            <!-- 파일 업로드 (사진 또는 동영상) -->
             <label for="fileUpload">사진 또는 영상 업로드:</label>
-            <input type="file" id="fileUpload" required>
+            <input type="file" id="fileUpload" accept="image/*,video/*" required>
 
             <button type="submit">업로드</button>
         </form>
