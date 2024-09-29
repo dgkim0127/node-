@@ -24,7 +24,7 @@ loginForm.addEventListener('submit', async (e) => {
         // 아이디로 사용자 정보 조회
         const user = await getUserByUserId(userId);
 
-        // 해싱된 비밀번호와 비교
+        // 해싱된 비밀번호와 비교 (여기서는 단순 예시, 실제로는 해시된 비밀번호 사용)
         if (user.password === hashPassword(password)) {
             alert(`로그인 성공: ${userId}`);
             window.location.href = 'dashboard.html'; // 로그인 성공 후 리디렉션
@@ -38,6 +38,6 @@ loginForm.addEventListener('submit', async (e) => {
 
 // 비밀번호 해싱 함수
 function hashPassword(password) {
-    // 간단한 해싱 예시 (실제에서는 더 강력한 해싱 알고리즘을 사용해야 함)
-    return btoa(password); // base64 인코딩 사용
+    // 간단한 해싱 예시 (실제 해싱 알고리즘은 더 복잡해야 합니다)
+    return btoa(password); // Base64 인코딩을 이용한 해싱
 }
