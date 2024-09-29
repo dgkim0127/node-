@@ -30,15 +30,35 @@
             <button id="showUploadButton" class="upload-button">Upload Files</button>
         </section>
 
-        <!-- 파일 업로드 창 (숨김 처리) -->
+        <!-- 파일 업로드 창 -->
         <section class="file-upload-section" style="display: none;">
             <h2>Upload Files</h2>
             <form id="uploadForm" class="upload-form">
-                <input type="file" id="fileInput" name="file" accept="image/*,video/*" class="file-input" multiple>
+                <input type="file" id="fileInput" name="file" accept="image/*" class="file-input" multiple onchange="previewImages()">
+
+                <!-- 이미지 미리보기 영역 -->
+                <div id="preview"></div>
 
                 <!-- 품번 입력 -->
-                <label for="partNumber">품번:</label>
-                <input type="text" id="partNumber" placeholder="B_0000E" required>
+                <label for="prefix">품번 선택 (B 또는 G):</label>
+                <select id="prefix" required>
+                    <option value="B">B</option>
+                    <option value="G">G</option>
+                </select>
+
+                <label for="number">번호(0000):</label>
+                <input type="text" id="number" placeholder="0000" pattern="\d{4}" required>
+
+                <label for="suffix">종류 선택 (E, R, B, N):</label>
+                <select id="suffix" required>
+                    <option value="E">E</option>
+                    <option value="R">R</option>
+                    <option value="B">B</option>
+                    <option value="N">N</option>
+                </select>
+
+                <label for="lastNumber">마지막 번호 (-0 선택적):</label>
+                <input type="text" id="lastNumber" placeholder="0" pattern="\d*">
 
                 <!-- 사이즈 입력 -->
                 <label for="size">사이즈:</label>
