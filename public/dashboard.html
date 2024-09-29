@@ -3,26 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시물 대시보드</title>
-    <link rel="stylesheet" href="dashboard-style.css">
+    <title>대시보드</title>
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <header>
-        <h1>게시물 대시보드</h1>
-        <nav>
+        <div class="header-left">
+            <h1>카테고리</h1>
             <ul>
-                <li><a href="#" id="logoutBtn">로그아웃</a></li>
+                <li><a href="#">카테고리 1</a></li>
+                <li><a href="#">카테고리 2</a></li>
+                <li><a href="#">카테고리 3</a></li>
             </ul>
-        </nav>
+        </div>
+        <div class="header-right">
+            <button id="uploadButton">업로드</button>
+        </div>
     </header>
-    
+
     <main>
-        <section id="postList">
-            <h2>최근 게시물</h2>
-            <div id="postsContainer"></div>
+        <section class="posts">
+            <!-- 게시물이 여기 표시됩니다 -->
         </section>
     </main>
 
-    <script type="module" src="dashboard.js"></script>
+    <script src="dashboard.js"></script>
 </body>
 </html>
