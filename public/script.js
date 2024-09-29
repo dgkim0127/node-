@@ -7,17 +7,9 @@ const loginUsername = document.getElementById('loginUsername');
 const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
 const signupButton = document.getElementById('signupButton');
-const uploadForm = document.getElementById('uploadForm');
-const fileInput = document.getElementById('fileInput');
-const thumbnailSelect = document.getElementById('thumbnailSelect');
-const message = document.getElementById('message');
-
-// 추가 필드
-const partNumberInput = document.getElementById('partNumber');
-const sizeInput = document.getElementById('size');
-const weightInput = document.getElementById('weight');
-const typeInput = document.getElementById('type');
-const descriptionInput = document.getElementById('description');
+const uploadSection = document.querySelector('.upload-section');
+const fileUploadSection = document.querySelector('.file-upload-section');
+const showUploadButton = document.getElementById('showUploadButton');
 
 let currentUser = null;
 let isAdmin = false;
@@ -112,8 +104,6 @@ showUploadButton.addEventListener('click', () => {
     fileUploadSection.style.display = 'block';  // 파일 업로드 섹션 보이기
     showUploadButton.style.display = 'none';    // 업로드 버튼 숨기기
 });
-
-
 
 // 파일 업로드 처리
 const uploadForm = document.getElementById('uploadForm');
