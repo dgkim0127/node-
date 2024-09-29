@@ -1,14 +1,14 @@
 import { db } from './firebaseConfig.js';
 import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
-// URL에서 문서 ID 추출
-const urlParams = new URLSearchParams(window.location.search);
-const docId = urlParams.get('id');
+// URL에서 id 쿼리 매개변수 가져오기
+const params = new URLSearchParams(window.location.search);
+const docId = params.get('id');
 
-// 파일 상세 정보를 가져와서 화면에 표시
-async function loadFileDetails() {
+// Firestore에서 해당 ID로 문서 가져오기
+async function getPostDetails(docId) {
     if (!docId) {
-        document.getElementById('detailsContent').innerText = 'No file selected.';
+        document.getElementById('detailSection').textContent = "Invalid Post ID.";
         return;
     }
 
@@ -18,28 +18,27 @@ async function loadFileDetails() {
 
         if (docSnap.exists()) {
             const data = docSnap.data();
-            displayFileDetails(data);
+            document.getElementById('partNumber').textContent = `품번: ${data.partNumber}`;
+            document.getElementById('description').textContent = `내용: ${data.description}`;
+            document.getElementById('size').textContent = `사이즈: ${data.size}`;
+            document.getElementById('weight').textContent = `중량: ${data.weight}`;
+            document.getElementById('type').textContent = `종류: ${data.type}`;
+
+            const imagesDiv = document.getElementById('images');
+            data.imageUrls.forEach((url) => {
+                const img = document.createElement('img');
+                img.src = url;
+                img.style.width = '200px';
+                imagesDiv.appendChild(img);
+            });
         } else {
-            document.getElementById('detailsContent').innerText = 'No details found for this file.';
+            document.getElementById('detailSection').textContent = "No such document!";
         }
     } catch (error) {
-        document.getElementById('detailsContent').innerText = 'Error fetching details: ' + error.message;
+        console.error("Error fetching document:", error);
+        document.getElementById('detailSection').textContent = "Error fetching post details.";
     }
 }
 
-// 파일 상세 정보를 화면에 표시하는 함수
-function displayFileDetails(data) {
-    const detailsContent = document.getElementById('detailsContent');
-    detailsContent.innerHTML = `
-        <h2>품번: ${data.partNumber}</h2>
-        <p>사이즈: ${data.size}</p>
-        <p>중량: ${data.weight}</p>
-        <p>종류: ${data.type}</p>
-        <p>설명: ${data.description}</p>
-        <img src="${data.thumbnailUrl}" alt="Thumbnail" style="width: 300px;">
-        <h3>All Images</h3>
-        ${data.imageUrls.map(url => `<img src="${url}" style="width: 100px; margin: 10px;">`).join('')}
-    `;
-}
-
-loadFileDetails();
+// 문서 정보 불러오기
+getPostDetails(docId);
