@@ -16,8 +16,6 @@ const firebaseConfig = {
 // Firebase 초기화
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);  // Firestore 초기화
-const auth = getAuth(app);     // Firebase Authentication 초기화
 const storage = getStorage(app);  // Firebase Storage 초기화
 
-// 내보내기
-export { db, auth, storage };
+export { db, storage };
