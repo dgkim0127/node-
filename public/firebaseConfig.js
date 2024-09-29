@@ -1,8 +1,9 @@
+// Firebase SDK 초기화
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js';
 import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 import { getStorage } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js';
 
+// Firebase 프로젝트 설정 정보
 const firebaseConfig = {
   apiKey: "AIzaSyDFysg8I_qKtDqDJLWg1_npTPBWRMM_5WY",
   authDomain: "jjji-4240b.firebaseapp.com",
@@ -14,9 +15,9 @@ const firebaseConfig = {
 };
 
 // Firebase 초기화
-const firebaseApp = initializeApp(firebaseConfig);
-const db = getFirestore(firebaseApp);
-const storage = getStorage(firebaseApp);
-const auth = getAuth(firebaseApp);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);  // Firebase Storage 객체
 
-export { db, storage, auth };
+// 내보내기
+export { db, storage };
