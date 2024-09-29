@@ -8,6 +8,9 @@ const loginPassword = document.getElementById('loginPassword');
 const loginMessage = document.getElementById('loginMessage');
 const signupButton = document.getElementById('signupButton');
 
+let currentUser = null;  // currentUser를 전역 변수로 선언
+let isAdmin = false;
+
 // 로그인 처리
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
