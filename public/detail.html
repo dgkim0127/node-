@@ -4,13 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>상세페이지</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-    <div class="detail-container">
-        <h1>게시물 상세 정보</h1>
-        <div id="postDetails"></div>
-    </div>
+    <header>
+        <div class="header-left">
+            <h1>상세 정보</h1>
+        </div>
+    </header>
+
+    <main>
+        <section class="detail-content">
+            <div id="postDetails"></div>
+        </section>
+    </main>
 
     <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="detail.js"></script>
