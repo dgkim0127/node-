@@ -12,7 +12,7 @@ loginForm.addEventListener('submit', async (e) => {
     const errorMessage = document.getElementById('errorMessage');
 
     try {
-        // 아이디를 이메일처럼 처리하여 Firebase Authentication에 사용
+        // 아이디를 이메일처럼 처리
         const email = `${userId}@example.com`;
         
         // Firebase 인증 (이메일 + 비밀번호)
@@ -26,19 +26,19 @@ loginForm.addEventListener('submit', async (e) => {
         // Firebase 인증 오류 처리
         switch (error.code) {
             case 'auth/wrong-password':
-                errorMessage.textContent = "비밀번호가 올바르지 않습니다.";
+                errorMessage.textContent = "비밀번호가 잘못되었습니다.";
                 break;
             case 'auth/user-not-found':
-                errorMessage.textContent = "존재하지 않는 아이디입니다.";
+                errorMessage.textContent = "해당 아이디의 사용자를 찾을 수 없습니다.";
                 break;
             case 'auth/invalid-email':
-                errorMessage.textContent = "잘못된 아이디 형식입니다.";
+                errorMessage.textContent = "유효하지 않은 아이디 형식입니다.";
                 break;
             case 'auth/too-many-requests':
                 errorMessage.textContent = "너무 많은 시도가 있었습니다. 잠시 후 다시 시도해주세요.";
                 break;
             default:
-                errorMessage.textContent = '로그인 실패: ' + error.message;
+                errorMessage.textContent = "로그인 실패: " + error.message;
         }
     }
 });
