@@ -106,19 +106,28 @@ async function loadUploadedFiles() {
     const querySnapshot = await getDocs(collection(db, 'uploads'));
     querySnapshot.forEach((doc) => {
         const data = doc.data();
-        displayUploadedFile(data.name, data.url, doc.id, data.storagePath);
+        displayUploadedFile(data.name, data.url, doc.id, data.storagePath, data.fileType);
     });
 }
 
 // 업로드된 파일을 화면에 표시하는 함수
-function displayUploadedFile(fileName, fileUrl, docId, storagePath) {
+function displayUploadedFile(fileName, fileUrl, docId, storagePath, fileType) {
     const fileElement = document.createElement('div');
     fileElement.className = 'uploaded-file';
 
-    const imgElement = document.createElement('img');
-    imgElement.src = fileUrl;
-    imgElement.alt = fileName;
-    imgElement.style.width = '200px';
+    let mediaElement;
+
+    if (fileType === 'image') {
+        mediaElement = document.createElement('img');
+        mediaElement.src = fileUrl;
+        mediaElement.alt = fileName;
+        mediaElement.style.width = '200px';
+    } else if (fileType === 'video') {
+        mediaElement = document.createElement('video');
+        mediaElement.src = fileUrl;
+        mediaElement.controls = true;
+        mediaElement.style.width = '200px';
+    }
 
     const nameElement = document.createElement('p');
     nameElement.textContent = fileName;
@@ -127,7 +136,7 @@ function displayUploadedFile(fileName, fileUrl, docId, storagePath) {
     deleteButton.textContent = "Delete";
     deleteButton.onclick = () => deleteFile(docId, storagePath, fileElement);
 
-    fileElement.appendChild(imgElement);
+    fileElement.appendChild(mediaElement);
     fileElement.appendChild(nameElement);
     fileElement.appendChild(deleteButton);
     document.getElementById('uploadedFiles').appendChild(fileElement);
@@ -171,17 +180,23 @@ uploadForm.addEventListener('submit', async (e) => {
         return;
     }
 
+    // 파일 확장자 확인
+    const fileType = file.type.split('/')[0];  // 'image' or 'video'
+
     const storageRef = ref(storage, `uploads/${file.name}`);
     
     try {
         await uploadBytes(storageRef, file);
         const fileUrl = await getDownloadURL(storageRef);
+        
         await addDoc(collection(db, 'uploads'), {
             name: file.name,
             url: fileUrl,
             storagePath: storageRef.fullPath,
+            fileType: fileType,  // 파일 유형 저장 (image 또는 video)
             createdAt: new Date()
         });
+        
         message.textContent = "File uploaded successfully!";
         loadUploadedFiles(); // 파일 목록 새로고침
     } catch (error) {
