@@ -3,6 +3,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
 body {
@@ -14,14 +15,15 @@ body {
 }
 
 .main-content {
-    padding: 20px;
     display: flex;
     flex-direction: column;
+    padding: 20px;
     align-items: flex-start;
     justify-content: flex-start;
-    max-width: 90%;
+    gap: 40px;
     position: relative;
     left: 10%;
+    max-width: 90%;
 }
 
 /* Header 스타일 */
@@ -55,6 +57,11 @@ body {
     background-color: #357ABD;
 }
 
+#signupMessage, #loginMessage {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
 /* 업로드 버튼 스타일 */
 .upload-button {
     background-color: #4A90E2;
@@ -75,10 +82,12 @@ body {
 
 /* 파일 업로드 섹션 */
 .file-upload-section {
+    display: none;
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
     max-width: 600px;
     margin-bottom: 20px;
     opacity: 0;
@@ -92,6 +101,7 @@ body {
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
     max-width: 800px;
     opacity: 0;
     transform: translateX(-20px);
@@ -110,11 +120,25 @@ body {
     animation: fadeInUp 0.8s forwards;
 }
 
-.uploaded-file img {
+.uploaded-file img, .uploaded-file video {
     max-width: 100%;
     height: auto;
     margin-bottom: 10px;
     border-radius: 4px;
+}
+
+.uploaded-file button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.uploaded-file button:hover {
+    background-color: #c82333;
 }
 
 /* Fade-in 애니메이션 */
@@ -143,8 +167,12 @@ body {
 
 /* 반응형 디자인 */
 @media (max-width: 768px) {
+    .uploaded-files {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    }
+
     .main-content {
-        left: 0;
+        left: 0; /* 모바일에서는 중앙 정렬 */
         max-width: 100%;
     }
 
