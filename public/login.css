@@ -10,8 +10,9 @@ body {
     font-family: Arial, sans-serif;
 }
 
+/* 로그인 컨테이너 */
 .login-container {
-    width: 350px;
+    width: 300px; /* 입력 창의 너비를 적당하게 설정 */
     padding: 20px;
     background-color: #fff;
     border-radius: 8px;
@@ -20,7 +21,7 @@ body {
     animation: fadeIn 1s ease-in-out;
 }
 
-/* 페이드 인 효과 */
+/* 페이드 인 애니메이션 */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -32,22 +33,32 @@ body {
     }
 }
 
+/* 텍스트 입력 필드 스타일 */
+form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: white;
+}
+
 form input {
-    width: 100%;
+    width: 100%; /* 입력창이 컨테이너에 맞게 100% 너비 */
     padding: 10px;
     margin-bottom: 15px;
     border: none;
-    border-bottom: 1px solid white;
+    border-bottom: 1px solid white; /* 밑줄 스타일 */
     background-color: transparent;
-    color: white;
+    color: white; /* 입력 텍스트 색상 */
     font-size: 16px;
-    outline: none;
+    outline: none; /* 포커스 시 외곽선 제거 */
 }
 
+/* 입력 필드 포커스 시 로얄 블루 */
 form input:focus {
     border-bottom: 1px solid royalblue;
 }
 
+/* 로그인 버튼 스타일 */
 form button {
     width: 100%;
     padding: 10px;
@@ -57,12 +68,14 @@ form button {
     border-radius: 4px;
     cursor: pointer;
     font-size: 16px;
+    transition: background-color 0.3s ease;
 }
 
 form button:hover {
-    background-color: #0047ab;
+    background-color: #0047ab; /* hover 시 로얄 블루 색상 변화 */
 }
 
+/* 오류 메시지 */
 .error {
     color: red;
     margin-top: 10px;
