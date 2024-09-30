@@ -15,7 +15,7 @@ fileUpload.addEventListener('change', function(event) {
     Array.from(files).forEach((file, index) => {
         const fileURL = URL.createObjectURL(file);
         
-        // 미리보기 이미지 또는 동영상 생성
+        // 미리보기 이미지 생성
         const previewElement = document.createElement('div');
         previewElement.classList.add('preview-item');
         
@@ -86,7 +86,7 @@ uploadForm.addEventListener('submit', async (e) => {
             size,
             content,
             thumbnailURL, // 썸네일 URL 저장
-            fileURLs: uploadedFileURLs, // 모든 이미지와 동영상 URL 저장
+            fileURLs: uploadedFileURLs, // 모든 이미지 및 동영상 URL 저장
             createdAt: new Date()
         });
 
