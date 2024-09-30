@@ -1,6 +1,6 @@
 import { storage, db } from './firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
-import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 const fileUpload = document.getElementById('fileUpload');
 const filePreviewContainer = document.getElementById('filePreviewContainer');
@@ -85,8 +85,8 @@ uploadForm.addEventListener('submit', async (e) => {
             weight,
             size,
             content,
-            thumbnailURL,
-            fileURLs: uploadedFileURLs,
+            thumbnailURL, // 썸네일 URL 저장
+            fileURLs: uploadedFileURLs, // 모든 이미지와 동영상 URL 저장
             createdAt: new Date()
         });
 
