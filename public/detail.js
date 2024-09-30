@@ -5,30 +5,58 @@ import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-f
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
 
-const postDetails = document.getElementById('postDetails');
+// DOM 요소 참조
+const productNumberElement = document.getElementById('productNumber');
+const typeElement = document.getElementById('type');
+const sizeElement = document.getElementById('size');
+const weightElement = document.getElementById('weight');
+const contentElement = document.getElementById('content');
+const mainImage = document.getElementById('mainImage');
+const mainVideo = document.getElementById('mainVideo');
+const mainMediaContainer = document.getElementById('mainMediaContainer');
+const subImagesContainer = document.getElementById('subImagesContainer');
 
-// Firestore에서 게시물 상세 정보 불러오기
+// Firestore에서 게시물 정보 로드
 async function loadPostDetails() {
     const docRef = doc(db, 'posts', postId);
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
         const postData = docSnap.data();
-        postDetails.innerHTML = `
-            <div class="post">
-                <img src="${postData.thumbnailURL}" alt="썸네일 이미지" />
-                <div class="info">
-                    <p>품번: ${postData.productNumber}</p>
-                    <p>종류: ${postData.type}</p>
-                    <p>중량: ${postData.weight}</p>
-                    <p>사이즈: ${postData.size}</p>
-                    <p>내용: ${postData.content}</p>
-                </div>
-                <a href="${postData.fileURL}" target="_blank">파일 보기</a>
-            </div>
-        `;
+
+        // 품번, 종류, 사이즈, 중량, 내용 표시
+        productNumberElement.textContent = postData.productNumber;
+        typeElement.textContent = postData.type;
+        sizeElement.textContent = postData.size;
+        weightElement.textContent = postData.weight;
+        contentElement.textContent = postData.content || '내용 없음';
+
+        // 동영상이 있으면 동영상, 없으면 썸네일 이미지 표시
+        if (postData.fileURLs && postData.fileURLs.some(url => url.match(/\.(mp4|webm|ogg)$/))) {
+            const videoURL = postData.fileURLs.find(url => url.match(/\.(mp4|webm|ogg)$/));
+            mainVideo.src = videoURL;
+            mainVideo.style.display = 'block';
+        } else if (postData.thumbnailURL) {
+            mainImage.src = postData.thumbnailURL;
+            mainImage.style.display = 'block';
+        }
+
+        // 서브 이미지 표시 (동영상 제외한 이미지 파일)
+        postData.fileURLs.forEach((url) => {
+            if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
+                const subImage = document.createElement('img');
+                subImage.src = url;
+                subImage.classList.add('sub-image');
+                subImage.addEventListener('click', () => {
+                    mainImage.src = url;
+                    mainImage.style.display = 'block';
+                    mainVideo.style.display = 'none';  // 동영상 숨기기
+                });
+                subImagesContainer.appendChild(subImage);
+            }
+        });
     } else {
-        postDetails.innerHTML = `<p>게시물을 찾을 수 없습니다.</p>`;
+        console.log('해당 게시물을 찾을 수 없습니다.');
     }
 }
 
