@@ -76,7 +76,7 @@ uploadForm.addEventListener('submit', async (e) => {
         });
 
         const uploadedFileURLs = await Promise.all(fileUploads);
-        const thumbnailURL = uploadedFileURLs[selectedThumbnail];  // 선택한 썸네일
+        const thumbnailURL = uploadedFileURLs[selectedThumbnail]; // 선택한 썸네일 URL
 
         // Firestore에 게시물 정보 저장
         await addDoc(collection(db, 'posts'), {
@@ -85,8 +85,8 @@ uploadForm.addEventListener('submit', async (e) => {
             weight,
             size,
             content,
-            thumbnailURL,  // 대시보드에 표시할 썸네일 이미지
-            fileURLs: uploadedFileURLs,  // 모든 업로드된 파일
+            thumbnailURL,
+            fileURLs: uploadedFileURLs,
             createdAt: new Date()
         });
 
