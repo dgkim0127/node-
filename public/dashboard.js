@@ -13,12 +13,18 @@ async function loadPosts() {
         postElement.classList.add('post');
 
         // 썸네일만 표시
-        const thumbnailURL = postData.thumbnailURL;
+        const thumbnailURL = postData.thumbnailURL;  // 썸네일 URL 확인
 
         if (thumbnailURL) {
             postElement.innerHTML = `
                 <a href="detail.html?id=${doc.id}">
                     <img src="${thumbnailURL}" alt="썸네일 이미지">
+                </a>
+            `;
+        } else {
+            postElement.innerHTML = `
+                <a href="detail.html?id=${doc.id}">
+                    <p>이미지가 없습니다</p>
                 </a>
             `;
         }
