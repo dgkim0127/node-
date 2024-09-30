@@ -1,6 +1,6 @@
 import { storage, db } from './firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
-import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 const fileUpload = document.getElementById('fileUpload');
 const filePreviewContainer = document.getElementById('filePreviewContainer');
@@ -19,7 +19,6 @@ fileUpload.addEventListener('change', function(event) {
         const previewElement = document.createElement('div');
         previewElement.classList.add('preview-item');
         
-        // 이미지 파일일 경우에만 클릭으로 썸네일 설정 가능
         if (file.type.startsWith('image/')) {
             previewElement.innerHTML = `<img src="${fileURL}" class="preview-image" data-index="${index}" alt="이미지 미리보기">`;
             previewElement.addEventListener('click', () => selectThumbnail(index, previewElement));
@@ -33,11 +32,9 @@ fileUpload.addEventListener('change', function(event) {
 
 // 썸네일 선택 함수
 function selectThumbnail(index, element) {
-    // 기존 선택된 썸네일 스타일 제거
     if (selectedThumbnail !== null) {
         document.querySelectorAll('.preview-item')[selectedThumbnail].classList.remove('selected-thumbnail');
     }
-    // 새로운 썸네일 선택
     selectedThumbnail = index;
     element.classList.add('selected-thumbnail');
 }
@@ -53,9 +50,19 @@ uploadForm.addEventListener('submit', async (e) => {
     const optionalNumber = document.getElementById('optionalNumber').value;
     const fullProductNumber = `${productPrefix}-${productNumber}${productSuffix ? '-' + productSuffix : ''}${optionalNumber ? '-' + optionalNumber : ''}`;
 
+    // 중복된 품번 체크
+    const q = query(collection(db, 'posts'), where('productNumber', '==', fullProductNumber));
+    const querySnapshot = await getDocs(q);
+    if (!querySnapshot.empty) {
+        alert('이미 존재하는 품번입니다.');
+        return;
+    }
+
     const type = document.getElementById('type').value;
     const weight = document.getElementById('weight').value;
-    const size = document.getElementById('size').value;
+    const sizeNumber = document.getElementById('sizeNumber').value;
+    const sizeUnit = document.getElementById('sizeUnit').value;
+    const size = `${sizeNumber} ${sizeUnit}`;
     const content = document.getElementById('content').value || '내용 없음';
     const files = fileUpload.files;
 
