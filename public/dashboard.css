@@ -34,7 +34,6 @@ main {
     padding: 20px;
 }
 
-/* 게시물 그리드 레이아웃 */
 .posts {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));  /* 자동으로 가로 배치, 최소 크기 150px */
@@ -73,25 +72,6 @@ main {
     transform: scale(1.1);  /* 미디어 약간 확대 */
 }
 
-/* 반응형 미디어 쿼리 */
-@media (min-width: 600px) {
-    .posts {
-        grid-template-columns: repeat(3, 1fr);  /* 화면 크기 600px 이상일 때 3개 */
-    }
-}
-
-@media (min-width: 900px) {
-    .posts {
-        grid-template-columns: repeat(4, 1fr);  /* 화면 크기 900px 이상일 때 4개 */
-    }
-}
-
-@media (min-width: 1200px) {
-    .posts {
-        grid-template-columns: repeat(6, 1fr);  /* 화면 크기 1200px 이상일 때 6개 */
-    }
-}
-
 /* 상세 페이지 스타일 */
 .detail-content {
     max-width: 800px;
@@ -116,6 +96,7 @@ main {
     display: flex;
     justify-content: center;
     gap: 10px;
+    margin-top: 20px;
 }
 
 .sub-image {
@@ -130,12 +111,13 @@ main {
     transform: scale(1.1);
 }
 
+/* 상품 정보 스타일 */
 .product-info {
     text-align: left;
     margin-top: 20px;
 }
 
-/* 업로드 폼 스타일 */
+/* 업로드 페이지 스타일 */
 .upload-container {
     max-width: 600px;
     margin: 50px auto;
