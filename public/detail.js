@@ -15,12 +15,6 @@ const mainImage = document.getElementById('mainImage');
 const mainVideo = document.getElementById('mainVideo');
 const subImagesContainer = document.getElementById('subImagesContainer');
 
-// 수정 버튼 클릭 시 수정 페이지로 이동
-const editButton = document.getElementById('editButton');
-editButton.addEventListener('click', () => {
-    window.location.href = `edit.html?id=${postId}`;
-});
-
 // Firestore에서 게시물 정보 로드
 async function loadPostDetails() {
     const docRef = doc(db, 'posts', postId);
@@ -36,17 +30,17 @@ async function loadPostDetails() {
         weightElement.textContent = postData.weight;
         contentElement.textContent = postData.content || '내용 없음';
 
-        // 동영상 또는 썸네일 표시
+        // 동영상이 있으면 동영상, 없으면 썸네일 이미지 표시
         if (postData.fileURLs && postData.fileURLs.some(url => url.match(/\.(mp4|webm|ogg)$/))) {
             const videoURL = postData.fileURLs.find(url => url.match(/\.(mp4|webm|ogg)$/));
             mainVideo.src = videoURL;
             mainVideo.style.display = 'block';
-        } else {
+        } else if (postData.thumbnailURL) {
             mainImage.src = postData.thumbnailURL;
             mainImage.style.display = 'block';
         }
 
-        // 서브 이미지 표시 (이미지 파일만)
+        // 서브 이미지 표시 (동영상 제외한 이미지 파일)
         postData.fileURLs.forEach((url) => {
             if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
                 const subImage = document.createElement('img');
