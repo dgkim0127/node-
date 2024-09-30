@@ -30,7 +30,7 @@ async function loadPostDetails() {
         weightElement.textContent = postData.weight;
         contentElement.textContent = postData.content || '내용 없음';
 
-        // 동영상이 있으면 동영상, 없으면 썸네일 이미지 표시
+        // 동영상 또는 썸네일 표시
         if (postData.fileURLs && postData.fileURLs.some(url => url.match(/\.(mp4|webm|ogg)$/))) {
             const videoURL = postData.fileURLs.find(url => url.match(/\.(mp4|webm|ogg)$/));
             mainVideo.src = videoURL;
@@ -40,7 +40,7 @@ async function loadPostDetails() {
             mainImage.style.display = 'block';
         }
 
-        // 서브 이미지 표시 (동영상 제외한 이미지 파일)
+        // 서브 이미지 표시 (이미지 파일만)
         postData.fileURLs.forEach((url) => {
             if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
                 const subImage = document.createElement('img');
