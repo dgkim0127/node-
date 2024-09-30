@@ -52,7 +52,13 @@
 
                 <!-- 사이즈 입력 -->
                 <label for="size">사이즈:</label>
-                <input type="text" id="size" placeholder="숫자 cm 또는 호" required>
+                <div>
+                    <input type="number" id="sizeNumber" placeholder="숫자" required>
+                    <select id="sizeUnit">
+                        <option value="cm">cm</option>
+                        <option value="호">호</option>
+                    </select>
+                </div>
 
                 <!-- 중량 입력 -->
                 <label for="weight">중량:</label>
