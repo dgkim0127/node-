@@ -1,6 +1,6 @@
 import { storage, db } from './firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
-import { addDoc, collection, query, where, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 const fileUpload = document.getElementById('fileUpload');
 const filePreviewContainer = document.getElementById('filePreviewContainer');
@@ -50,14 +50,6 @@ uploadForm.addEventListener('submit', async (e) => {
     const optionalNumber = document.getElementById('optionalNumber').value;
     const fullProductNumber = `${productPrefix}-${productNumber}${productSuffix ? '-' + productSuffix : ''}${optionalNumber ? '-' + optionalNumber : ''}`;
 
-    // 중복된 품번 체크
-    const q = query(collection(db, 'posts'), where('productNumber', '==', fullProductNumber));
-    const querySnapshot = await getDocs(q);
-    if (!querySnapshot.empty) {
-        alert('이미 존재하는 품번입니다.');
-        return;
-    }
-
     const type = document.getElementById('type').value;
     const weight = document.getElementById('weight').value;
     const sizeNumber = document.getElementById('sizeNumber').value;
@@ -84,7 +76,7 @@ uploadForm.addEventListener('submit', async (e) => {
         });
 
         const uploadedFileURLs = await Promise.all(fileUploads);
-        const thumbnailURL = uploadedFileURLs[selectedThumbnail]; // 선택한 썸네일 URL
+        const thumbnailURL = uploadedFileURLs[selectedThumbnail];  // 선택한 썸네일
 
         // Firestore에 게시물 정보 저장
         await addDoc(collection(db, 'posts'), {
@@ -93,8 +85,8 @@ uploadForm.addEventListener('submit', async (e) => {
             weight,
             size,
             content,
-            thumbnailURL,
-            fileURLs: uploadedFileURLs,
+            thumbnailURL,  // 대시보드에 표시할 썸네일 이미지
+            fileURLs: uploadedFileURLs,  // 모든 업로드된 파일
             createdAt: new Date()
         });
 
