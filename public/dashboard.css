@@ -29,18 +29,38 @@ a:hover {
     text-decoration: underline;
 }
 
-/* 대시보드 스타일 */
+/* 대시보드 레이아웃 */
 main {
     padding: 20px;
 }
 
 .posts {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));  /* 자동으로 가로 배치, 최소 크기 150px */
-    gap: 20px;  /* 게시물 간 간격 */
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));  /* 최소 크기 150px 기준으로 자동 정렬 */
+    gap: 20px;  /* 게시물 간의 간격 */
     justify-content: center;  /* 게시물 중앙 정렬 */
 }
 
+/* 작은 화면에서 게시물 가로 갯수 줄이기 */
+@media (min-width: 600px) {
+    .posts {
+        grid-template-columns: repeat(3, 1fr);  /* 600px 이상일 때 가로 3개 */
+    }
+}
+
+@media (min-width: 900px) {
+    .posts {
+        grid-template-columns: repeat(4, 1fr);  /* 900px 이상일 때 가로 4개 */
+    }
+}
+
+@media (min-width: 1200px) {
+    .posts {
+        grid-template-columns: repeat(6, 1fr);  /* 1200px 이상일 때 가로 6개 */
+    }
+}
+
+/* 게시물 스타일 */
 .post {
     background-color: white;
     position: relative;
@@ -96,7 +116,6 @@ main {
     display: flex;
     justify-content: center;
     gap: 10px;
-    margin-top: 20px;
 }
 
 .sub-image {
@@ -109,12 +128,6 @@ main {
 
 .sub-image:hover {
     transform: scale(1.1);
-}
-
-/* 상품 정보 스타일 */
-.product-info {
-    text-align: left;
-    margin-top: 20px;
 }
 
 /* 업로드 페이지 스타일 */
