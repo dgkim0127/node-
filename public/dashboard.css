@@ -20,36 +20,6 @@ header h1 {
     margin: 0;
 }
 
-/* 상세 페이지 스타일 */
-.detail-content {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
-
-.post img {
-    width: 100%;  /* 이미지가 너무 크지 않도록 비율에 맞게 줄어듦 */
-    max-width: 400px;  /* 이미지 최대 너비 설정 */
-    height: auto;
-    border-radius: 10px;
-}
-
-.post video {
-    width: 100%;  /* 비디오도 동일하게 조정 */
-    max-width: 400px;
-    height: auto;
-    border-radius: 10px;
-}
-
-.post .info {
-    text-align: left;
-    margin-top: 20px;
-}
-
 a {
     color: royalblue;
     text-decoration: none;
@@ -82,14 +52,14 @@ main {
     transition: transform 0.3s, box-shadow 0.3s; /* 부드러운 움직임 */
 }
 
-.post img {
+.post img, .post video {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;  /* 이미지 크기 조정 */
-    transition: transform 0.3s;  /* 이미지가 부드럽게 확대되도록 설정 */
+    object-fit: cover;  /* 이미지 및 비디오 크기 조정 */
+    transition: transform 0.3s;  /* 부드럽게 확대 */
 }
 
 /* 마우스 올렸을 때 강조 효과 */
@@ -98,21 +68,51 @@ main {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);  /* 강조된 그림자 */
 }
 
-.post:hover img {
-    transform: scale(1.1);  /* 이미지도 약간 확대 */
+.post:hover img, .post:hover video {
+    transform: scale(1.1);  /* 미디어 약간 확대 */
 }
 
-/* 반응형 레이아웃 */
-@media (min-width: 600px) {
-    .posts {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    }
+/* 상세 페이지 스타일 */
+.detail-content {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
 }
 
-@media (min-width: 1200px) {
-    .posts {
-        grid-template-columns: repeat(6, 1fr);
-    }
+.media-container {
+    margin: 20px 0;
+}
+
+#mainImage, #mainVideo {
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+.sub-images {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.sub-image {
+    width: 100px;
+    height: auto;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: transform 0.2s ease;
+}
+
+.sub-image:hover {
+    transform: scale(1.1);
+}
+
+.product-info {
+    text-align: left;
+    margin-top: 20px;
 }
 
 /* 업로드 폼 스타일 */
