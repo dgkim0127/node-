@@ -20,6 +20,36 @@ header h1 {
     margin: 0;
 }
 
+/* 상세 페이지 스타일 */
+.detail-content {
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.post img {
+    width: 100%;  /* 이미지가 너무 크지 않도록 비율에 맞게 줄어듦 */
+    max-width: 400px;  /* 이미지 최대 너비 설정 */
+    height: auto;
+    border-radius: 10px;
+}
+
+.post video {
+    width: 100%;  /* 비디오도 동일하게 조정 */
+    max-width: 400px;
+    height: auto;
+    border-radius: 10px;
+}
+
+.post .info {
+    text-align: left;
+    margin-top: 20px;
+}
+
 a {
     color: royalblue;
     text-decoration: none;
