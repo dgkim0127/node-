@@ -17,24 +17,21 @@ async function loadPosts() {
         const postElement = document.createElement('div');
         postElement.classList.add('post');
 
-        // 게시물 썸네일 또는 동영상 표시
-        const fileURL = postData.thumbnailURL || postData.fileURL;
-        if (fileURL) {
-            if (fileURL.match(/\.(jpeg|jpg|gif|png)$/)) {
-                // 이미지일 경우
-                postElement.innerHTML = `
-                    <a href="detail.html?id=${doc.id}">
-                        <img src="${fileURL}" alt="썸네일 이미지">
-                    </a>
-                `;
-            } else if (fileURL.match(/\.(mp4|webm|ogg)$/)) {
-                // 동영상일 경우
-                postElement.innerHTML = `
-                    <a href="detail.html?id=${doc.id}">
-                        <video src="${fileURL}" controls alt="동영상 미리보기"></video>
-                    </a>
-                `;
-            }
+        // 썸네일 이미지가 있는지 확인하고 표시
+        const thumbnailURL = postData.thumbnailURL;
+
+        if (thumbnailURL) {
+            postElement.innerHTML = `
+                <a href="detail.html?id=${doc.id}">
+                    <img src="${thumbnailURL}" alt="썸네일 이미지">
+                </a>
+            `;
+        } else {
+            postElement.innerHTML = `
+                <a href="detail.html?id=${doc.id}">
+                    <p>이미지가 없습니다</p>
+                </a>
+            `;
         }
 
         postContainer.appendChild(postElement);
