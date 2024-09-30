@@ -1,5 +1,5 @@
 import { db } from './firebaseConfig.js';
-import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
 // URL에서 게시물 ID 추출
 const urlParams = new URLSearchParams(window.location.search);
@@ -13,8 +13,8 @@ const weightElement = document.getElementById('weight');
 const contentElement = document.getElementById('content');
 const mainImage = document.getElementById('mainImage');
 const mainVideo = document.getElementById('mainVideo');
+const mainMediaContainer = document.getElementById('mainMediaContainer');
 const subImagesContainer = document.getElementById('subImagesContainer');
-const saveChangesButton = document.getElementById('saveChanges');
 
 // Firestore에서 게시물 정보 로드
 async function loadPostDetails() {
@@ -24,14 +24,14 @@ async function loadPostDetails() {
     if (docSnap.exists()) {
         const postData = docSnap.data();
 
-        // 기존 데이터 표시
+        // 품번, 종류, 사이즈, 중량, 내용 표시
         productNumberElement.textContent = postData.productNumber;
-        typeElement.value = postData.type;
-        sizeElement.value = postData.size;
-        weightElement.value = postData.weight;
-        contentElement.value = postData.content || '';
+        typeElement.textContent = postData.type;
+        sizeElement.textContent = postData.size;
+        weightElement.textContent = postData.weight;
+        contentElement.textContent = postData.content || '내용 없음';
 
-        // 썸네일 이미지 또는 동영상 표시
+        // 동영상이 있으면 동영상, 없으면 썸네일 이미지 표시
         if (postData.fileURLs && postData.fileURLs.some(url => url.match(/\.(mp4|webm|ogg)$/))) {
             const videoURL = postData.fileURLs.find(url => url.match(/\.(mp4|webm|ogg)$/));
             mainVideo.src = videoURL;
@@ -41,7 +41,7 @@ async function loadPostDetails() {
             mainImage.style.display = 'block';
         }
 
-        // 서브 이미지 표시
+        // 서브 이미지 표시 (동영상 제외한 이미지 파일)
         postData.fileURLs.forEach((url) => {
             if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
                 const subImage = document.createElement('img');
@@ -50,40 +50,14 @@ async function loadPostDetails() {
                 subImage.addEventListener('click', () => {
                     mainImage.src = url;
                     mainImage.style.display = 'block';
-                    mainVideo.style.display = 'none';
+                    mainVideo.style.display = 'none';  // 동영상 숨기기
                 });
                 subImagesContainer.appendChild(subImage);
             }
         });
     } else {
-        console.log('게시물을 찾을 수 없습니다.');
+        console.log('해당 게시물을 찾을 수 없습니다.');
     }
 }
 
-// 변경사항 저장
-async function saveChanges() {
-    const updatedType = typeElement.value;
-    const updatedSize = sizeElement.value;
-    const updatedWeight = weightElement.value;
-    const updatedContent = contentElement.value;
-
-    try {
-        const postRef = doc(db, 'posts', postId);
-        await updateDoc(postRef, {
-            type: updatedType,
-            size: updatedSize,
-            weight: updatedWeight,
-            content: updatedContent,
-        });
-        alert('변경사항이 저장되었습니다.');
-    } catch (error) {
-        console.error('변경사항 저장 중 오류 발생:', error);
-        alert('변경사항 저장에 실패했습니다.');
-    }
-}
-
-// 이벤트 리스너
-saveChangesButton.addEventListener('click', saveChanges);
-
-// 페이지 로드 시 게시물 정보 불러오기
 loadPostDetails();
