@@ -169,6 +169,24 @@ header h1 {
     width: 100%; /* 두 개의 입력 필드를 나란히 배치 */
 }
 
+/* 타입 필드 옆에 '선택' 텍스트 추가 */
+.type-container {
+    display: flex;
+    align-items: center;
+}
+
+.type-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.type-input-wrapper span {
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
 /* 중량 필드 옆에 g 추가 */
 .weight-container {
     display: flex;
