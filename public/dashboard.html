@@ -9,14 +9,17 @@
 <body>
     <header>
         <h1>Dashboard</h1>
-        <button class="upload-btn" onclick="location.href='upload.html'">Upload New Post</button>
+        <!-- 버튼 컨테이너 -->
+        <div class="button-container">
+            <button class="upload-btn" id="upload-button">Upload New Post</button>
+            <button class="signup-btn" id="signup-button">Sign Up</button>
+        </div>
     </header>
 
     <section id="post-grid">
-        <!-- 게시물 데이터가 여기에 표시됩니다 -->
+        <!-- 게시물이 여기에 표시됩니다 -->
     </section>
 
-    <!-- Firebase 및 대시보드 스크립트 -->
     <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="dashboard.js"></script>
 </body>
