@@ -8,60 +8,58 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();  // 기본 폼 제출 방지
 
-        // productNumber 입력 필드를 가져옴
+        // 제품 번호 가져오기
         const productNumberInput = document.getElementById('productNumber');
         if (!productNumberInput) {
             console.error('Product number input not found!');
             return;
         }
 
-        const productNumber = productNumberInput.value;  // 제품 번호 추출
-        const files = document.getElementById('mediaFiles').files;  // 파일 입력 필드에서 파일 목록 추출
+        const productNumber = productNumberInput.value;  // 제품 번호
+        const files = document.getElementById('mediaFiles').files;  // 파일 목록
 
-        // 파일 목록이 있는지 확인
         if (!files.length) {
             console.error('No files selected for upload.');
             return;
         }
 
         let mediaURLs = [];
+        let thumbnailURL = '';  // 썸네일 URL
 
-        // 각 파일을 Firebase Storage에 업로드하고 URL을 저장
-        for (let file of files) {
+        // 각 파일을 Firebase Storage에 업로드하고 URL 저장
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
             if (!file.name) {
                 console.error('File name is undefined.');
                 continue;
             }
 
             try {
-                // Firebase Storage 경로 설정 (file.path 대신 file.name 사용)
                 const storageRef = ref(storage, `media/${file.name}`);
-                // 파일을 Firebase Storage에 업로드
-                await uploadBytes(storageRef, file);
-                // 업로드된 파일의 다운로드 URL 가져오기
-                const downloadURL = await getDownloadURL(storageRef);
-                mediaURLs.push(downloadURL);  // URL 배열에 추가
+                await uploadBytes(storageRef, file);  // 파일 업로드
+                const downloadURL = await getDownloadURL(storageRef);  // 다운로드 URL
+                mediaURLs.push(downloadURL);
+
+                // 첫 번째 파일을 썸네일로 지정 (또는 사용자가 선택한 파일을 썸네일로 지정할 수 있음)
+                if (i === 0) {
+                    thumbnailURL = downloadURL;  // 첫 번째 파일을 썸네일로 지정
+                }
             } catch (error) {
                 console.error(`Error uploading file ${file.name}:`, error);
             }
         }
 
-        // Firestore에 게시물 데이터 저장
+        // Firestore에 데이터 저장
         try {
-            const postCollection = collection(db, "posts");  // "posts" 컬렉션 참조
-            if (!postCollection) {
-                console.error('Error getting collection reference.');
-                return;
-            }
-
-            await addDoc(postCollection, {
-                productNumber: productNumber,  // 제품 번호
-                media: mediaURLs,  // 미디어 파일들의 URL
-                createdAt: new Date()  // 생성 날짜
+            await addDoc(collection(db, "posts"), {
+                productNumber: productNumber,
+                media: mediaURLs,
+                thumbnail: thumbnailURL,  // 썸네일 URL 추가
+                createdAt: new Date()
             });
 
-            alert('Post uploaded successfully!');  // 성공 메시지
-            window.location.href = 'dashboard.html';  // 대시보드로 이동
+            alert('Post uploaded successfully!');
+            window.location.href = 'dashboard.html';  // 업로드 후 대시보드로 이동
         } catch (error) {
             console.error('Error saving post data to Firestore:', error);
         }
