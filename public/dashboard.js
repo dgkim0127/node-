@@ -33,7 +33,7 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
         }
 
         const postSnapshot = await getDocs(postQuery);
-        const postList = postSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        let postList = postSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         // 마지막으로 로드한 문서를 저장하여 다음 페이지에서 사용
         lastVisible = postSnapshot.docs[postSnapshot.docs.length - 1];
@@ -46,6 +46,13 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
             postGrid.innerHTML = '<p>No posts available</p>';
             return;
         }
+
+        // 게시물을 품번의 4자리 숫자 기준으로 오름차순 정렬
+        postList = postList.sort((a, b) => {
+            const numA = parseInt(a.productNumber.match(/\d{4}/) || 0); // 품번에서 4자리 숫자 추출
+            const numB = parseInt(b.productNumber.match(/\d{4}/) || 0);
+            return numA - numB; // 오름차순 정렬
+        });
 
         postList.forEach(post => {
             const thumbnail = post.thumbnail || 'default-thumbnail.png';  // 기본 이미지 설정
