@@ -33,25 +33,47 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('input', generateProductNumber);
     });
 
-    // 미디어 파일 미리보기
+    // 미디어 파일 미리보기 (이미지 및 동영상 포함)
     mediaFilesInput.addEventListener('change', (event) => {
         const files = event.target.files;
         previewGrid.innerHTML = ''; // 기존 미리보기 초기화
         Array.from(files).forEach((file, index) => {
+            const fileType = file.type;
             const reader = new FileReader();
+
             reader.onload = (e) => {
-                const imgElement = document.createElement('img');
-                imgElement.src = e.target.result;
-                imgElement.alt = `preview-${index}`;
-                imgElement.addEventListener('click', () => {
-                    // 선택한 썸네일을 강조 표시
-                    const selected = document.querySelector('.selected');
-                    if (selected) selected.classList.remove('selected');
-                    imgElement.classList.add('selected');
-                    selectedThumbnail = index;  // 썸네일 인덱스 저장
-                });
-                previewGrid.appendChild(imgElement);
+                // 이미지 파일인 경우
+                if (fileType.startsWith('image/')) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = e.target.result;
+                    imgElement.alt = `preview-${index}`;
+                    imgElement.style.width = '100%';
+                    imgElement.addEventListener('click', () => {
+                        const selected = document.querySelector('.selected');
+                        if (selected) selected.classList.remove('selected');
+                        imgElement.classList.add('selected');
+                        selectedThumbnail = index;  // 썸네일 인덱스 저장
+                    });
+                    previewGrid.appendChild(imgElement);
+                }
+
+                // 비디오 파일인 경우
+                else if (fileType.startsWith('video/')) {
+                    const videoElement = document.createElement('video');
+                    videoElement.src = e.target.result;
+                    videoElement.controls = true; // 비디오 플레이어 컨트롤 표시
+                    videoElement.style.width = '100%';
+                    videoElement.alt = `preview-${index}`;
+                    videoElement.addEventListener('click', () => {
+                        const selected = document.querySelector('.selected');
+                        if (selected) selected.classList.remove('selected');
+                        videoElement.classList.add('selected');
+                        selectedThumbnail = index;  // 썸네일 인덱스 저장
+                    });
+                    previewGrid.appendChild(videoElement);
+                }
             };
+
             reader.readAsDataURL(file);
         });
     });
