@@ -148,15 +148,15 @@ header h1 {
     width: 40px; /* 더 짧은 드롭다운 */
 }
 
-/* 사이즈 입력 필드 및 단위 선택 */
+/* 사이즈, 타입, 중량 입력 필드 및 단위 선택 */
 #size-container {
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
-#size, #size-unit {
-    width: 25%; /* 사이즈 입력 필드와 단위 선택 필드를 4분의 1 크기로 조정 */
+#size, #size-unit, #type, #weight {
+    width: 25%; /* 사이즈, 타입, 중량 필드 및 단위 선택 필드를 4분의 1 크기로 조정 */
 }
 
 /* Q 옵션 스타일 */
