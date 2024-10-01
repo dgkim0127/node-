@@ -1,36 +1,27 @@
+// dashboard.js
 import { db } from './firebaseConfig.js';
-import { collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
 
-const postContainer = document.querySelector('.posts');
+// Firestore에서 게시물 데이터를 로드하는 함수
+const loadPosts = async () => {
+    const postCollection = collection(db, "posts"); // "posts" 컬렉션에서 데이터 가져오기
+    const postSnapshot = await getDocs(postCollection); // 데이터 스냅샷 가져오기
+    const postList = postSnapshot.docs.map(doc => doc.data()); // 데이터 리스트로 변환
 
-// Firestore에서 게시물 데이터를 불러오기
-async function loadPosts() {
-    const querySnapshot = await getDocs(collection(db, 'posts'));
+    const postGrid = document.getElementById('post-grid');
+    postGrid.innerHTML = ''; // 기존 콘텐츠 초기화
 
-    querySnapshot.forEach((doc) => {
-        const postData = doc.data();
+    // 각 게시물을 썸네일 형태로 표시
+    postList.forEach(post => {
         const postElement = document.createElement('div');
-        postElement.classList.add('post');
-
-        // 썸네일만 표시
-        const thumbnailURL = postData.thumbnailURL;
-
-        if (thumbnailURL) {
-            postElement.innerHTML = `
-                <a href="detail.html?id=${doc.id}">
-                    <img src="${thumbnailURL}" alt="썸네일 이미지">
-                </a>
-            `;
-        } else {
-            postElement.innerHTML = `
-                <a href="detail.html?id=${doc.id}">
-                    <p>이미지가 없습니다</p>
-                </a>
-            `;
-        }
-
-        postContainer.appendChild(postElement);
+        postElement.classList.add('post-item');
+        postElement.innerHTML = `
+            <img src="${post.thumbnail}" alt="${post.productNumber}">
+            <p>Product: ${post.productNumber}</p>
+        `;
+        postGrid.appendChild(postElement);
     });
-}
+};
 
-loadPosts();
+// 페이지 로드 시 게시물 로드
+window.addEventListener('DOMContentLoaded', loadPosts);
