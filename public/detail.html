@@ -3,45 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>상세 정보</title>
+    <title>Post Detail</title>
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <header>
-        <div class="header-left">
-            <h1>상세 정보</h1>
-            <p>No. <span id="productNumber"></span></p>
-        </div>
-        <div class="header-right">
-            <button onclick="history.back()">뒤로가기</button>
-        </div>
+        <h1>Post Detail</h1>
+        <button onclick="location.href='dashboard.html'">Back to Dashboard</button>
     </header>
 
-    <main>
-        <section class="detail-content">
-            <!-- 메인 이미지 또는 동영상 표시 -->
-            <div id="mainMediaContainer" class="media-container">
-                <img id="mainImage" src="" alt="메인 이미지" style="display:none;">
-                <video id="mainVideo" controls style="display:none;"></video>
-            </div>
-
-            <!-- 서브 이미지 (클릭 시 메인 이미지와 교체) -->
-            <div class="sub-images" id="subImagesContainer"></div>
-
-            <!-- 상품 정보 -->
-            <div class="product-info">
-                <p>종류: <span id="type"></span></p>
-                <p>사이즈: <span id="size"></span></p>
-                <p>중량: <span id="weight"></span></p>
-                <p id="content"></p>
-            </div>
-
-            <!-- 수정 페이지로 이동하는 버튼 -->
-            <div class="edit-button-container">
-                <button id="editButton">수정하기</button>
-            </div>
-        </section>
-    </main>
+    <section id="post-detail">
+        <h2 id="product-number">Product Number: </h2>
+        <img id="post-image" src="" alt="Product Image">
+        <!-- 추가적인 상세 정보도 여기에 표시 가능 -->
+    </section>
 
     <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="detail.js"></script>
