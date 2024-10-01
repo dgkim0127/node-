@@ -4,10 +4,34 @@ import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.c
 
 document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('upload-form');
+    const prefixInput = document.getElementById('prefix');
+    const numberInput = document.getElementById('number');
+    const suffixInput = document.getElementById('suffix');
+    const qCheckInput = document.getElementById('q-check');
+    const extraInput = document.getElementById('extra');
+    const generatedProductNumber = document.getElementById('generated-product-number');
     const mediaFilesInput = document.getElementById('mediaFiles');
     const previewGrid = document.getElementById('preview-grid');
     let selectedThumbnail = null; // 선택한 썸네일을 저장할 변수
     let mediaURLs = [];  // 업로드한 파일 URL을 저장할 배열
+
+    // 제품 번호 생성 함수
+    const generateProductNumber = () => {
+        const prefix = prefixInput.value ? `${prefixInput.value}-` : '';
+        const number = numberInput.value || '0000';  // 기본값 0000
+        const suffix = suffixInput.value ? `-${suffixInput.value}` : '';
+        const qCheck = qCheckInput.checked ? 'Q' : '';  // Q 체크 여부
+        const extra = extraInput.value ? `-${extraInput.value}` : '';  // 추가 숫자 (2자리)
+
+        // 최종 제품 번호 생성
+        const fullProductNumber = `${prefix}${number}${suffix}${qCheck}${extra}`;
+        generatedProductNumber.textContent = fullProductNumber;  // HTML에 업데이트
+    };
+
+    // 입력 필드 변경 시 제품 번호 갱신
+    [prefixInput, numberInput, suffixInput, qCheckInput, extraInput].forEach(input => {
+        input.addEventListener('input', generateProductNumber);
+    });
 
     // 미디어 파일 미리보기
     mediaFilesInput.addEventListener('change', (event) => {
@@ -32,15 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // 업로드 폼 제출 시 처리
+    // 업로드 폼 제출 처리
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const productNumber = document.getElementById('productNumber').value;
-        const type = document.getElementById('type').value;
-        const size = document.getElementById('size').value;
-        const weight = document.getElementById('weight').value;
-        const content = document.getElementById('content').value;
-        const files = mediaFilesInput.files;
+        const productNumber = generatedProductNumber.textContent;
+        const files = document.getElementById('mediaFiles').files;
 
         // 제품 번호 중복 확인
         const productQuery = query(collection(db, "posts"), where("productNumber", "==", productNumber));
@@ -67,10 +87,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await addDoc(collection(db, "posts"), {
                 productNumber: productNumber,
-                type: type,
-                size: size,
-                weight: weight,
-                content: content,
                 media: mediaURLs,
                 thumbnail: thumbnailURL,
                 createdAt: new Date()
