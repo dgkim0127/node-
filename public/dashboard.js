@@ -3,18 +3,23 @@ import { collection, getDocs, query, limit, startAfter, where } from "https://ww
 
 let lastVisible = null; // 마지막으로 로드한 게시물의 참조를 저장
 const pageSize = 42; // 한 페이지당 게시물 수
-let currentQuery = null; // 현재 쿼리 저장 (검색 쿼리 포함)
+let currentQuery = null; // 현재 쿼리 저장 (검색 쿼리 및 Type 필터링 포함)
 
 // Firestore에서 데이터를 로드하여 대시보드에 표시하는 함수
-const loadPosts = async (isNextPage = false, searchTerm = '') => {
+const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '') => {
     try {
         const postCollection = collection(db, "posts");
         let postQuery = query(postCollection, limit(pageSize));
 
+        // Type이 선택된 경우 해당 Type으로 필터링
+        if (selectedType) {
+            postQuery = query(postCollection, where("type", "==", selectedType));
+        }
+
         // 검색어가 있는 경우 productNumber 필드를 기준으로 부분 일치 검색
         if (searchTerm) {
             const searchTermUpper = searchTerm.toUpperCase();  // 대소문자 구분 없이 검색
-            postQuery = query(postCollection, where("productNumber", ">=", searchTermUpper), where("productNumber", "<=", searchTermUpper + "\uf8ff"));
+            postQuery = query(postQuery, where("productNumber", ">=", searchTermUpper), where("productNumber", "<=", searchTermUpper + "\uf8ff"));
         }
 
         // 다음 페이지를 불러오는 경우, 마지막 게시물 이후부터 가져옴
@@ -79,7 +84,16 @@ nextPageButton.addEventListener('click', () => loadPosts(true));
 const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', (e) => {
     const searchTerm = e.target.value.trim();
-    loadPosts(false, searchTerm); // 검색어가 변경될 때마다 검색
+    const selectedType = document.getElementById('type-filter').value; // 선택된 Type
+    loadPosts(false, searchTerm, selectedType); // 검색어가 변경될 때마다 검색
+});
+
+// Type 필터링 기능 처리
+const typeFilter = document.getElementById('type-filter');
+typeFilter.addEventListener('change', () => {
+    const selectedType = typeFilter.value;
+    const searchTerm = searchInput.value.trim(); // 현재 입력된 검색어
+    loadPosts(false, searchTerm, selectedType); // 선택된 Type에 따라 필터링
 });
 
 // 업로드 버튼 클릭 시 업로드 페이지로 이동
