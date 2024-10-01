@@ -141,11 +141,26 @@ header h1 {
 #product-number-inputs {
     display: flex;
     align-items: center;
-    gap: 4px; /* 빈 공간 최소화 */
+    gap: 4px;
 }
 
 #prefix, #suffix {
-    width: 40px; /* 드롭다운 버튼을 더 짧게 설정 */
+    width: 40px; /* 더 짧은 드롭다운 */
+}
+
+/* 사이즈 입력 필드 및 단위 선택 */
+#size-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+#size {
+    width: 25%; /* 사이즈 입력 필드를 4분의 1 크기로 조정 */
+}
+
+#size-unit {
+    width: 60px; /* 단위 선택 드롭다운 */
 }
 
 /* Q 옵션 스타일 */
