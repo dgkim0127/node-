@@ -29,17 +29,20 @@ header {
 }
 
 /* 검색 입력 필드 스타일 */
-#search-input {
+#search-input, #type-filter {
     padding: 8px;
     font-size: 16px;
     border-radius: 4px;
     border: 1px solid #ccc;
-    width: 250px;
     transition: border-color 0.3s ease;
 }
 
-#search-input:focus {
+#search-input:focus, #type-filter:focus {
     border-color: #0056b3;
+}
+
+#type-filter {
+    width: 150px;
 }
 
 .button-container {
