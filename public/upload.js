@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                // Firebase Storage 경로 설정
+                // Firebase Storage 경로 설정 (file.path 대신 file.name 사용)
                 const storageRef = ref(storage, `media/${file.name}`);
                 // 파일을 Firebase Storage에 업로드
                 await uploadBytes(storageRef, file);
