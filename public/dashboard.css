@@ -169,6 +169,19 @@ header h1 {
     width: 100%; /* 두 개의 입력 필드를 나란히 배치 */
 }
 
+/* 중량 필드 옆에 g 추가 */
+.weight-container {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.weight-container span {
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 4px;
+}
+
 /* Q 옵션 스타일 */
 #q-label {
     font-weight: normal;
