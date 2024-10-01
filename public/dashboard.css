@@ -173,10 +173,15 @@ header h1 {
 .weight-container {
     display: flex;
     align-items: center;
+}
+
+.weight-input-wrapper {
+    display: flex;
+    align-items: center;
     gap: 4px;
 }
 
-.weight-container span {
+.weight-input-wrapper span {
     font-size: 14px;
     font-weight: bold;
     margin-left: 4px;
