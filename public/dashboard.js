@@ -41,3 +41,9 @@ const loadPosts = async () => {
 
 // 페이지 로드 시 게시물을 불러옴
 window.addEventListener('DOMContentLoaded', loadPosts);
+
+// 업로드 버튼 클릭 시 업로드 페이지로 이동
+const uploadButton = document.getElementById('upload-button');
+uploadButton.addEventListener('click', () => {
+    window.location.href = 'upload.html';
+});
