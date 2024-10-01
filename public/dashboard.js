@@ -66,3 +66,15 @@ window.addEventListener('DOMContentLoaded', () => loadPosts());
 // 다음 페이지로 이동하는 함수
 const nextPageButton = document.getElementById('next-page-btn');
 nextPageButton.addEventListener('click', () => loadPosts(true));
+
+// 업로드 버튼 클릭 시 업로드 페이지로 이동
+const uploadButton = document.getElementById('upload-button');
+uploadButton.addEventListener('click', () => {
+    window.location.href = 'upload.html';
+});
+
+// 회원가입 버튼 클릭 시 회원가입 페이지로 이동
+const signupButton = document.getElementById('signup-button');
+signupButton.addEventListener('click', () => {
+    window.location.href = 'signup.html';  // 회원가입 페이지로 이동
+});
