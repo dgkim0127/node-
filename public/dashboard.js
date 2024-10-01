@@ -13,7 +13,7 @@ async function loadPosts() {
         postElement.classList.add('post');
 
         // 썸네일만 표시
-        const thumbnailURL = postData.thumbnailURL;  // 썸네일 URL 확인
+        const thumbnailURL = postData.thumbnailURL;
 
         if (thumbnailURL) {
             postElement.innerHTML = `
