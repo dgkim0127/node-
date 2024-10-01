@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>게시물 수정</title>
+    <title>수정 페이지</title>
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <header>
         <h1>게시물 수정</h1>
     </header>
+
     <main>
         <form id="editForm">
+            <!-- 여기서 기존 게시물 정보를 불러와 수정할 수 있습니다 -->
             <label for="type">종류:</label>
             <select id="type">
                 <option value="14K">14K</option>
@@ -20,22 +22,26 @@
                 <option value="925">925</option>
             </select>
 
-            <label for="sizeNumber">사이즈:</label>
-            <input type="text" id="sizeNumber" placeholder="숫자 입력">
+            <label for="sizeNumber">사이즈 (숫자):</label>
+            <input type="text" id="sizeNumber">
+
+            <label for="sizeUnit">단위 (cm 또는 호):</label>
             <select id="sizeUnit">
                 <option value="cm">cm</option>
                 <option value="호">호</option>
             </select>
 
-            <label for="weight">중량:</label>
-            <input type="text" id="weight" placeholder="숫자 입력 g">
+            <label for="weight">중량 (g):</label>
+            <input type="text" id="weight">
 
-            <label for="content">내용:</label>
-            <textarea id="content" placeholder="내용을 입력하세요"></textarea>
+            <label for="content">내용 (선택적 입력):</label>
+            <textarea id="content"></textarea>
 
-            <button type="submit">수정하기</button>
+            <button type="submit">수정 완료</button>
         </form>
     </main>
-    <script src="edit.js"></script>
+
+    <script type="module" src="firebaseConfig.js"></script>
+    <script type="module" src="edit.js"></script>
 </body>
 </html>
