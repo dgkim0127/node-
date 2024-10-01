@@ -1,18 +1,24 @@
 import { db } from './firebaseConfig.js';
-import { collection, getDocs, query, limit, startAfter } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { collection, getDocs, query, limit, startAfter, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 let lastVisible = null; // 마지막으로 로드한 게시물의 참조를 저장
 const pageSize = 42; // 한 페이지당 게시물 수
+let currentQuery = null; // 현재 쿼리 저장 (검색 쿼리 포함)
 
 // Firestore에서 데이터를 로드하여 대시보드에 표시하는 함수
-const loadPosts = async (isNextPage = false) => {
+const loadPosts = async (isNextPage = false, searchTerm = '') => {
     try {
         const postCollection = collection(db, "posts");
         let postQuery = query(postCollection, limit(pageSize));
 
+        // 검색어가 있는 경우 productNumber 필드를 기준으로 검색
+        if (searchTerm) {
+            postQuery = query(postCollection, where("productNumber", ">=", searchTerm), where("productNumber", "<=", searchTerm + "\uf8ff"));
+        }
+
         // 다음 페이지를 불러오는 경우, 마지막 게시물 이후부터 가져옴
         if (isNextPage && lastVisible) {
-            postQuery = query(postCollection, startAfter(lastVisible), limit(pageSize));
+            postQuery = query(currentQuery || postQuery, startAfter(lastVisible), limit(pageSize));
         }
 
         const postSnapshot = await getDocs(postQuery);
@@ -20,6 +26,7 @@ const loadPosts = async (isNextPage = false) => {
 
         // 마지막으로 로드한 문서를 저장하여 다음 페이지에서 사용
         lastVisible = postSnapshot.docs[postSnapshot.docs.length - 1];
+        currentQuery = postQuery;
 
         const postGrid = document.getElementById('post-grid');
         postGrid.innerHTML = '';
@@ -66,6 +73,13 @@ window.addEventListener('DOMContentLoaded', () => loadPosts());
 // 다음 페이지로 이동하는 함수
 const nextPageButton = document.getElementById('next-page-btn');
 nextPageButton.addEventListener('click', () => loadPosts(true));
+
+// 검색 기능 처리
+const searchInput = document.getElementById('search-input');
+searchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.trim();
+    loadPosts(false, searchTerm); // 검색어가 변경될 때마다 검색
+});
 
 // 업로드 버튼 클릭 시 업로드 페이지로 이동
 const uploadButton = document.getElementById('upload-button');
