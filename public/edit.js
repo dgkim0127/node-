@@ -11,8 +11,9 @@ const typeInput = document.getElementById('type');
 const sizeInput = document.getElementById('size');
 const weightInput = document.getElementById('weight');
 const contentInput = document.getElementById('content');
+const saveButton = document.getElementById('saveButton');
 
-// Firestore에서 기존 게시물 정보를 로드
+// Firestore에서 게시물 정보 로드
 async function loadPostDetails() {
     const docRef = doc(db, 'posts', postId);
     const docSnap = await getDoc(docRef);
@@ -20,7 +21,7 @@ async function loadPostDetails() {
     if (docSnap.exists()) {
         const postData = docSnap.data();
 
-        // 폼에 기존 게시물 정보 삽입
+        // 게시물 정보를 입력 필드에 표시
         productNumberInput.value = postData.productNumber;
         typeInput.value = postData.type;
         sizeInput.value = postData.size;
@@ -31,18 +32,13 @@ async function loadPostDetails() {
     }
 }
 
-loadPostDetails();
-
-// 게시물 수정 처리
-const editForm = document.getElementById('editForm');
-editForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
+// 게시물 업데이트 처리
+saveButton.addEventListener('click', async () => {
     const updatedProductNumber = productNumberInput.value;
     const updatedType = typeInput.value;
     const updatedSize = sizeInput.value;
     const updatedWeight = weightInput.value;
-    const updatedContent = contentInput.value;
+    const updatedContent = contentInput.value || '내용 없음';
 
     try {
         const docRef = doc(db, 'posts', postId);
@@ -54,10 +50,13 @@ editForm.addEventListener('submit', async (e) => {
             content: updatedContent
         });
 
-        alert('게시물이 성공적으로 수정되었습니다.');
+        alert('수정 완료!');
         window.location.href = `detail.html?id=${postId}`;
     } catch (error) {
-        console.error('게시물 수정 중 오류 발생:', error);
-        alert('게시물 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+        console.error('수정 중 오류 발생:', error);
+        alert('수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
     }
 });
+
+// 게시물 로드
+loadPostDetails();
