@@ -18,8 +18,13 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
 
         // 검색어가 있는 경우 productNumber 필드를 기준으로 부분 일치 검색
         if (searchTerm) {
-            const searchTermUpper = searchTerm.toUpperCase();  // 대소문자 구분 없이 검색
-            postQuery = query(postQuery, where("productNumber", ">=", searchTermUpper), where("productNumber", "<=", searchTermUpper + "\uf8ff"));
+            const isNumeric = /^\d+$/.test(searchTerm); // 검색어가 숫자인지 확인
+            if (isNumeric) {
+                postQuery = query(postQuery, where("productNumber", ">=", searchTerm), where("productNumber", "<=", searchTerm + "\uf8ff"));
+            } else {
+                const searchTermUpper = searchTerm.toUpperCase();  // 대소문자 구분 없이 검색
+                postQuery = query(postQuery, where("productNumber", ">=", searchTermUpper), where("productNumber", "<=", searchTermUpper + "\uf8ff"));
+            }
         }
 
         // 다음 페이지를 불러오는 경우, 마지막 게시물 이후부터 가져옴
