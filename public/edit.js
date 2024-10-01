@@ -6,13 +6,13 @@ const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
 
 // DOM 요소 참조
-const typeElement = document.getElementById('type');
-const sizeElement = document.getElementById('size');
-const weightElement = document.getElementById('weight');
-const contentElement = document.getElementById('content');
-const editForm = document.getElementById('editForm');
+const productNumberInput = document.getElementById('productNumber');
+const typeInput = document.getElementById('type');
+const sizeInput = document.getElementById('size');
+const weightInput = document.getElementById('weight');
+const contentInput = document.getElementById('content');
 
-// Firestore에서 게시물 정보 로드
+// Firestore에서 기존 게시물 정보를 로드
 async function loadPostDetails() {
     const docRef = doc(db, 'posts', postId);
     const docSnap = await getDoc(docRef);
@@ -20,41 +20,44 @@ async function loadPostDetails() {
     if (docSnap.exists()) {
         const postData = docSnap.data();
 
-        // 기존 데이터 표시
-        typeElement.value = postData.type;
-        sizeElement.value = postData.size;
-        weightElement.value = postData.weight;
-        contentElement.value = postData.content || '';
+        // 폼에 기존 게시물 정보 삽입
+        productNumberInput.value = postData.productNumber;
+        typeInput.value = postData.type;
+        sizeInput.value = postData.size;
+        weightInput.value = postData.weight;
+        contentInput.value = postData.content || '';
     } else {
-        console.log('게시물을 찾을 수 없습니다.');
+        console.log('해당 게시물을 찾을 수 없습니다.');
     }
 }
 
-// 수정된 게시물 저장
-async function saveChanges(e) {
+loadPostDetails();
+
+// 게시물 수정 처리
+const editForm = document.getElementById('editForm');
+editForm.addEventListener('submit', async (e) => {
     e.preventDefault();
 
-    const updatedType = typeElement.value;
-    const updatedSize = sizeElement.value;
-    const updatedWeight = weightElement.value;
-    const updatedContent = contentElement.value;
+    const updatedProductNumber = productNumberInput.value;
+    const updatedType = typeInput.value;
+    const updatedSize = sizeInput.value;
+    const updatedWeight = weightInput.value;
+    const updatedContent = contentInput.value;
 
     try {
-        const postRef = doc(db, 'posts', postId);
-        await updateDoc(postRef, {
+        const docRef = doc(db, 'posts', postId);
+        await updateDoc(docRef, {
+            productNumber: updatedProductNumber,
             type: updatedType,
             size: updatedSize,
             weight: updatedWeight,
-            content: updatedContent,
+            content: updatedContent
         });
-        alert('변경사항이 저장되었습니다.');
-        window.location.href = `detail.html?id=${postId}`;  // 저장 후 상세 페이지로 이동
-    } catch (error) {
-        console.error('변경사항 저장 중 오류 발생:', error);
-        alert('변경사항 저장에 실패했습니다.');
-    }
-}
 
-// 페이지 로드 시 게시물 정보 불러오기
-loadPostDetails();
-editForm.addEventListener('submit', saveChanges);
+        alert('게시물이 성공적으로 수정되었습니다.');
+        window.location.href = `detail.html?id=${postId}`;
+    } catch (error) {
+        console.error('게시물 수정 중 오류 발생:', error);
+        alert('게시물 수정 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
+});
