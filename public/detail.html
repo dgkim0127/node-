@@ -8,35 +8,24 @@
 </head>
 <body>
     <header>
-        <div class="header-left">
-            <h1>상세 정보</h1>
-            <p>No. <span id="productNumber"></span></p>
-        </div>
-        <div class="header-right">
-            <button onclick="history.back()">뒤로가기</button>
-        </div>
+        <h1>상세 정보</h1>
+        <button onclick="history.back()">뒤로가기</button>
     </header>
-
     <main>
-        <section class="detail-content">
-            <div id="mainMediaContainer" class="media-container">
-                <img id="mainImage" src="" alt="메인 이미지" style="display:none;">
-                <video id="mainVideo" controls style="display:none;"></video>
-            </div>
-            <div class="sub-images" id="subImagesContainer"></div>
-            <div class="product-info">
-                <p>종류: <span id="type"></span></p>
-                <p>사이즈: <span id="size"></span></p>
-                <p>중량: <span id="weight"></span></p>
-                <p id="content"></p>
-            </div>
-            <div class="edit-button-container">
-                <button id="editButton">수정하기</button>
-            </div>
-        </section>
+        <div class="media-container">
+            <img id="mainImage" style="display:none;">
+            <video id="mainVideo" controls style="display:none;"></video>
+        </div>
+        <div id="subImagesContainer" class="sub-images"></div>
+        <div class="product-info">
+            <p>품번: <span id="productNumber"></span></p>
+            <p>종류: <span id="type"></span></p>
+            <p>사이즈: <span id="size"></span></p>
+            <p>중량: <span id="weight"></span></p>
+            <p id="content"></p>
+        </div>
+        <button id="editButton">수정하기</button>
     </main>
-
-    <script type="module" src="firebaseConfig.js"></script>
-    <script type="module" src="detail.js"></script>
+    <script src="detail.js"></script>
 </body>
 </html>
