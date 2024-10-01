@@ -1,65 +1,39 @@
 import { db } from './firebaseConfig.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// URL에서 게시물 ID 추출
-const urlParams = new URLSearchParams(window.location.search);
-const postId = urlParams.get('id');
+// URL 쿼리 스트링에서 ID 가져오기
+const getPostIdFromURL = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');  // 쿼리 스트링에서 'id' 값을 반환
+};
 
-// DOM 요소 참조
-const productNumberElement = document.getElementById('productNumber');
-const typeElement = document.getElementById('type');
-const sizeElement = document.getElementById('size');
-const weightElement = document.getElementById('weight');
-const contentElement = document.getElementById('content');
-const mainImage = document.getElementById('mainImage');
-const mainVideo = document.getElementById('mainVideo');
-const subImagesContainer = document.getElementById('subImagesContainer');
-
-// Firestore에서 게시물 정보 로드
-async function loadPostDetails() {
-    const docRef = doc(db, 'posts', postId);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-        const postData = docSnap.data();
-
-        // 제품 정보 표시
-        productNumberElement.textContent = postData.productNumber;
-        typeElement.textContent = postData.type;
-        sizeElement.textContent = postData.size;
-        weightElement.textContent = postData.weight;
-        contentElement.textContent = postData.content || '내용 없음';
-
-        // 동영상 또는 썸네일 표시
-        if (postData.fileURLs && postData.fileURLs.some(url => url.match(/\.(mp4|webm|ogg)$/))) {
-            const videoURL = postData.fileURLs.find(url => url.match(/\.(mp4|webm|ogg)$/));
-            mainVideo.src = videoURL;
-            mainVideo.style.display = 'block';
-        } else if (postData.thumbnailURL) {
-            mainImage.src = postData.thumbnailURL;
-            mainImage.style.display = 'block';
-        }
-
-        // 서브 이미지 표시 (이미지 파일만)
-        postData.fileURLs.forEach((url) => {
-            if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
-                const subImage = document.createElement('img');
-                subImage.src = url;
-                subImage.classList.add('sub-image');
-
-                // 서브 이미지 클릭 시 메인 이미지와 교체
-                subImage.addEventListener('click', () => {
-                    mainImage.src = url;
-                    mainImage.style.display = 'block';
-                    mainVideo.style.display = 'none';  // 동영상 숨기기
-                });
-
-                subImagesContainer.appendChild(subImage);
-            }
-        });
-    } else {
-        console.log('해당 게시물을 찾을 수 없습니다.');
+// Firestore에서 게시물 데이터를 가져와 상세 페이지에 표시
+const loadPostDetail = async () => {
+    const postId = getPostIdFromURL();
+    if (!postId) {
+        console.error('No post ID found in URL');
+        return;
     }
-}
+
+    try {
+        const postRef = doc(db, "posts", postId);
+        const postSnap = await getDoc(postRef);
+
+        if (postSnap.exists()) {
+            const postData = postSnap.data();
+            document.getElementById('product-number').textContent = `Product Number: ${postData.productNumber}`;
+            document.getElementById('post-image').src = postData.thumbnail || 'default-thumbnail.png';
+            // 추가적인 상세 정보도 여기에 표시 가능
+        } else {
+            console.error('No such post!');
+        }
+    } catch (error) {
+        console.error('Error loading post:', error);
+    }
+};
+
+// 페이지 로드 시 상세 정보를 불러옴
+window.addEventListener('DOMContentLoaded', loadPostDetail);
+
 
 loadPostDetails();
