@@ -1,6 +1,6 @@
 import { storage, db } from './firebaseConfig.js';
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-storage.js";
-import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('upload-form');
@@ -48,7 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Firestore에 게시물 데이터 저장
         try {
-            await addDoc(collection(db, "posts"), {
+            const postCollection = collection(db, "posts");  // "posts" 컬렉션 참조
+            if (!postCollection) {
+                console.error('Error getting collection reference.');
+                return;
+            }
+
+            await addDoc(postCollection, {
                 productNumber: productNumber,  // 제품 번호
                 media: mediaURLs,  // 미디어 파일들의 URL
                 createdAt: new Date()  // 생성 날짜
