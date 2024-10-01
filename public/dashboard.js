@@ -6,7 +6,7 @@ const loadPosts = async () => {
     try {
         const postCollection = collection(db, "posts");
         const postSnapshot = await getDocs(postCollection);
-        const postList = postSnapshot.docs.map(doc => doc.data());
+        const postList = postSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         const postGrid = document.getElementById('post-grid');
         postGrid.innerHTML = '';
@@ -24,6 +24,12 @@ const loadPosts = async () => {
             postElement.innerHTML = `
                 <img src="${thumbnail}" alt="${post.productNumber}">
             `;
+
+            // 게시물을 클릭하면 상세 페이지로 이동
+            postElement.addEventListener('click', () => {
+                window.location.href = `detail.html?id=${post.id}`;  // 제품 ID를 URL에 포함
+            });
+
             postGrid.appendChild(postElement);
         });
     } catch (error) {
