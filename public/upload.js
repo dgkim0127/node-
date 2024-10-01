@@ -60,7 +60,11 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const productNumber = generatedProductNumber.textContent;
-        const files = document.getElementById('mediaFiles').files;
+        const type = document.getElementById('type').value;
+        const size = document.getElementById('size').value;
+        const weight = document.getElementById('weight').value;
+        const content = document.getElementById('content').value;
+        const files = mediaFilesInput.files;
 
         // 제품 번호 중복 확인
         const productQuery = query(collection(db, "posts"), where("productNumber", "==", productNumber));
@@ -87,6 +91,10 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             await addDoc(collection(db, "posts"), {
                 productNumber: productNumber,
+                type: type,
+                size: size,
+                weight: weight,
+                content: content,
                 media: mediaURLs,
                 thumbnail: thumbnailURL,
                 createdAt: new Date()
