@@ -58,7 +58,8 @@ header h1 {
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 8px; /* 부드러운 모서리 */
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.1); /* 게시물 기본 어두운 배경 추가 */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 .post-item img {
@@ -72,6 +73,7 @@ header h1 {
 }
 
 .post-item:hover {
+    background-color: rgba(0, 0, 0, 0.2); /* 마우스 오버 시 더 어두워짐 */
     transform: scale(1.05);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* 호버 시 부드러운 그림자 확대 */
 }
