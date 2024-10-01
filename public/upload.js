@@ -1,65 +1,41 @@
-import { db } from './firebaseConfig.js';
-import { doc, getDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+// Firebase와의 연결 설정
+import { storage, db } from './firebaseConfig.js';
+import { ref, uploadBytes, getDownloadURL } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js';
+import { addDoc, collection } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
 
-// URL에서 게시물 ID 추출
-const urlParams = new URLSearchParams(window.location.search);
-const postId = urlParams.get('id');
+const fileUpload = document.getElementById('fileUpload');
+const filePreviewContainer = document.getElementById('filePreviewContainer');
+let selectedThumbnail = null;  // 썸네일로 선택된 파일
 
-// DOM 요소 참조
-const productNumberElement = document.getElementById('productNumber');
-const typeElement = document.getElementById('type');
-const sizeElement = document.getElementById('size');
-const weightElement = document.getElementById('weight');
-const contentElement = document.getElementById('content');
-const mainImage = document.getElementById('mainImage');
-const mainVideo = document.getElementById('mainVideo');
-const subImagesContainer = document.getElementById('subImagesContainer');
+// 파일 미리보기 기능
+fileUpload.addEventListener('change', function(event) {
+    const files = event.target.files;
+    filePreviewContainer.innerHTML = ''; // 기존 미리보기 삭제
 
-// Firestore에서 게시물 정보 로드
-async function loadPostDetails() {
-    const docRef = doc(db, 'posts', postId);
-    const docSnap = await getDoc(docRef);
+    Array.from(files).forEach((file, index) => {
+        const fileURL = URL.createObjectURL(file);
 
-    if (docSnap.exists()) {
-        const postData = docSnap.data();
+        const previewElement = document.createElement('div');
+        previewElement.classList.add('preview-item');
 
-        // 제품 정보 표시
-        productNumberElement.textContent = postData.productNumber;
-        typeElement.textContent = postData.type;
-        sizeElement.textContent = postData.size;
-        weightElement.textContent = postData.weight;
-        contentElement.textContent = postData.content || '내용 없음';
-
-        // 동영상 또는 썸네일 표시
-        if (postData.fileURLs && postData.fileURLs.some(url => url.match(/\.(mp4|webm|ogg)$/))) {
-            const videoURL = postData.fileURLs.find(url => url.match(/\.(mp4|webm|ogg)$/));
-            mainVideo.src = videoURL;
-            mainVideo.style.display = 'block';
-        } else if (postData.thumbnailURL) {
-            mainImage.src = postData.thumbnailURL;
-            mainImage.style.display = 'block';
+        // 이미지 및 동영상 미리보기
+        if (file.type.startsWith('image/')) {
+            previewElement.innerHTML = `<img src="${fileURL}" class="preview-image" alt="이미지 미리보기">`;
+        } else if (file.type.startsWith('video/')) {
+            previewElement.innerHTML = `<video src="${fileURL}" controls class="preview-image"></video>`;
         }
 
-        // 서브 이미지 표시 (이미지 파일만)
-        postData.fileURLs.forEach((url) => {
-            if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
-                const subImage = document.createElement('img');
-                subImage.src = url;
-                subImage.classList.add('sub-image');
+        filePreviewContainer.appendChild(previewElement);
+    });
+});
 
-                // 서브 이미지 클릭 시 메인 이미지와 교체
-                subImage.addEventListener('click', () => {
-                    mainImage.src = url;
-                    mainImage.style.display = 'block';
-                    mainVideo.style.display = 'none';  // 동영상 숨기기
-                });
+// 업로드 폼 처리
+const uploadForm = document.getElementById('uploadForm');
+uploadForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-                subImagesContainer.appendChild(subImage);
-            }
-        });
-    } else {
-        console.log('해당 게시물을 찾을 수 없습니다.');
-    }
-}
-
-loadPostDetails();
+    const productNumber = document.getElementById('productNumber').value;
+    const type = document.getElementById('type').value;
+    const size = document.getElementById('size').value;
+    const weight = document.getElementById('weight').value;
+    const content = document.getElementById('content').value || '내용 없음';
