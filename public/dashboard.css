@@ -133,6 +133,16 @@ header h1 {
     border: 1px solid #ccc;
 }
 
+/* 제품 번호 입력 필드를 한 줄로 표시 */
+#product-number-container {
+    margin-bottom: 16px;
+}
+
+#product-number-inputs {
+    display: flex;
+    gap: 8px;
+}
+
 #preview-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
