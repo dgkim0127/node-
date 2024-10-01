@@ -1,12 +1,25 @@
 import { db } from './firebaseConfig.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { collection, getDocs, query, limit, startAfter } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
+let lastVisible = null; // 마지막으로 로드한 게시물의 참조를 저장
+const pageSize = 42; // 한 페이지당 게시물 수
 
 // Firestore에서 데이터를 로드하여 대시보드에 표시하는 함수
-const loadPosts = async () => {
+const loadPosts = async (isNextPage = false) => {
     try {
         const postCollection = collection(db, "posts");
-        const postSnapshot = await getDocs(postCollection);
+        let postQuery = query(postCollection, limit(pageSize));
+
+        // 다음 페이지를 불러오는 경우, 마지막 게시물 이후부터 가져옴
+        if (isNextPage && lastVisible) {
+            postQuery = query(postCollection, startAfter(lastVisible), limit(pageSize));
+        }
+
+        const postSnapshot = await getDocs(postQuery);
         const postList = postSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+        // 마지막으로 로드한 문서를 저장하여 다음 페이지에서 사용
+        lastVisible = postSnapshot.docs[postSnapshot.docs.length - 1];
 
         const postGrid = document.getElementById('post-grid');
         postGrid.innerHTML = '';
@@ -32,6 +45,14 @@ const loadPosts = async () => {
 
             postGrid.appendChild(postElement);
         });
+
+        // "다음 페이지" 버튼 표시 여부 결정
+        const nextPageButton = document.getElementById('next-page-btn');
+        if (postList.length < pageSize) {
+            nextPageButton.style.display = 'none'; // 더 이상 게시물이 없으면 숨김
+        } else {
+            nextPageButton.style.display = 'block'; // 다음 페이지가 있을 경우 표시
+        }
     } catch (error) {
         console.error('Error loading posts:', error);
         const postGrid = document.getElementById('post-grid');
@@ -39,17 +60,9 @@ const loadPosts = async () => {
     }
 };
 
-// 페이지 로드 시 게시물을 불러옴
-window.addEventListener('DOMContentLoaded', loadPosts);
+// 페이지 로드 시 첫 번째 페이지의 게시물을 불러옴
+window.addEventListener('DOMContentLoaded', () => loadPosts());
 
-// 업로드 버튼 클릭 시 업로드 페이지로 이동
-const uploadButton = document.getElementById('upload-button');
-uploadButton.addEventListener('click', () => {
-    window.location.href = 'upload.html';
-});
-
-// 회원가입 버튼 클릭 시 회원가입 페이지로 이동
-const signupButton = document.getElementById('signup-button');
-signupButton.addEventListener('click', () => {
-    window.location.href = 'signup.html';  // 회원가입 페이지로 이동
-});
+// 다음 페이지로 이동하는 함수
+const nextPageButton = document.getElementById('next-page-btn');
+nextPageButton.addEventListener('click', () => loadPosts(true));
