@@ -9,7 +9,7 @@
 <body>
     <header>
         <h1>Upload Post</h1>
-        <button class="back-btn" onclick="location.href='dashboard.html'">Back to Dashboard</button>
+        <button onclick="location.href='dashboard.html'">Back to Dashboard</button>
     </header>
 
     <section id="upload-section">
@@ -36,19 +36,24 @@
             <input type="number" id="weight" name="weight" step="0.01" placeholder="Weight in grams" required>
 
             <!-- 선택적 내용 입력 -->
-            <label for="content">Content:</label>
+            <label for="content">Content (optional):</label>
             <textarea id="content" name="content" placeholder="Optional description..."></textarea>
 
             <!-- 미디어 파일 업로드 -->
             <label for="mediaFiles">Upload Media (Photos/Videos):</label>
-            <input type="file" id="mediaFiles" name="mediaFiles" accept="image/*,video/*" multiple>
+            <input type="file" id="mediaFiles" name="mediaFiles" accept="image/*,video/*" multiple required>
+
+            <!-- 미리보기 영역 -->
+            <div id="preview-grid">
+                <!-- 선택한 파일의 미리보기가 여기에 나타납니다 -->
+            </div>
 
             <!-- 제출 버튼 -->
             <button type="submit">Upload</button>
         </form>
     </section>
 
-    <!-- Firebase 설정 및 업로드 스크립트 -->
+    <!-- Firebase 및 업로드 스크립트 -->
     <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="upload.js"></script>
 </body>
