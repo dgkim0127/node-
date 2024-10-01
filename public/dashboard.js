@@ -16,22 +16,6 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
             postQuery = query(postCollection, where("type", "==", selectedType));
         }
 
-        // 검색어가 있는 경우 productNumber 필드에서 4자리 숫자만 추출하여 부분 일치 검색
-        if (searchTerm) {
-            const isNumeric = /^\d{4}$/.test(searchTerm); // 검색어가 4자리 숫자인지 확인
-            if (isNumeric) {
-                postQuery = query(postQuery, where("productNumber", ">=", searchTerm), where("productNumber", "<=", searchTerm + "\uf8ff"));
-            } else {
-                const searchTermUpper = searchTerm.toUpperCase();  // 대소문자 구분 없이 검색
-                postQuery = query(postQuery, where("productNumber", ">=", searchTermUpper), where("productNumber", "<=", searchTermUpper + "\uf8ff"));
-            }
-        }
-
-        // 다음 페이지를 불러오는 경우, 마지막 게시물 이후부터 가져옴
-        if (isNextPage && lastVisible) {
-            postQuery = query(currentQuery || postQuery, startAfter(lastVisible), limit(pageSize));
-        }
-
         const postSnapshot = await getDocs(postQuery);
         let postList = postSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
@@ -47,12 +31,28 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
             return;
         }
 
+        // 검색어가 있는 경우 productNumber 필드에서 4자리 숫자만 추출하여 부분 일치 검색
+        if (searchTerm) {
+            const isNumeric = /^\d+$/.test(searchTerm); // 검색어가 숫자인지 확인
+            if (isNumeric) {
+                postList = postList.filter(post => {
+                    const numberMatch = post.productNumber.match(/\d{4}/); // 품번에서 4자리 숫자 추출
+                    return numberMatch && numberMatch[0].includes(searchTerm); // 부분 일치 확인
+                });
+            }
+        }
+
         // 게시물을 품번의 4자리 숫자 기준으로 오름차순 정렬
         postList = postList.sort((a, b) => {
             const numA = parseInt(a.productNumber.match(/\d{4}/) || 0); // 품번에서 4자리 숫자 추출
             const numB = parseInt(b.productNumber.match(/\d{4}/) || 0);
             return numA - numB; // 오름차순 정렬
         });
+
+        if (postList.length === 0) {
+            postGrid.innerHTML = '<p>No matching posts found</p>';
+            return;
+        }
 
         postList.forEach(post => {
             const thumbnail = post.thumbnail || 'default-thumbnail.png';  // 기본 이미지 설정
