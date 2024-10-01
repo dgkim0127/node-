@@ -3,25 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>대시보드</title>
+    <title>Dashboard</title>
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <header>
-        <div class="header-left">
-            <h1>대시보드</h1>
-        </div>
-        <div class="header-right">
-            <a href="upload.html">
-                <button>업로드</button>
-            </a>
-        </div>
+        <h1>Dashboard</h1>
+        <button class="upload-btn" onclick="location.href='upload.html'">Upload New Post</button>
     </header>
+    <section id="post-grid">
+        <!-- 게시물 목록이 동적으로 여기에 표시됩니다 -->
+    </section>
 
-    <main>
-        <div class="posts"></div>
-    </main>
-
+    <!-- Firebase 설정 및 대시보드 스크립트 모듈 -->
     <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="dashboard.js"></script>
 </body>
