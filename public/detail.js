@@ -30,10 +30,19 @@ async function loadPostDetails() {
         weightElement.textContent = postData.weight;
         contentElement.textContent = postData.content || '내용 없음';
 
-        // 서브 이미지와 동영상 모두 표시 (썸네일 포함)
+        // 동영상 또는 썸네일 표시
+        if (postData.fileURLs && postData.fileURLs.some(url => url.match(/\.(mp4|webm|ogg)$/))) {
+            const videoURL = postData.fileURLs.find(url => url.match(/\.(mp4|webm|ogg)$/));
+            mainVideo.src = videoURL;
+            mainVideo.style.display = 'block';
+        } else if (postData.thumbnailURL) {
+            mainImage.src = postData.thumbnailURL;
+            mainImage.style.display = 'block';
+        }
+
+        // 서브 이미지 표시 (이미지 파일만)
         postData.fileURLs.forEach((url) => {
             if (url.match(/\.(jpeg|jpg|gif|png)$/)) {
-                // 이미지 파일 처리
                 const subImage = document.createElement('img');
                 subImage.src = url;
                 subImage.classList.add('sub-image');
@@ -46,36 +55,8 @@ async function loadPostDetails() {
                 });
 
                 subImagesContainer.appendChild(subImage);
-
-            } else if (url.match(/\.(mp4|webm|ogg)$/)) {
-                // 동영상 파일 처리
-                const subVideo = document.createElement('video');
-                subVideo.src = url;
-                subVideo.controls = true;
-                subVideo.classList.add('sub-image');
-
-                // 서브 동영상 클릭 시 메인 동영상과 교체
-                subVideo.addEventListener('click', () => {
-                    mainVideo.src = url;
-                    mainVideo.style.display = 'block';
-                    mainImage.style.display = 'none';  // 이미지 숨기기
-                });
-
-                subImagesContainer.appendChild(subVideo);
             }
         });
-
-        // 썸네일이나 메인 미디어를 메인 화면에 설정
-        if (postData.fileURLs && postData.fileURLs.length > 0) {
-            const firstMedia = postData.fileURLs[0];
-            if (firstMedia.match(/\.(jpeg|jpg|gif|png)$/)) {
-                mainImage.src = firstMedia;
-                mainImage.style.display = 'block';
-            } else if (firstMedia.match(/\.(mp4|webm|ogg)$/)) {
-                mainVideo.src = firstMedia;
-                mainVideo.style.display = 'block';
-            }
-        }
     } else {
         console.log('해당 게시물을 찾을 수 없습니다.');
     }
