@@ -116,6 +116,7 @@ main {
     display: flex;
     justify-content: center;
     gap: 10px;
+    margin-top: 20px;
 }
 
 .sub-image {
@@ -128,6 +129,12 @@ main {
 
 .sub-image:hover {
     transform: scale(1.1);
+}
+
+/* 상품 정보 스타일 */
+.product-info {
+    text-align: left;
+    margin-top: 20px;
 }
 
 /* 업로드 페이지 스타일 */
