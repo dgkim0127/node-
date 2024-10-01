@@ -145,7 +145,7 @@ header h1 {
 }
 
 #prefix, #suffix {
-    width: 50px; /* 드롭다운 버튼을 더 짧게 설정 */
+    width: 40px; /* 드롭다운 버튼을 더 짧게 설정 */
 }
 
 /* Q 옵션 스타일 */
