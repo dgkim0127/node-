@@ -155,8 +155,18 @@ header h1 {
     gap: 8px;
 }
 
-#size, #size-unit, #type, #weight {
-    width: 25%; /* 사이즈, 타입, 중량 필드 및 단위 선택 필드를 4분의 1 크기로 조정 */
+#size, #size-unit {
+    width: 25%; /* 사이즈 및 단위 선택 필드를 4분의 1 크기로 조정 */
+}
+
+/* 타입과 중량을 같은 줄에 배치 */
+#type-weight-container {
+    display: flex;
+    gap: 16px;
+}
+
+#type, #weight {
+    width: 100%; /* 두 개의 입력 필드를 나란히 배치 */
 }
 
 /* Q 옵션 스타일 */
