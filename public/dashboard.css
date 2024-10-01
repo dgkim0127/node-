@@ -107,3 +107,63 @@ header h1 {
         grid-template-columns: repeat(2, 1fr); /* 767px 이하 */
     }
 }
+
+/* 업로드 섹션 */
+#upload-section {
+    padding: 20px;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+#upload-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+#upload-form input, #upload-form select, #upload-form textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+#preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+    margin-top: 20px;
+}
+
+#preview-grid img {
+    width: 100%;
+    height: auto;
+    cursor: pointer;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    transition: border-color 0.3s ease;
+}
+
+#preview-grid img.selected {
+    border-color: #002366; /* 썸네일 선택 시 로얄블루 강조 */
+}
+
+/* 제출 버튼 */
+#upload-form button {
+    background-color: #0056b3;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#upload-form button:hover {
+    background-color: #003d80;
+}
