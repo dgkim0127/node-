@@ -16,9 +16,9 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
             postQuery = query(postCollection, where("type", "==", selectedType));
         }
 
-        // 검색어가 있는 경우 productNumber 필드를 기준으로 부분 일치 검색
+        // 검색어가 있는 경우 productNumber 필드에서 4자리 숫자만 추출하여 부분 일치 검색
         if (searchTerm) {
-            const isNumeric = /^\d+$/.test(searchTerm); // 검색어가 숫자인지 확인
+            const isNumeric = /^\d{4}$/.test(searchTerm); // 검색어가 4자리 숫자인지 확인
             if (isNumeric) {
                 postQuery = query(postQuery, where("productNumber", ">=", searchTerm), where("productNumber", "<=", searchTerm + "\uf8ff"));
             } else {
