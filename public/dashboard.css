@@ -10,10 +10,12 @@ body {
 
 /* 헤더 스타일 */
 header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     background-color: #002366; /* 로얄블루 색상 */
     color: white;
     padding: 20px;
-    text-align: center;
     font-size: 24px;
     font-weight: bold;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -25,18 +27,22 @@ header h1 {
     letter-spacing: 1px;
 }
 
-.upload-btn {
+.button-container {
+    display: flex;
+    gap: 10px;
+}
+
+.upload-btn, .signup-btn {
     background-color: #0056b3; /* 로얄블루 계열의 버튼 색상 */
     color: white;
     border: none;
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
-    margin-top: 10px;
     transition: background-color 0.3s ease; /* 부드러운 버튼 색상 전환 */
 }
 
-.upload-btn:hover {
+.upload-btn:hover, .signup-btn:hover {
     background-color: #003d80; /* 호버 시 더 짙은 로얄블루 */
 }
 
