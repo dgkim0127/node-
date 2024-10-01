@@ -1,6 +1,6 @@
 // dashboard.js
 import { db } from './firebaseConfig.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.14.0/firebase-firestore.js";
+import { collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 // Firestore에서 게시물 데이터를 로드하는 함수
 const loadPosts = async () => {
