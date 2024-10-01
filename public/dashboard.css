@@ -140,25 +140,24 @@ header h1 {
 
 #product-number-inputs {
     display: flex;
-    gap: 8px;
-    align-items: center; /* 수직 가운데 정렬 */
+    align-items: center;
+    gap: 4px; /* 빈 공간 최소화 */
 }
 
-.short-select {
-    width: 60px; /* prefix와 suffix 선택 버튼을 더 짧게 만듦 */
+#prefix, #suffix {
+    width: 50px; /* 더 짧은 드롭다운 버튼 */
 }
 
+/* Q 옵션 스타일 */
 #q-label {
-    margin-left: 4px;
-    font-size: 16px;
-    opacity: 0.5; /* 기본적으로 반투명 */
-    transition: opacity 0.3s ease; /* 체크 시 부드러운 전환 */
+    font-weight: normal;
+    opacity: 0.5;
+    transition: opacity 0.3s, font-weight 0.3s;
 }
 
-/* Q 체크박스 체크 시 글자 진하게 */
 #q-check:checked + #q-label {
-    opacity: 1;
     font-weight: bold;
+    opacity: 1;
 }
 
 #preview-grid {
