@@ -12,6 +12,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const generatedProductNumber = document.getElementById('generated-product-number');
     const mediaFilesInput = document.getElementById('mediaFiles');
     const previewGrid = document.getElementById('preview-grid');
+    const sizeInput = document.getElementById('size');
+    const weightInput = document.getElementById('weight');
+    const sizeUnitInput = document.getElementById('size-unit');
     let selectedThumbnail = null; // 선택한 썸네일을 저장할 변수
     let mediaURLs = [];  // 업로드한 파일 URL을 저장할 배열
 
@@ -33,47 +36,25 @@ document.addEventListener('DOMContentLoaded', () => {
         input.addEventListener('input', generateProductNumber);
     });
 
-    // 미디어 파일 미리보기 (이미지 및 동영상 포함)
+    // 미디어 파일 미리보기
     mediaFilesInput.addEventListener('change', (event) => {
         const files = event.target.files;
         previewGrid.innerHTML = ''; // 기존 미리보기 초기화
         Array.from(files).forEach((file, index) => {
-            const fileType = file.type;
             const reader = new FileReader();
-
             reader.onload = (e) => {
-                // 이미지 파일인 경우
-                if (fileType.startsWith('image/')) {
-                    const imgElement = document.createElement('img');
-                    imgElement.src = e.target.result;
-                    imgElement.alt = `preview-${index}`;
-                    imgElement.style.width = '100%';
-                    imgElement.addEventListener('click', () => {
-                        const selected = document.querySelector('.selected');
-                        if (selected) selected.classList.remove('selected');
-                        imgElement.classList.add('selected');
-                        selectedThumbnail = index;  // 썸네일 인덱스 저장
-                    });
-                    previewGrid.appendChild(imgElement);
-                }
-
-                // 비디오 파일인 경우
-                else if (fileType.startsWith('video/')) {
-                    const videoElement = document.createElement('video');
-                    videoElement.src = e.target.result;
-                    videoElement.controls = true; // 비디오 플레이어 컨트롤 표시
-                    videoElement.style.width = '100%';
-                    videoElement.alt = `preview-${index}`;
-                    videoElement.addEventListener('click', () => {
-                        const selected = document.querySelector('.selected');
-                        if (selected) selected.classList.remove('selected');
-                        videoElement.classList.add('selected');
-                        selectedThumbnail = index;  // 썸네일 인덱스 저장
-                    });
-                    previewGrid.appendChild(videoElement);
-                }
+                const imgElement = document.createElement('img');
+                imgElement.src = e.target.result;
+                imgElement.alt = `preview-${index}`;
+                imgElement.addEventListener('click', () => {
+                    // 선택한 썸네일을 강조 표시
+                    const selected = document.querySelector('.selected');
+                    if (selected) selected.classList.remove('selected');
+                    imgElement.classList.add('selected');
+                    selectedThumbnail = index;  // 썸네일 인덱스 저장
+                });
+                previewGrid.appendChild(imgElement);
             };
-
             reader.readAsDataURL(file);
         });
     });
@@ -81,9 +62,20 @@ document.addEventListener('DOMContentLoaded', () => {
     // 업로드 폼 제출 처리
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
+        // 필수 필드 확인
+        if (!mediaFilesInput.files.length) {
+            alert('Please upload at least one image or video.');
+            return;
+        }
+        if (!numberInput.value || !weightInput.value || !sizeInput.value) {
+            alert('Product number, weight, and size are required fields.');
+            return;
+        }
+
         const productNumber = generatedProductNumber.textContent;
         const type = document.getElementById('type').value;
-        const size = document.getElementById('size').value;
+        const size = `${sizeInput.value}${sizeUnitInput.value}`;  // 사이즈와 단위 결합
         const weight = document.getElementById('weight').value;
         const content = document.getElementById('content').value;
         const files = mediaFilesInput.files;
