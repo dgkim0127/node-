@@ -50,14 +50,12 @@ const loadPostDetail = async () => {
                 const videoElement = document.createElement('video');
                 videoElement.src = mediaURL;
                 videoElement.controls = true;
-                videoElement.style.width = '100%';
                 mediaContainer.appendChild(videoElement);
             } else {
                 // 이미지 파일일 경우
                 const imgElement = document.createElement('img');
                 imgElement.src = mediaURL;
                 imgElement.alt = `Media for ${postData.productNumber}`;
-                imgElement.style.width = '100%';
                 mediaContainer.appendChild(imgElement);
             }
         });
