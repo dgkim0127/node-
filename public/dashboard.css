@@ -152,27 +152,6 @@ header {
     }
 }
 
-/* 전체 페이지 스타일 */
-body {
-    font-family: 'Arial', sans-serif;
-    background-color: #f4f6f9;
-    color: #333;
-    margin: 0;
-    padding: 0;
-}
-
-/* 헤더 스타일 */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #002366;
-    color: white;
-    padding: 20px;
-    font-size: 24px;
-    font-weight: bold;
-}
-
 /* 업로드 섹션 스타일 */
 #upload-section {
     padding: 20px;
@@ -211,8 +190,27 @@ header {
     margin-bottom: 16px;
 }
 
+/* 체크박스 선택 시 글자 진하게, 선택 안하면 흐리게 */
+#type-container label {
+    opacity: 0.5;
+    font-weight: normal;
+    transition: opacity 0.3s, font-weight 0.3s;
+}
+
 #type-container input:checked + label {
-    font-weight: bold; /* 체크박스 선택 시 글자 진하게 */
+    opacity: 1;
+    font-weight: bold;
+}
+
+/* Q 체크박스 선택 시 스타일 변경 */
+#q-label {
+    opacity: 0.5;
+    transition: opacity 0.3s ease, font-weight 0.3s ease;
+}
+
+#q-check:checked + #q-label {
+    font-weight: bold; /* Q 체크 시 글자 진하게 */
+    opacity: 1;
 }
 
 /* 사이즈와 중량을 같은 줄에 배치 */
@@ -229,11 +227,6 @@ header {
 /* 사이즈와 중량 필드 크기를 줄임 */
 #size, #weight {
     width: 100%;
-}
-
-/* Q 체크박스 선택 시 스타일 변경 */
-#q-check:checked + #q-label {
-    font-weight: bold; /* Q 체크 시 글자 진하게 */
 }
 
 /* 미리보기 그리드 스타일 */
@@ -270,8 +263,6 @@ header {
 #upload-form button:hover {
     background-color: #003d80;
 }
-
-
 /* 상세 페이지 스타일 */
 #media-container {
     display: flex;
