@@ -152,6 +152,27 @@ header {
     }
 }
 
+/* 전체 페이지 스타일 */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+/* 헤더 스타일 */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #002366;
+    color: white;
+    padding: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+
 /* 업로드 섹션 스타일 */
 #upload-section {
     padding: 20px;
@@ -249,6 +270,7 @@ header {
 #upload-form button:hover {
     background-color: #003d80;
 }
+
 
 /* 상세 페이지 스타일 */
 #media-container {
