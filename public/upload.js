@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const suffixInput = document.getElementById('suffix');
     const qCheckInput = document.getElementById('q-check');
     const extraInput = document.getElementById('extra');
-    const generatedProductNumber = document.getElementById('generated-product-number');
     const mediaFilesInput = document.getElementById('mediaFiles');
     const previewGrid = document.getElementById('preview-grid');
     const sizeInput = document.getElementById('size');
@@ -17,6 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const sizeUnitInput = document.getElementById('size-unit');
     let selectedThumbnail = null; // 선택한 썸네일을 저장할 변수
     let mediaURLs = [];  // 업로드한 파일 URL을 저장할 배열
+
+    // 뒤로 가기 버튼
+    const backButton = document.getElementById('back-btn');
+    backButton.addEventListener('click', () => {
+        window.history.back();  // 이전 페이지로 이동
+    });
 
     // 제품 번호 생성 함수
     const generateProductNumber = () => {
@@ -28,13 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 최종 제품 번호 생성
         const fullProductNumber = `${prefix}${number}${suffix}${qCheck}${extra}`;
-        generatedProductNumber.textContent = fullProductNumber;  // HTML에 업데이트
+        return fullProductNumber;
     };
-
-    // 입력 필드 변경 시 제품 번호 갱신
-    [prefixInput, numberInput, suffixInput, qCheckInput, extraInput].forEach(input => {
-        input.addEventListener('input', generateProductNumber);
-    });
 
     // 미디어 파일 미리보기
     mediaFilesInput.addEventListener('change', (event) => {
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const productNumber = generatedProductNumber.textContent;
+        const productNumber = generateProductNumber();
         const type = document.getElementById('type').value;
         const size = `${sizeInput.value}${sizeUnitInput.value}`;  // 사이즈와 단위 결합
         const weight = document.getElementById('weight').value;
