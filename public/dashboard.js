@@ -1,5 +1,5 @@
 import { db } from './firebaseConfig.js';
-import { collection, getDocs, query, limit, startAfter, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { collection, getDocs, query, where, limit, startAfter } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 let lastVisible = null; // 마지막으로 로드한 게시물의 참조를 저장
 const pageSize = 42; // 한 페이지당 게시물 수
@@ -11,13 +11,15 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
         const postCollection = collection(db, "posts");
         let postQuery = query(postCollection, limit(pageSize));
 
-        // Type이 선택된 경우 해당 Type으로 필터링
+        // 검색어와 타입별 필터링 동시 처리
         if (selectedType && selectedType !== 'all') {
+            // Type 필터링을 위해 'type' 필드를 배열로 저장했을 경우 'array-contains' 사용
             postQuery = query(postCollection, where("type", "array-contains", selectedType), limit(pageSize));
         }
 
         // 검색어가 입력된 경우
         if (searchTerm) {
+            // 제품 번호를 기준으로 검색 필터링 (제품 번호가 정확히 일치하거나 포함된 경우)
             postQuery = query(postCollection, where("productNumber", ">=", searchTerm), where("productNumber", "<=", searchTerm + '\uf8ff'), limit(pageSize));
         }
 
