@@ -43,19 +43,23 @@ const loadPostDetail = async () => {
         // 미디어 파일들을 표시
         const mediaFiles = postData.media || [];
         mediaFiles.forEach((mediaURL) => {
-            const mediaType = mediaURL.split('.').pop();  // 파일 확장자로 타입 확인
+            const mediaType = mediaURL.split('.').pop().toLowerCase();  // 파일 확장자를 소문자로 변환
 
             if (mediaType === 'mp4' || mediaType === 'webm' || mediaType === 'ogg') {
                 // 비디오 파일일 경우
                 const videoElement = document.createElement('video');
                 videoElement.src = mediaURL;
                 videoElement.controls = true;
+                videoElement.style.width = '300px';  // 비디오 크기 조정
+                videoElement.style.borderRadius = '8px';  // 비디오 모서리 둥글게 처리
                 mediaContainer.appendChild(videoElement);
             } else {
                 // 이미지 파일일 경우
                 const imgElement = document.createElement('img');
                 imgElement.src = mediaURL;
                 imgElement.alt = `Media for ${postData.productNumber}`;
+                imgElement.style.width = '300px';  // 이미지 크기 조정
+                imgElement.style.borderRadius = '8px';  // 이미지 모서리 둥글게 처리
                 mediaContainer.appendChild(imgElement);
             }
         });
