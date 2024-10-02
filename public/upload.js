@@ -23,37 +23,40 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.back();  // 이전 페이지로 이동
     });
 
-    // 제품 번호 생성 함수
-    const generateProductNumber = () => {
-        const prefix = prefixInput.value ? `${prefixInput.value}-` : '';
-        const number = numberInput.value || '0000';  // 기본값 0000
-        const suffix = suffixInput.value ? `-${suffixInput.value}` : '';
-        const qCheck = qCheckInput.checked ? 'Q' : '';  // Q 체크 여부
-        const extra = extraInput.value ? `-${extraInput.value}` : '';  // 추가 숫자 (2자리)
-
-        // 최종 제품 번호 생성
-        const fullProductNumber = `${prefix}${number}${suffix}${qCheck}${extra}`;
-        return fullProductNumber;
-    };
-
-    // 미디어 파일 미리보기
+    // 미디어 파일 미리보기 (이미지 및 동영상)
     mediaFilesInput.addEventListener('change', (event) => {
         const files = event.target.files;
         previewGrid.innerHTML = ''; // 기존 미리보기 초기화
         Array.from(files).forEach((file, index) => {
+            const mediaType = file.type.split('/')[0]; // 이미지 또는 비디오 확인
             const reader = new FileReader();
             reader.onload = (e) => {
-                const imgElement = document.createElement('img');
-                imgElement.src = e.target.result;
-                imgElement.alt = `preview-${index}`;
-                imgElement.addEventListener('click', () => {
-                    // 선택한 썸네일을 강조 표시
-                    const selected = document.querySelector('.selected');
-                    if (selected) selected.classList.remove('selected');
-                    imgElement.classList.add('selected');
-                    selectedThumbnail = index;  // 썸네일 인덱스 저장
-                });
-                previewGrid.appendChild(imgElement);
+                if (mediaType === 'image') {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = e.target.result;
+                    imgElement.alt = `preview-${index}`;
+                    imgElement.addEventListener('click', () => {
+                        // 선택한 썸네일을 강조 표시
+                        const selected = document.querySelector('.selected');
+                        if (selected) selected.classList.remove('selected');
+                        imgElement.classList.add('selected');
+                        selectedThumbnail = index;  // 썸네일 인덱스 저장
+                    });
+                    previewGrid.appendChild(imgElement);
+                } else if (mediaType === 'video') {
+                    const videoElement = document.createElement('video');
+                    videoElement.src = e.target.result;
+                    videoElement.controls = true;
+                    videoElement.alt = `preview-${index}`;
+                    videoElement.addEventListener('click', () => {
+                        // 선택한 썸네일을 강조 표시
+                        const selected = document.querySelector('.selected');
+                        if (selected) selected.classList.remove('selected');
+                        videoElement.classList.add('selected');
+                        selectedThumbnail = index;  // 썸네일 인덱스 저장
+                    });
+                    previewGrid.appendChild(videoElement);
+                }
             };
             reader.readAsDataURL(file);
         });
@@ -73,10 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const productNumber = generateProductNumber();
-        const type = document.getElementById('type').value;
-        const size = `${sizeInput.value}${sizeUnitInput.value}`;  // 사이즈와 단위 결합
-        const weight = document.getElementById('weight').value;
+        const productNumber = `${prefixInput.value}-${numberInput.value}${suffixInput.value}${qCheckInput.checked ? 'Q' : ''}${extraInput.value ? `-${extraInput.value}` : ''}`;
+        const type = Array.from(document.querySelectorAll('#type-container input:checked')).map(el => el.value).join(', ');
+        const size = `${sizeInput.value}${sizeUnitInput.value}`;
+        const weight = weightInput.value;
         const content = document.getElementById('content').value;
         const files = mediaFilesInput.files;
 
