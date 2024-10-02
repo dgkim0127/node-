@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const sizeInput = document.getElementById('size');
     const weightInput = document.getElementById('weight');
     const sizeUnitInput = document.getElementById('size-unit');
-    const loadingMessage = document.getElementById('loading-message'); // 로딩 메시지 요소
+    const loadingOverlay = document.getElementById('loading-overlay'); // 로딩 오버레이
 
     let selectedThumbnail = null; // 선택한 썸네일을 저장할 변수
     let mediaURLs = [];  // 업로드한 파일 URL을 저장할 배열
@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 업로드 시작 시 로딩 메시지 표시
-        loadingMessage.style.display = 'block';
+        // 업로드 시작 시 로딩 오버레이 표시
+        loadingOverlay.style.display = 'flex';
 
         const productNumber = `${prefixInput.value}-${numberInput.value}${suffixInput.value}${qCheckInput.checked ? 'Q' : ''}${extraInput.value ? `-${extraInput.value}` : ''}`;
         const type = Array.from(document.querySelectorAll('#type-container input:checked')).map(el => el.value).join(', ');
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const productSnapshot = await getDocs(productQuery);
         if (!productSnapshot.empty) {
             alert('This product number already exists!');
-            loadingMessage.style.display = 'none'; // 로딩 메시지 숨김
+            loadingOverlay.style.display = 'none'; // 중복 확인 후 로딩 오버레이 숨김
             return;
         }
 
@@ -126,8 +126,9 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error uploading post:', error);
             alert('Error uploading post');
         } finally {
-            // 업로드 완료 시 로딩 메시지 숨김
-            loadingMessage.style.display = 'none';
+            // 업로드 완료 시 로딩 오버레이 숨김
+            loadingOverlay.style.display = 'none';
         }
     });
 });
+
