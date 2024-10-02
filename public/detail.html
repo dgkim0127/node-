@@ -3,19 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Post Detail</title>
+    <title>Detail Page</title>
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <header>
-        <h1>Post Detail</h1>
-        <button onclick="location.href='dashboard.html'">Back to Dashboard</button>
+        <h1 id="post-title">Post Detail</h1>
+        <button id="back-btn">Back</button>
     </header>
 
-    <section id="post-detail">
-        <h2 id="product-number">Product Number: </h2>
-        <img id="post-image" src="" alt="Product Image">
-        <!-- 추가적인 상세 정보도 여기에 표시 가능 -->
+    <section id="media-container">
+        <!-- 미디어 파일들이 표시됩니다 -->
+    </section>
+
+    <section id="post-info">
+        <!-- 제품 정보가 표시됩니다 -->
+        <p><strong>Product Number:</strong> <span id="product-number"></span></p>
+        <p><strong>Type:</strong> <span id="product-type"></span></p>
+        <p><strong>Size:</strong> <span id="product-size"></span></p>
+        <p><strong>Weight:</strong> <span id="product-weight"></span></p>
+        <p><strong>Content:</strong> <span id="product-content"></span></p>
     </section>
 
     <script type="module" src="firebaseConfig.js"></script>
