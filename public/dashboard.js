@@ -12,8 +12,18 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
         let postQuery = query(postCollection, limit(pageSize));
 
         // Type이 선택된 경우 해당 Type으로 필터링
-        if (selectedType) {
-            postQuery = query(postCollection, where("type", "==", selectedType));
+        if (selectedType && selectedType !== 'all') {
+            postQuery = query(postCollection, where("type", "array-contains", selectedType), limit(pageSize));
+        }
+
+        // 검색어가 입력된 경우
+        if (searchTerm) {
+            postQuery = query(postCollection, where("productNumber", ">=", searchTerm), where("productNumber", "<=", searchTerm + '\uf8ff'), limit(pageSize));
+        }
+
+        // 페이징 처리
+        if (isNextPage && lastVisible) {
+            postQuery = query(currentQuery, startAfter(lastVisible), limit(pageSize));
         }
 
         const postSnapshot = await getDocs(postQuery);
