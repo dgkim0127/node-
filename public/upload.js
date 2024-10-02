@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const sizeInput = document.getElementById('size');
     const weightInput = document.getElementById('weight');
     const sizeUnitInput = document.getElementById('size-unit');
+    const loadingMessage = document.getElementById('loading-message'); // 로딩 메시지 요소
+
     let selectedThumbnail = null; // 선택한 썸네일을 저장할 변수
     let mediaURLs = [];  // 업로드한 파일 URL을 저장할 배열
 
@@ -36,11 +38,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     imgElement.src = e.target.result;
                     imgElement.alt = `preview-${index}`;
                     imgElement.addEventListener('click', () => {
-                        // 선택한 썸네일을 강조 표시
                         const selected = document.querySelector('.selected');
                         if (selected) selected.classList.remove('selected');
                         imgElement.classList.add('selected');
-                        selectedThumbnail = index;  // 썸네일 인덱스 저장
+                        selectedThumbnail = index;
                     });
                     previewGrid.appendChild(imgElement);
                 } else if (mediaType === 'video') {
@@ -49,11 +50,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     videoElement.controls = true;
                     videoElement.alt = `preview-${index}`;
                     videoElement.addEventListener('click', () => {
-                        // 선택한 썸네일을 강조 표시
                         const selected = document.querySelector('.selected');
                         if (selected) selected.classList.remove('selected');
                         videoElement.classList.add('selected');
-                        selectedThumbnail = index;  // 썸네일 인덱스 저장
+                        selectedThumbnail = index;
                     });
                     previewGrid.appendChild(videoElement);
                 }
@@ -76,6 +76,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // 업로드 시작 시 로딩 메시지 표시
+        loadingMessage.style.display = 'block';
+
         const productNumber = `${prefixInput.value}-${numberInput.value}${suffixInput.value}${qCheckInput.checked ? 'Q' : ''}${extraInput.value ? `-${extraInput.value}` : ''}`;
         const type = Array.from(document.querySelectorAll('#type-container input:checked')).map(el => el.value).join(', ');
         const size = `${sizeInput.value}${sizeUnitInput.value}`;
@@ -88,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const productSnapshot = await getDocs(productQuery);
         if (!productSnapshot.empty) {
             alert('This product number already exists!');
+            loadingMessage.style.display = 'none'; // 로딩 메시지 숨김
             return;
         }
 
@@ -117,9 +121,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 createdAt: new Date()
             });
             alert('Post uploaded successfully!');
-            window.location.href = 'dashboard.html';
+            window.location.href = 'dashboard.html'; // 업로드 완료 후 대시보드로 이동
         } catch (error) {
             console.error('Error uploading post:', error);
+            alert('Error uploading post');
+        } finally {
+            // 업로드 완료 시 로딩 메시지 숨김
+            loadingMessage.style.display = 'none';
         }
     });
 });
