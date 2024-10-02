@@ -31,17 +31,6 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
             return;
         }
 
-        // 검색어가 있는 경우 productNumber 필드에서 4자리 숫자만 추출하여 부분 일치 검색
-        if (searchTerm) {
-            const isNumeric = /^\d+$/.test(searchTerm); // 검색어가 숫자인지 확인
-            if (isNumeric) {
-                postList = postList.filter(post => {
-                    const numberMatch = post.productNumber.match(/\d{4}/); // 품번에서 4자리 숫자 추출
-                    return numberMatch && numberMatch[0].includes(searchTerm); // 부분 일치 확인
-                });
-            }
-        }
-
         // 게시물을 품번의 4자리 숫자 기준으로 오름차순 정렬
         postList = postList.sort((a, b) => {
             const numA = parseInt(a.productNumber.match(/\d{4}/) || 0); // 품번에서 4자리 숫자 추출
@@ -49,19 +38,27 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
             return numA - numB; // 오름차순 정렬
         });
 
-        if (postList.length === 0) {
-            postGrid.innerHTML = '<p>No matching posts found</p>';
-            return;
-        }
-
         postList.forEach(post => {
-            const thumbnail = post.thumbnail || 'default-thumbnail.png';  // 기본 이미지 설정
+            const thumbnailURL = post.thumbnail || 'default-thumbnail.png';  // 기본 이미지 설정
+            const mediaType = thumbnailURL.split('.').pop();  // 파일 확장자로 타입 추출
 
             const postElement = document.createElement('div');
             postElement.classList.add('post-item');
-            postElement.innerHTML = `
-                <img src="${thumbnail}" alt="${post.productNumber}">
-            `;
+
+            if (mediaType === 'mp4' || mediaType === 'webm' || mediaType === 'ogg') {
+                // 영상 파일일 경우 비디오 태그 생성
+                const videoElement = document.createElement('video');
+                videoElement.src = thumbnailURL;
+                videoElement.controls = true;  // 비디오 컨트롤러 추가
+                videoElement.style.width = '100%';  // 비디오 크기 조정
+                postElement.appendChild(videoElement);
+            } else {
+                // 이미지 파일일 경우 이미지 태그 생성
+                const imgElement = document.createElement('img');
+                imgElement.src = thumbnailURL;
+                imgElement.alt = `Thumbnail for post ${post.productNumber}`;
+                postElement.appendChild(imgElement);
+            }
 
             // 게시물을 클릭하면 상세 페이지로 이동
             postElement.addEventListener('click', () => {
