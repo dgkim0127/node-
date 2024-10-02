@@ -224,9 +224,9 @@ header {
     flex: 1;
 }
 
-/* 사이즈와 중량 필드 크기를 줄임 */
+/* 사이즈와 중량 필드 크기를 3분의 1로 줄임 */
 #size, #weight {
-    width: 100%;
+    width: 33%;
 }
 
 /* 미리보기 그리드 스타일 */
@@ -263,6 +263,7 @@ header {
 #upload-form button:hover {
     background-color: #003d80;
 }
+
 /* 상세 페이지 스타일 */
 #media-container {
     display: flex;
