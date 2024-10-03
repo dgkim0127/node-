@@ -1,18 +1,19 @@
 import { storage, db } from './firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
-import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('upload-form');
     const mediaFilesInput = document.getElementById('mediaFiles');
-    const productNameInput = document.getElementById('product-name'); // 이름 입력 필드
+    const productNameInput = document.getElementById('product-name');
     const sizeInput = document.getElementById('size');
     const weightInput = document.getElementById('weight');
     const sizeUnitInput = document.getElementById('size-unit');
-    const loadingOverlay = document.getElementById('loading-overlay'); // 로딩 오버레이
+    const previewGrid = document.getElementById('preview-grid'); // 미리보기 그리드
+    const loadingOverlay = document.getElementById('loading-overlay');
 
-    let selectedThumbnail = null; // 선택한 썸네일을 저장할 변수
-    let mediaURLs = [];  // 업로드한 파일 URL을 저장할 배열
+    let selectedThumbnail = null;
+    let mediaURLs = [];
 
     // 미디어 파일 미리보기 (이미지 및 동영상)
     mediaFilesInput.addEventListener('change', (event) => {
@@ -26,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const imgElement = document.createElement('img');
                     imgElement.src = e.target.result;
                     imgElement.alt = `preview-${index}`;
+                    imgElement.classList.add('preview-thumbnail');
                     imgElement.addEventListener('click', () => {
                         const selected = document.querySelector('.selected');
                         if (selected) selected.classList.remove('selected');
@@ -37,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const videoElement = document.createElement('video');
                     videoElement.src = e.target.result;
                     videoElement.controls = true;
+                    videoElement.classList.add('preview-thumbnail');
                     videoElement.alt = `preview-${index}`;
                     videoElement.addEventListener('click', () => {
                         const selected = document.querySelector('.selected');
@@ -55,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
     uploadForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
-        // 필수 필드 확인
         if (!mediaFilesInput.files.length) {
             alert('Please upload at least one image or video.');
             return;
@@ -65,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 업로드 시작 시 로딩 오버레이 표시
         loadingOverlay.style.display = 'flex';
 
         const productName = productNameInput.value;
@@ -75,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const content = document.getElementById('content').value;
         const files = mediaFilesInput.files;
 
-        // Firebase Storage에 파일 업로드 및 URL 저장
         mediaURLs = [];
         for (let i = 0; i < files.length; i++) {
             const file = files[i];
@@ -85,13 +85,11 @@ document.addEventListener('DOMContentLoaded', () => {
             mediaURLs.push(downloadURL);
         }
 
-        // 선택한 썸네일 URL 가져오기
         const thumbnailURL = mediaURLs[selectedThumbnail] || mediaURLs[0];
 
-        // Firestore에 데이터 저장
         try {
             await addDoc(collection(db, "posts"), {
-                name: productName, // 품번 대신 이름 저장
+                name: productName,
                 type: type,
                 size: size,
                 weight: weight,
@@ -101,12 +99,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 createdAt: new Date()
             });
             alert('Post uploaded successfully!');
-            window.location.href = 'dashboard.html'; // 업로드 완료 후 대시보드로 이동
+            window.location.href = 'dashboard.html';
         } catch (error) {
             console.error('Error uploading post:', error);
             alert('Error uploading post');
         } finally {
-            // 업로드 완료 시 로딩 오버레이 숨김
             loadingOverlay.style.display = 'none';
         }
     });
