@@ -85,26 +85,37 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
     }
 };
 
-// 페이지 로드 시 첫 번째 페이지의 게시물을 불러옴
-window.addEventListener('DOMContentLoaded', () => loadPosts());
+// 페이지가 로드된 후에 이벤트 리스너 및 초기 데이터를 불러옴
+document.addEventListener('DOMContentLoaded', () => {
+    // 게시물 목록 로드
+    loadPosts();
 
-// 다음 페이지로 이동하는 함수
-const nextPageButton = document.getElementById('next-page-btn');
-nextPageButton.addEventListener('click', () => loadPosts(true));
+    // 검색 기능 처리
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.trim();
+        loadPosts(false, searchTerm); // 검색어가 변경될 때마다 검색
+    });
 
-// 검색 기능 처리
-const searchInput = document.getElementById('search-input');
-searchInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.trim();
-    loadPosts(false, searchTerm); // 검색어가 변경될 때마다 검색
-});
+    // 다음 페이지로 이동하는 함수
+    const nextPageButton = document.getElementById('next-page-btn');
+    if (nextPageButton) {
+        nextPageButton.addEventListener('click', () => loadPosts(true));
+    }
 
-// 업로드 버튼 클릭 시 업로드 페이지로 이동
-document.getElementById('upload-btn').addEventListener('click', () => {
-    window.location.href = 'upload.html'; // 업로드 페이지로 이동
-});
+    // 업로드 버튼 클릭 시 업로드 페이지로 이동
+    const uploadButton = document.getElementById('upload-btn');
+    if (uploadButton) {
+        uploadButton.addEventListener('click', () => {
+            window.location.href = 'upload.html'; // 업로드 페이지로 이동
+        });
+    }
 
-// 회원가입 버튼 클릭 시 회원가입 페이지로 이동
-document.getElementById('signup-btn').addEventListener('click', () => {
-    window.location.href = 'signup.html';  // 회원가입 페이지로 이동
+    // 회원가입 버튼 클릭 시 회원가입 페이지로 이동
+    const signupButton = document.getElementById('signup-btn');
+    if (signupButton) {
+        signupButton.addEventListener('click', () => {
+            window.location.href = 'signup.html';  // 회원가입 페이지로 이동
+        });
+    }
 });
