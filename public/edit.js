@@ -188,5 +188,28 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    loadPostDetailForEdit();
+    // 게시물 삭제 버튼 클릭 시 모달 열기
+document.getElementById('delete-btn').addEventListener('click', () => {
+    deleteModal.style.display = 'flex';
+});
+
+// 삭제 취소 버튼
+document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+    deleteModal.style.display = 'none';
+});
+
+// 게시물 삭제 확인
+document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+    try {
+        await deleteDoc(doc(db, "posts", postId));
+        alert('Post deleted successfully!');
+        window.location.href = 'dashboard.html'; // 삭제 후 대시보드로 이동
+    } catch (error) {
+        console.error('Error deleting post:', error);
+        alert('Error deleting post');
+    }
+});
+
+   // 페이지 로드 시 게시물 세부 정보 불러오기
+window.addEventListener('DOMContentLoaded', loadPostDetail);
 });
