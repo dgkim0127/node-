@@ -1,6 +1,6 @@
 // Firestore 모듈 불러오기
 import { db } from './firebaseConfig.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; // getDoc과 doc을 불러옵니다.
+import { doc, getDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; // 삭제를 위한 deleteDoc 추가
 
 // 게시물 ID 가져오기
 const urlParams = new URLSearchParams(window.location.search);
@@ -91,10 +91,26 @@ const createThumbnail = (mediaURL, index) => {
     thumbnailGallery.appendChild(imgElement);
 };
 
+// 게시물 삭제 함수
+const deletePost = async () => {
+    const confirmation = confirm("Are you sure you want to delete this post?");
+    if (confirmation) {
+        try {
+            await deleteDoc(doc(db, "posts", postId));
+            alert("Post deleted successfully.");
+            window.location.href = 'dashboard.html'; // 대시보드로 리다이렉트
+        } catch (error) {
+            console.error("Error deleting post:", error);
+            alert("Failed to delete post.");
+        }
+    }
+};
+
 // 페이지가 로드된 후 이벤트 리스너 추가
 document.addEventListener('DOMContentLoaded', () => {
     const homeButton = document.getElementById('home-btn');
     const editButton = document.getElementById('edit-btn');
+    const deleteButton = document.getElementById('delete-btn'); // 삭제 버튼
 
     // Home 버튼 이벤트 리스너
     if (homeButton) {
@@ -108,6 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
         editButton.addEventListener('click', () => {
             window.location.href = `edit.html?id=${postId}`; // 수정 페이지로 이동
         });
+    }
+
+    // Delete 버튼 이벤트 리스너
+    if (deleteButton) {
+        deleteButton.addEventListener('click', deletePost); // 삭제 버튼 클릭 시 삭제 함수 호출
     }
 
     // 게시물 세부 정보 로드
