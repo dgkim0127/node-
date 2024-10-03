@@ -23,6 +23,7 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
 
         // 페이징 처리
         if (isNextPage && lastVisible) {
+            console.log('Loading next page, starting after:', lastVisible);
             postQuery = query(currentQuery, startAfter(lastVisible), limit(pageSize)); // 이전 쿼리의 마지막 문서부터 시작
         }
 
@@ -30,7 +31,14 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
         let postList = postSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         // 마지막으로 로드한 문서를 저장하여 다음 페이지에서 사용
-        lastVisible = postSnapshot.docs[postSnapshot.docs.length - 1]; // 마지막 문서 저장
+        if (postSnapshot.docs.length > 0) {
+            lastVisible = postSnapshot.docs[postSnapshot.docs.length - 1]; // 마지막 문서 저장
+            console.log('New lastVisible:', lastVisible);
+        } else {
+            console.log('No more posts to load.');
+            lastVisible = null; // 더 이상 게시물이 없으면 lastVisible을 null로 설정
+        }
+        
         currentQuery = postQuery; // 현재 쿼리 저장
 
         const postGrid = document.getElementById('post-grid');
@@ -73,7 +81,7 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
 
         // "다음 페이지" 버튼 표시 여부 결정
         const nextPageButton = document.getElementById('next-page-btn');
-        if (postList.length < pageSize) {
+        if (postList.length < pageSize || !lastVisible) {
             nextPageButton.style.display = 'none'; // 더 이상 게시물이 없으면 숨김
         } else {
             nextPageButton.style.display = 'block'; // 다음 페이지가 있을 경우 표시
