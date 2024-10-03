@@ -43,6 +43,9 @@ const loadPostDetail = async () => {
                 const videoElement = document.createElement('video');
                 videoElement.src = mainMediaURL;
                 videoElement.controls = true;
+                videoElement.autoplay = true; // 자동 재생
+                videoElement.loop = true; // 무한 반복
+                videoElement.muted = true; // 자동 재생 시 무음 설정
                 videoElement.style.width = '60%'; // 메인 비디오 크기
                 mainMediaContainer.appendChild(videoElement);
             } else {
@@ -69,6 +72,9 @@ const loadPostDetail = async () => {
                             const newVideoElement = document.createElement('video');
                             newVideoElement.src = mediaURL;
                             newVideoElement.controls = true;
+                            newVideoElement.autoplay = true; // 자동 재생
+                            newVideoElement.loop = true; // 무한 반복
+                            newVideoElement.muted = true; // 자동 재생 시 무음 설정
                             newVideoElement.style.width = '60%';
                             mainMediaContainer.appendChild(newVideoElement);
                         } else {
