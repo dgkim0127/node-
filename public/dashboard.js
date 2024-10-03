@@ -2,7 +2,7 @@ import { db } from './firebaseConfig.js';
 import { collection, getDocs, query, where, limit, startAfter } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 let lastVisible = null; // 마지막으로 로드한 게시물의 참조를 저장
-const pageSize = 42; // 한 페이지당 게시물 수
+const pageSize = 2; // 한 페이지당 게시물 수
 let currentQuery = null; // 현재 쿼리 저장 (검색 쿼리 및 Type 필터링 포함)
 
 // Firestore에서 데이터를 로드하여 대시보드에 표시하는 함수
@@ -23,15 +23,15 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
 
         // 페이징 처리
         if (isNextPage && lastVisible) {
-            postQuery = query(currentQuery, startAfter(lastVisible), limit(pageSize));
+            postQuery = query(currentQuery, startAfter(lastVisible), limit(pageSize)); // 이전 쿼리의 마지막 문서부터 시작
         }
 
         const postSnapshot = await getDocs(postQuery);
         let postList = postSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
         // 마지막으로 로드한 문서를 저장하여 다음 페이지에서 사용
-        lastVisible = postSnapshot.docs[postSnapshot.docs.length - 1];
-        currentQuery = postQuery;
+        lastVisible = postSnapshot.docs[postSnapshot.docs.length - 1]; // 마지막 문서 저장
+        currentQuery = postQuery; // 현재 쿼리 저장
 
         const postGrid = document.getElementById('post-grid');
         postGrid.innerHTML = '';
@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 다음 페이지로 이동하는 함수
     const nextPageButton = document.getElementById('next-page-btn');
     if (nextPageButton) {
-        nextPageButton.addEventListener('click', () => loadPosts(true));
+        nextPageButton.addEventListener('click', () => loadPosts(true)); // 다음 페이지 로드
     }
 
     // 업로드 버튼 클릭 시 업로드 페이지로 이동
