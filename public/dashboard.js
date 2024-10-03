@@ -43,8 +43,8 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
 
         // 게시물을 품번의 4자리 숫자 기준으로 오름차순 정렬
         postList = postList.sort((a, b) => {
-            const numA = parseInt(a.productNumber.match(/\d{4}/) || 0); // 품번에서 4자리 숫자 추출
-            const numB = parseInt(b.productNumber.match(/\d{4}/) || 0);
+            const numA = parseInt((a.productNumber?.match(/\d{4}/) || [0])[0]); // productNumber가 존재하는지 확인
+            const numB = parseInt((b.productNumber?.match(/\d{4}/) || [0])[0]);
             return numA - numB; // 오름차순 정렬
         });
 
