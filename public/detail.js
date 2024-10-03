@@ -24,8 +24,8 @@ const loadPostDetail = async () => {
             const postData = postDoc.data();
             console.log(postData); // 데이터 로드 확인용 콘솔 로그
 
-            // 게시물 이름 설정
-            postNameElement.textContent = postData.productNumber || "No Name";
+            // 게시물 이름 설정 (헤더에 품번 표시)
+            postNameElement.textContent = postData.productNumber || "No Product Number";
 
             // 미디어 배열이 없는 경우 기본 메시지 표시
             if (!postData.media || postData.media.length === 0) {
@@ -37,7 +37,7 @@ const loadPostDetail = async () => {
             const mainMediaURL = postData.media[0]; // 첫 번째 미디어를 메인으로 설정
             const mediaType = mainMediaURL.split('.').pop(); // 파일 확장자로 타입 결정
 
-            if (mediaType === 'mp4' || mediaType === 'webm' || mediaType === 'ogg') {
+            if (['mp4', 'webm', 'ogg'].includes(mediaType)) {
                 // 동영상일 경우
                 const videoElement = document.createElement('video');
                 videoElement.src = mainMediaURL;
@@ -63,7 +63,7 @@ const loadPostDetail = async () => {
                         // 클릭 시 메인 미디어 변경
                         mainMediaContainer.innerHTML = ''; // 기존 미디어 제거
                         const newMediaType = mediaURL.split('.').pop();
-                        if (newMediaType === 'mp4' || newMediaType === 'webm' || newMediaType === 'ogg') {
+                        if (['mp4', 'webm', 'ogg'].includes(newMediaType)) {
                             const newVideoElement = document.createElement('video');
                             newVideoElement.src = mediaURL;
                             newVideoElement.controls = true;
