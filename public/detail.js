@@ -35,7 +35,7 @@ const loadPostDetail = async () => {
 
             // 메인 동영상 또는 이미지 표시
             const mainMediaURL = postData.media[0]; // 첫 번째 미디어를 메인으로 설정
-            const mediaType = mainMediaURL.split('.').pop(); // 파일 확장자로 타입 결정
+            const mediaType = mainMediaURL.split('.').pop().split('?')[0]; // 확장자만 추출
             console.log("Main Media URL: ", mainMediaURL, " | Media Type: ", mediaType); // 콘솔 로그로 확인
 
             if (['mp4', 'webm', 'ogg'].includes(mediaType)) {
@@ -57,7 +57,7 @@ const loadPostDetail = async () => {
             // 미리보기 갤러리에 나머지 미디어 추가
             postData.media.forEach((mediaURL, index) => {
                 if (index > 0) {
-                    const mediaType = mediaURL.split('.').pop();
+                    const mediaType = mediaURL.split('.').pop().split('?')[0]; // 확장자만 추출
                     console.log(`Thumbnail ${index} | URL: ${mediaURL} | Type: ${mediaType}`); // 썸네일 미디어 타입 확인
                     const imgElement = document.createElement('img');
                     imgElement.src = mediaURL;
