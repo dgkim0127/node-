@@ -1,6 +1,6 @@
 // Firestore 모듈 불러오기
 import { db } from './firebaseConfig.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"; // getDoc과 doc을 불러옵니다.
 
 // 게시물 ID 가져오기
 const urlParams = new URLSearchParams(window.location.search);
@@ -19,6 +19,7 @@ const loadPostDetail = async () => {
     }
 
     try {
+        // Firestore에서 게시물 정보 가져오기
         const postDoc = await getDoc(doc(db, "posts", postId));
         if (postDoc.exists()) {
             const postData = postDoc.data();
