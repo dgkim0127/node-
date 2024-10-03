@@ -1,7 +1,3 @@
-import { storage, db } from './firebaseConfig.js';
-import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
-import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-
 document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('upload-form');
     const mediaFilesInput = document.getElementById('mediaFiles');
@@ -9,11 +5,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const sizeInput = document.getElementById('size');
     const weightInput = document.getElementById('weight');
     const sizeUnitInput = document.getElementById('size-unit');
-    const previewGrid = document.getElementById('preview-grid'); // 미리보기 그리드
+    const previewGrid = document.getElementById('preview-grid');
     const loadingOverlay = document.getElementById('loading-overlay');
+    const backButton = document.getElementById('back-btn'); // 뒤로가기 버튼
 
     let selectedThumbnail = null;
     let mediaURLs = [];
+
+    // 뒤로가기 버튼 클릭 시 이전 페이지로 이동
+    backButton.addEventListener('click', () => {
+        window.history.back(); // 이전 페이지로 이동
+    });
 
     // 미디어 파일 미리보기 (이미지 및 동영상)
     mediaFilesInput.addEventListener('change', (event) => {
