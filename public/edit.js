@@ -18,9 +18,9 @@ const mediaFilesInput = document.getElementById('mediaFiles');
 const previewGrid = document.getElementById('preview-grid');
 const deleteMediaBtn = document.getElementById('delete-media-btn');
 
-let existingMediaURLs = []; // 기존 미디어 URLs
-let selectedMediaIndex = null; // 선택한 미디어 인덱스
-let newMediaURLs = []; // 새로운 미디어 URLs
+let existingMediaURLs = [];
+let selectedMediaIndex = null;
+let newMediaURLs = [];
 
 // Firestore에서 게시물 데이터를 불러와 수정 가능한 폼에 표시하는 함수
 const loadPostDetailForEdit = async () => {
@@ -87,8 +87,8 @@ const createThumbnail = (mediaURL, index) => {
     imgElement.alt = `Thumbnail ${index}`;
     imgElement.addEventListener('click', () => {
         displayMainMedia(mediaURL);
-        selectedMediaIndex = index; // 선택한 미디어 인덱스 저장
-        deleteMediaBtn.style.display = 'block'; // 미디어 선택 시 삭제 버튼 표시
+        selectedMediaIndex = index;
+        deleteMediaBtn.style.display = 'block';
     });
     thumbnailGallery.appendChild(imgElement);
 };
@@ -96,7 +96,7 @@ const createThumbnail = (mediaURL, index) => {
 // 미디어 파일 미리보기
 mediaFilesInput.addEventListener('change', (event) => {
     const files = event.target.files;
-    previewGrid.innerHTML = ''; // 기존 미리보기 초기화
+    previewGrid.innerHTML = '';
     Array.from(files).forEach((file, index) => {
         const reader = new FileReader();
         reader.onload = (e) => {
@@ -121,16 +121,15 @@ deleteMediaBtn.addEventListener('click', async () => {
     if (selectedMediaIndex !== null && existingMediaURLs[selectedMediaIndex]) {
         const mediaURL = existingMediaURLs[selectedMediaIndex];
 
-        // Firebase Storage에서 해당 파일 삭제
         const storageRef = ref(storage, mediaURL);
         try {
             await deleteObject(storageRef);
-            existingMediaURLs.splice(selectedMediaIndex, 1); // 미디어 URL 배열에서 제거
+            existingMediaURLs.splice(selectedMediaIndex, 1);
             selectedMediaIndex = null;
-            deleteMediaBtn.style.display = 'none'; // 삭제 후 버튼 숨김
+            deleteMediaBtn.style.display = 'none';
             alert('Media deleted successfully!');
-            thumbnailGallery.innerHTML = ''; // 썸네일 갤러리 초기화
-            existingMediaURLs.forEach((mediaURL, index) => createThumbnail(mediaURL, index)); // 갤러리 재구성
+            thumbnailGallery.innerHTML = '';
+            existingMediaURLs.forEach((mediaURL, index) => createThumbnail(mediaURL, index));
         } catch (error) {
             console.error('Error deleting media:', error);
             alert('Error deleting media');
@@ -139,54 +138,53 @@ deleteMediaBtn.addEventListener('click', async () => {
 });
 
 // 게시물 수정 폼 제출 처리
-document.addEventListener('DOMContentLoaded', () => {
-    const editForm = document.getElementById('edit-form');
-    const backButton = document.getElementById('back-btn');
+document.getElementById('submit-btn').addEventListener('click', async (e) => {
+    e.preventDefault();
 
-    if (editForm) {
-        editForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
+    const updatedData = {
+        name: productNameInput.value,
+        type: productTypeInput.value,
+        size: productSizeInput.value,
+        weight: productWeightInput.value,
+        content: productContentInput.value,
+        media: existingMediaURLs
+    };
 
-            // 기존 필드 업데이트
-            const updatedData = {
-                name: productNameInput.value,
-                type: productTypeInput.value,
-                size: productSizeInput.value,
-                weight: productWeightInput.value,
-                content: productContentInput.value,
-                media: existingMediaURLs // 삭제 및 추가된 미디어 반영
-            };
-
-            // 새로운 미디어 업로드
-            const files = mediaFilesInput.files;
-            if (files.length > 0) {
-                newMediaURLs = [];
-                for (let i = 0; i < files.length; i++) {
-                    const file = files[i];
-                    const storageRef = ref(storage, `media/${file.name}`);
-                    await uploadBytes(storageRef, file);
-                    const downloadURL = await getDownloadURL(storageRef);
-                    newMediaURLs.push(downloadURL);
-                }
-                updatedData.media = [...existingMediaURLs, ...newMediaURLs];
-            }
-
-            try {
-                await updateDoc(doc(db, "posts", postId), updatedData);
-                alert('Post updated successfully!');
-                window.location.href = `detail.html?id=${postId}`;
-            } catch (error) {
-                console.error('Error updating post:', error);
-                alert('Error updating post');
-            }
-        });
+    const files = mediaFilesInput.files;
+    if (files.length > 0) {
+        newMediaURLs = [];
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const storageRef = ref(storage, `media/${file.name}`);
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+            newMediaURLs.push(downloadURL);
+        }
+        updatedData.media = [...existingMediaURLs, ...newMediaURLs];
     }
 
-    if (backButton) {
-        backButton.addEventListener('click', () => {
-            window.history.back();
-        });
+    try {
+        await updateDoc(doc(db, "posts", postId), updatedData);
+        alert('Post updated successfully!');
+        window.location.href = `detail.html?id=${postId}`;
+    } catch (error) {
+        console.error('Error updating post:', error);
+        alert('Error updating post');
     }
-
-    loadPostDetailForEdit();
 });
+
+// 뒤로가기 버튼 클릭 시
+document.getElementById('back-btn').addEventListener('click', () => {
+    window.history.back();
+});
+
+// 추가 미디어 버튼 클릭 시 파일 선택 트리거
+document.getElementById('add-media-btn').addEventListener('click', () => {
+    const mediaInput = document.getElementById('mediaFiles');
+    if (mediaInput) {
+        mediaInput.click(); 
+    }
+});
+
+// 페이지 로드 시 게시물 세부 정보 불러오기
+window.addEventListener('DOMContentLoaded', loadPostDetailForEdit);
