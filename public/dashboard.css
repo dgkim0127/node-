@@ -22,10 +22,11 @@ header {
     transition: box-shadow 0.3s ease;
 }
 
-/* 헤더 버튼 컨테이너 */
+/* 헤더 버튼 컨테이너 (세로 정렬) */
 .header-buttons {
     display: flex;
-    gap: 15px;
+    flex-direction: column; /* 세로로 정렬 */
+    gap: 10px; /* 버튼 간격 */
 }
 
 /* 업로드 버튼과 회원가입 버튼 스타일 */
