@@ -60,61 +60,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-// 업로드 폼 제출 처리
-uploadForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
+    // 업로드 폼 제출 처리
+    uploadForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-    if (!mediaFilesInput.files.length) {
-        alert('Please upload at least one image or video.');
-        return;
-    }
-    if (!productNameInput.value || !weightInput.value || !sizeInput.value) {
-        alert('Name, weight, and size are required fields.');
-        return;
-    }
+        if (!mediaFilesInput.files.length) {
+            alert('Please upload at least one image or video.');
+            return;
+        }
+        if (!productNameInput.value || !weightInput.value || !sizeInput.value) {
+            alert('Name, weight, and size are required fields.');
+            return;
+        }
 
-    // 업로드 시작 시 로딩 오버레이 표시
-    loadingOverlay.style.display = 'flex';
+        // 썸네일 선택이 안 되었을 경우 경고
+        if (selectedThumbnail === null) {
+            alert('Please select a thumbnail.');
+            return;
+        }
 
-    const productName = productNameInput.value;
-    const productNumber = productNameInput.value; // Here we map the product name as productNumber if you want to keep both the same
-    const type = Array.from(document.querySelectorAll('#type-container input:checked')).map(el => el.value).join(', ');
-    const size = `${sizeInput.value}${sizeUnitInput.value}`;
-    const weight = weightInput.value;
-    const content = document.getElementById('content').value;
-    const files = mediaFilesInput.files;
+        // 업로드 시작 시 로딩 오버레이 표시
+        loadingOverlay.style.display = 'flex';
 
-    mediaURLs = [];
-    for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const storageRef = ref(storage, `media/${file.name}`);
-        await uploadBytes(storageRef, file);
-        const downloadURL = await getDownloadURL(storageRef);
-        mediaURLs.push(downloadURL);
-    }
+        const productName = productNameInput.value;
+        const type = Array.from(document.querySelectorAll('#type-container input:checked')).map(el => el.value).join(', ');
+        const size = `${sizeInput.value}${sizeUnitInput.value}`;
+        const weight = weightInput.value;
+        const content = document.getElementById('content').value;
+        const files = mediaFilesInput.files;
 
-    const thumbnailURL = mediaURLs[selectedThumbnail] || mediaURLs[0];
+        mediaURLs = [];
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const storageRef = ref(storage, `media/${file.name}`);
+            await uploadBytes(storageRef, file);
+            const downloadURL = await getDownloadURL(storageRef);
+            mediaURLs.push(downloadURL);
+        }
 
-    try {
-        // Firestore에 데이터 저장
-        await addDoc(collection(db, "posts"), {
-            name: productName,
-            productNumber: productNumber, // Add product number here
-            type: type,
-            size: size,
-            weight: weight,
-            content: content,
-            media: mediaURLs,
-            thumbnail: thumbnailURL,
-            createdAt: new Date()
-        });
-        alert('Post uploaded successfully!');
-        window.location.href = 'dashboard.html';
-    } catch (error) {
-        console.error('Error uploading post:', error);
-        alert('Error uploading post');
-    } finally {
-        // 업로드 완료 시 로딩 오버레이 숨김
-        loadingOverlay.style.display = 'none';
-    }
+        const thumbnailURL = mediaURLs[selectedThumbnail];
+
+        try {
+            // Firestore에 데이터 저장
+            await addDoc(collection(db, "posts"), {
+                name: productName,
+                productNumber: productName, // 제품명과 품번을 동일하게 사용
+                type: type,
+                size: size,
+                weight: weight,
+                content: content,
+                media: mediaURLs,
+                thumbnail: thumbnailURL,
+                createdAt: new Date()
+            });
+            alert('Post uploaded successfully!');
+            window.location.href = 'dashboard.html';
+        } catch (error) {
+            console.error('Error uploading post:', error);
+            alert('Error uploading post');
+        } finally {
+            // 업로드 완료 시 로딩 오버레이 숨김
+            loadingOverlay.style.display = 'none';
+        }
+    });
 });
