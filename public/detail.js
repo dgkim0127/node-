@@ -113,5 +113,10 @@ document.getElementById('back-btn').addEventListener('click', () => {
     window.history.back();
 });
 
+// 수정 버튼 클릭 시 수정 페이지로 이동
+document.getElementById('edit-btn').addEventListener('click', () => {
+    window.location.href = `edit.html?id=${postId}`; // 수정 페이지로 이동
+});
+
 // 페이지 로드 시 게시물 세부 정보 불러오기
 window.addEventListener('DOMContentLoaded', loadPostDetail);
