@@ -46,7 +46,8 @@ const loadPostDetail = async () => {
                 videoElement.autoplay = true; // 자동 재생
                 videoElement.loop = true; // 무한 반복
                 videoElement.muted = true; // 자동 재생 시 무음 설정
-                videoElement.style.width = '60%'; // 메인 비디오 크기
+                videoElement.style.width = '80%'; // 동영상 크기를 80%로 설정 (더 작게)
+                videoElement.style.maxHeight = '400px'; // 최대 높이를 400px로 제한
                 mainMediaContainer.appendChild(videoElement);
             } else {
                 // 이미지일 경우
@@ -75,7 +76,8 @@ const loadPostDetail = async () => {
                             newVideoElement.autoplay = true; // 자동 재생
                             newVideoElement.loop = true; // 무한 반복
                             newVideoElement.muted = true; // 자동 재생 시 무음 설정
-                            newVideoElement.style.width = '60%';
+                            newVideoElement.style.width = '80%'; // 동영상 크기를 80%로 설정 (더 작게)
+                            newVideoElement.style.maxHeight = '400px'; // 최대 높이를 400px로 제한
                             mainMediaContainer.appendChild(newVideoElement);
                         } else {
                             const newImgElement = document.createElement('img');
