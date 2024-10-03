@@ -4,19 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Page</title>
-    <link rel="stylesheet" href="dashboard.css"> <!-- 대시보드와 동일한 CSS 파일 사용 -->
+    <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
     <header>
-        <h1 id="post-name">Loading...</h1> <!-- 게시물 이름을 표시할 부분 -->
-        <button id="back-btn">Back</button> <!-- 뒤로가기 버튼 -->
+        <h1 id="post-name">Loading...</h1> <!-- 이름을 표시할 부분 -->
+        <div class="header-buttons">
+            <button id="back-btn">Back</button>
+            <button id="edit-btn">Edit</button> <!-- 수정 버튼 추가 -->
+        </div>
     </header>
 
-    <section id="main-media-container"></section> <!-- 메인 동영상 또는 이미지 표시 -->
-    <section id="thumbnail-gallery"></section> <!-- 작은 미리보기 이미지 표시 -->
-    <section id="post-info"></section> <!-- 게시물 정보를 표시할 부분 -->
+    <section id="main-media-container"></section>
+    <section id="thumbnail-gallery"></section>
+    <section id="post-info"></section>
 
-    <!-- Firebase와 detail.js 연결 -->
     <script type="module" src="firebaseConfig.js"></script>
     <script type="module" src="detail.js"></script>
 </body>
