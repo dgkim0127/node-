@@ -277,7 +277,7 @@ header {
     font-weight: bold;
 }
 
-/* 상세 페이지 스타일 */
+/* 상세 페이지 미디어 컨테이너 */
 #main-media-container {
     display: flex;
     justify-content: center; /* 중앙 정렬 */
@@ -293,6 +293,7 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 
+/* 썸네일 갤러리 스타일 */
 #thumbnail-gallery {
     display: flex;
     justify-content: center;
@@ -332,7 +333,7 @@ header {
 
 /* 반응형 미디어 설정 */
 @media (max-width: 600px) {
-    #media-container img, #media-container video {
+    #main-media-container img, #main-media-container video {
         width: 100%; /* 작은 화면에서 미디어 파일이 화면에 맞게 조정 */
         height: auto;
     }
