@@ -1,62 +1,100 @@
 import { db } from './firebaseConfig.js';
-import { doc, getDoc, updateDoc } from 'https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js';
+import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
-// URL에서 게시물 ID 추출
+// 게시물 ID 가져오기
 const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get('id');
 
-// DOM 요소 참조
-const productNumberInput = document.getElementById('productNumber');
-const typeInput = document.getElementById('type');
-const sizeInput = document.getElementById('size');
-const weightInput = document.getElementById('weight');
-const contentInput = document.getElementById('content');
-const saveButton = document.getElementById('saveButton');
+const postNameElement = document.getElementById('post-name');
+const productNameInput = document.getElementById('product-name');
+const productTypeInput = document.getElementById('product-type');
+const productSizeInput = document.getElementById('product-size');
+const productWeightInput = document.getElementById('product-weight');
+const productContentInput = document.getElementById('product-content');
+const mainMediaContainer = document.getElementById('main-media-container');
+const thumbnailGallery = document.getElementById('thumbnail-gallery');
 
-// Firestore에서 게시물 정보 로드
-async function loadPostDetails() {
-    const docRef = doc(db, 'posts', postId);
-    const docSnap = await getDoc(docRef);
-
-    if (docSnap.exists()) {
-        const postData = docSnap.data();
-
-        // 게시물 정보를 입력 필드에 표시
-        productNumberInput.value = postData.productNumber;
-        typeInput.value = postData.type;
-        sizeInput.value = postData.size;
-        weightInput.value = postData.weight;
-        contentInput.value = postData.content || '';
-    } else {
-        console.log('해당 게시물을 찾을 수 없습니다.');
+// Firestore에서 게시물 데이터를 불러와 수정 가능한 폼에 표시하는 함수
+const loadPostDetailForEdit = async () => {
+    if (!postId) {
+        postNameElement.textContent = 'Post Not Found';
+        return;
     }
-}
-
-// 게시물 업데이트 처리
-saveButton.addEventListener('click', async () => {
-    const updatedProductNumber = productNumberInput.value;
-    const updatedType = typeInput.value;
-    const updatedSize = sizeInput.value;
-    const updatedWeight = weightInput.value;
-    const updatedContent = contentInput.value || '내용 없음';
 
     try {
-        const docRef = doc(db, 'posts', postId);
-        await updateDoc(docRef, {
-            productNumber: updatedProductNumber,
-            type: updatedType,
-            size: updatedSize,
-            weight: updatedWeight,
-            content: updatedContent
-        });
+        const postDoc = await getDoc(doc(db, "posts", postId));
+        if (postDoc.exists()) {
+            const postData = postDoc.data();
+            postNameElement.textContent = postData.productNumber || "No Product Number";
 
-        alert('수정 완료!');
-        window.location.href = `detail.html?id=${postId}`;
+            // 폼 필드에 기존 데이터 채우기
+            productNameInput.value = postData.name || '';
+            productTypeInput.value = postData.type || '';
+            productSizeInput.value = postData.size || '';
+            productWeightInput.value = postData.weight || '';
+            productContentInput.value = postData.content || '';
+
+            // 메인 미디어 표시
+            const mainMediaURL = postData.media[0];
+            const mediaType = mainMediaURL.split('.').pop().split('?')[0];
+            if (['mp4', 'webm', 'ogg'].includes(mediaType)) {
+                const videoElement = document.createElement('video');
+                videoElement.src = mainMediaURL;
+                videoElement.controls = true;
+                videoElement.style.width = '60%';
+                mainMediaContainer.appendChild(videoElement);
+            } else {
+                const imgElement = document.createElement('img');
+                imgElement.src = mainMediaURL;
+                imgElement.alt = "Main media image";
+                imgElement.style.width = '60%';
+                mainMediaContainer.appendChild(imgElement);
+            }
+
+            // 썸네일 갤러리 표시
+            postData.media.forEach((mediaURL, index) => {
+                if (index > 0) {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = mediaURL;
+                    imgElement.alt = `Thumbnail ${index}`;
+                    thumbnailGallery.appendChild(imgElement);
+                }
+            });
+        } else {
+            postNameElement.textContent = 'Post Not Found';
+        }
     } catch (error) {
-        console.error('수정 중 오류 발생:', error);
-        alert('수정 중 오류가 발생했습니다. 다시 시도해 주세요.');
+        console.error("Error loading post details for edit:", error);
+        postNameElement.textContent = 'Error loading post';
+    }
+};
+
+// 게시물 수정 폼 제출 처리
+document.getElementById('edit-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const updatedData = {
+        name: productNameInput.value,
+        type: productTypeInput.value,
+        size: productSizeInput.value,
+        weight: productWeightInput.value,
+        content: productContentInput.value
+    };
+
+    try {
+        await updateDoc(doc(db, "posts", postId), updatedData);
+        alert('Post updated successfully!');
+        window.location.href = `detail.html?id=${postId}`; // 수정 후 상세 페이지로 돌아가기
+    } catch (error) {
+        console.error('Error updating post:', error);
+        alert('Error updating post');
     }
 });
 
-// 게시물 로드
-loadPostDetails();
+// 뒤로가기 버튼 클릭 시
+document.getElementById('back-btn').addEventListener('click', () => {
+    window.history.back();
+});
+
+// 페이지 로드 시 게시물 세부 정보 불러오기
+window.addEventListener('DOMContentLoaded', loadPostDetailForEdit);
