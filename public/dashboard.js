@@ -41,13 +41,6 @@ const loadPosts = async (isNextPage = false, searchTerm = '', selectedType = '')
             return;
         }
 
-        // 게시물을 품번의 4자리 숫자 기준으로 오름차순 정렬
-        postList = postList.sort((a, b) => {
-            const numA = parseInt((a.productNumber?.match(/\d{4}/) || [0])[0]); // productNumber가 존재하는지 확인
-            const numB = parseInt((b.productNumber?.match(/\d{4}/) || [0])[0]);
-            return numA - numB; // 오름차순 정렬
-        });
-
         postList.forEach(post => {
             const thumbnailURL = post.thumbnail || 'default-thumbnail.png';  // 기본 이미지 설정
             const mediaType = thumbnailURL.split('.').pop();  // 파일 확장자로 타입 추출
@@ -103,26 +96,15 @@ nextPageButton.addEventListener('click', () => loadPosts(true));
 const searchInput = document.getElementById('search-input');
 searchInput.addEventListener('input', (e) => {
     const searchTerm = e.target.value.trim();
-    const selectedType = document.getElementById('type-filter').value; // 선택된 Type
-    loadPosts(false, searchTerm, selectedType); // 검색어가 변경될 때마다 검색
-});
-
-// Type 필터링 기능 처리
-const typeFilter = document.getElementById('type-filter');
-typeFilter.addEventListener('change', () => {
-    const selectedType = typeFilter.value;
-    const searchTerm = searchInput.value.trim(); // 현재 입력된 검색어
-    loadPosts(false, searchTerm, selectedType); // 선택된 Type에 따라 필터링
+    loadPosts(false, searchTerm); // 검색어가 변경될 때마다 검색
 });
 
 // 업로드 버튼 클릭 시 업로드 페이지로 이동
-const uploadButton = document.getElementById('upload-button');
-uploadButton.addEventListener('click', () => {
-    window.location.href = 'upload.html';
+document.getElementById('upload-btn').addEventListener('click', () => {
+    window.location.href = 'upload.html'; // 업로드 페이지로 이동
 });
 
 // 회원가입 버튼 클릭 시 회원가입 페이지로 이동
-const signupButton = document.getElementById('signup-button');
-signupButton.addEventListener('click', () => {
+document.getElementById('signup-btn').addEventListener('click', () => {
     window.location.href = 'signup.html';  // 회원가입 페이지로 이동
 });
