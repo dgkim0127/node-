@@ -98,14 +98,13 @@ header {
     overflow: hidden;
     width: 100%;
     padding-bottom: 100%; /* 정사각형 모양 */
-    background-color: white;
+    background-color: rgba(0, 0, 0, 0.1); /* 게시물 기본 어두운 배경 추가 */
     border: 1px solid #ccc;
     border-radius: 8px; /* 부드러운 모서리 */
-    background-color: rgba(0, 0, 0, 0.1); /* 게시물 기본 어두운 배경 추가 */
     transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
-.post-item img {
+.post-item img, .post-item video {
     position: absolute;
     top: 0;
     left: 0;
@@ -121,7 +120,7 @@ header {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2); /* 호버 시 부드러운 그림자 확대 */
 }
 
-.post-item:hover img {
+.post-item:hover img, .post-item:hover video {
     opacity: 0.8;
     transform: scale(1.1); /* 이미지 확대 효과 */
 }
@@ -209,7 +208,6 @@ header {
     margin-bottom: 16px;
 }
 
-/* 체크박스 선택 시 글자 진하게, 선택 안하면 흐리게 */
 #type-container label {
     opacity: 0.5;
     font-weight: normal;
@@ -243,9 +241,9 @@ header {
     flex: 1;
 }
 
-/* 사이즈와 중량 필드 크기를 3분의 1로 줄임 */
+/* 사이즈와 중량 필드 크기를 100%로 설정 */
 #size, #weight {
-    width: 33%;
+    width: 100%;
 }
 
 /* 미리보기 그리드 스타일 */
@@ -267,6 +265,35 @@ header {
 
 #preview-grid img.selected, #preview-grid video.selected {
     border-color: #002366; /* 선택된 썸네일에 로얄블루 테두리 */
+}
+
+/* 미디어 삭제 및 추가 버튼 스타일 */
+#delete-media-btn, #add-media-btn {
+    background-color: #0056b3; /* 로얄블루 색상 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-top: 20px;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    display: block;
+    width: 100%;
+}
+
+#delete-media-btn:hover, #add-media-btn:hover {
+    background-color: #003d80; /* 호버 시 더 짙은 로얄블루 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* 미디어 삭제 버튼을 빨간색으로 설정 */
+#delete-media-btn {
+    background-color: #ff4d4d; /* 빨간색 버튼 */
+}
+
+#delete-media-btn:hover {
+    background-color: #ff1a1a; /* 호버 시 더 짙은 빨간색 */
 }
 
 /* 제출 버튼 스타일 */
@@ -378,6 +405,12 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+#edit-info form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
 #edit-info label {
     font-weight: bold;
     margin-bottom: 8px;
@@ -392,8 +425,10 @@ header {
     border-radius: 4px;
     border: 1px solid #ccc;
     box-sizing: border-box;
+    font-size: 16px;
 }
 
+/* 제출 버튼 스타일 */
 #edit-info button {
     background-color: #0056b3;
     color: white;
@@ -408,3 +443,43 @@ header {
     background-color: #003d80;
 }
 
+/* 미디어 섹션 */
+#edit-media {
+    margin-top: 20px;
+    padding: 20px;
+    max-width: 800px;
+    margin: 20px auto; /* 수평 중앙 정렬 및 상단 여백 */
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#edit-media label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    display: block;
+}
+
+#edit-media input[type="file"] {
+    margin-bottom: 16px;
+}
+
+/* 미리보기 그리드 스타일 */
+#preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 10px;
+}
+
+#preview-grid img, #preview-grid video {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+#preview-grid img.selected, #preview-grid video.selected {
+    border-color: #002366; /* 선택된 썸네일에 로얄블루 테두리 */
+}
