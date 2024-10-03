@@ -22,7 +22,7 @@ const loadPostDetail = async () => {
         const postDoc = await getDoc(doc(db, "posts", postId));
         if (postDoc.exists()) {
             const postData = postDoc.data();
-            console.log(postData); // 데이터 로드 확인용 콘솔 로그
+            console.log("Post Data: ", postData); // 데이터 로드 확인용 콘솔 로그
 
             // 게시물 이름 설정 (헤더에 품번 표시)
             postNameElement.textContent = postData.productNumber || "No Product Number";
@@ -36,6 +36,7 @@ const loadPostDetail = async () => {
             // 메인 동영상 또는 이미지 표시
             const mainMediaURL = postData.media[0]; // 첫 번째 미디어를 메인으로 설정
             const mediaType = mainMediaURL.split('.').pop(); // 파일 확장자로 타입 결정
+            console.log("Main Media URL: ", mainMediaURL, " | Media Type: ", mediaType); // 콘솔 로그로 확인
 
             if (['mp4', 'webm', 'ogg'].includes(mediaType)) {
                 // 동영상일 경우
@@ -56,14 +57,15 @@ const loadPostDetail = async () => {
             // 미리보기 갤러리에 나머지 미디어 추가
             postData.media.forEach((mediaURL, index) => {
                 if (index > 0) {
+                    const mediaType = mediaURL.split('.').pop();
+                    console.log(`Thumbnail ${index} | URL: ${mediaURL} | Type: ${mediaType}`); // 썸네일 미디어 타입 확인
                     const imgElement = document.createElement('img');
                     imgElement.src = mediaURL;
                     imgElement.alt = `Thumbnail ${index}`;
                     imgElement.addEventListener('click', () => {
                         // 클릭 시 메인 미디어 변경
                         mainMediaContainer.innerHTML = ''; // 기존 미디어 제거
-                        const newMediaType = mediaURL.split('.').pop();
-                        if (['mp4', 'webm', 'ogg'].includes(newMediaType)) {
+                        if (['mp4', 'webm', 'ogg'].includes(mediaType)) {
                             const newVideoElement = document.createElement('video');
                             newVideoElement.src = mediaURL;
                             newVideoElement.controls = true;
