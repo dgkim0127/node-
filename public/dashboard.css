@@ -46,6 +46,23 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 호버 시 그림자 추가 */
 }
 
+/* 뒤로가기 버튼 디자인 */
+#back-btn {
+    background-color: #0056b3; /* 로얄블루 계열의 버튼 색상 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 8px; /* 부드러운 모서리 */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#back-btn:hover {
+    background-color: #003d80; /* 호버 시 더 짙은 로얄블루 */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 호버 시 그림자 추가 */
+}
+
 /* 검색창을 헤더 아래 좌측에 배치 */
 #search-container {
     display: flex;
@@ -287,23 +304,24 @@ header {
     font-weight: bold;
 }
 
-/* 상세 페이지 미디어 컨테이너 */
+/* 메인 미디어 컨테이너 */
 #main-media-container {
     display: flex;
-    justify-content: center; /* 중앙 정렬 */
+    justify-content: center;
     align-items: center;
     margin-bottom: 20px;
 }
 
 #main-media-container video,
 #main-media-container img {
-    width: 60%; /* 동영상 및 이미지 크기를 설정 */
+    width: 60%; /* 동영상 및 이미지 크기 */
+    max-width: 500px; /* 최대 크기 설정 */
     height: auto;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
 }
 
-/* 썸네일 갤러리 스타일 */
+/* 썸네일 갤러리 */
 #thumbnail-gallery {
     display: flex;
     justify-content: center;
@@ -312,7 +330,7 @@ header {
 }
 
 #thumbnail-gallery img {
-    width: 100px; /* 작은 이미지 크기 */
+    width: 80px; /* 작은 이미지 크기 */
     height: auto;
     border-radius: 8px;
     cursor: pointer;
@@ -343,7 +361,8 @@ header {
 
 /* 반응형 미디어 설정 */
 @media (max-width: 600px) {
-    #main-media-container img, #main-media-container video {
+    #main-media-container video,
+    #main-media-container img {
         width: 100%; /* 작은 화면에서 미디어 파일이 화면에 맞게 조정 */
         height: auto;
     }
