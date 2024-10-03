@@ -69,32 +69,42 @@ const loadPostDetailForEdit = async () => {
     }
 };
 
-// 게시물 수정 폼 제출 처리
-document.getElementById('edit-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
+// DOM이 로드된 후에 이벤트 리스너를 추가
+document.addEventListener('DOMContentLoaded', () => {
+    const editForm = document.getElementById('edit-form');
+    const backButton = document.getElementById('back-btn');
 
-    const updatedData = {
-        name: productNameInput.value,
-        type: productTypeInput.value,
-        size: productSizeInput.value,
-        weight: productWeightInput.value,
-        content: productContentInput.value
-    };
+    if (editForm) {
+        // 게시물 수정 폼 제출 처리
+        editForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
 
-    try {
-        await updateDoc(doc(db, "posts", postId), updatedData);
-        alert('Post updated successfully!');
-        window.location.href = `detail.html?id=${postId}`; // 수정 후 상세 페이지로 돌아가기
-    } catch (error) {
-        console.error('Error updating post:', error);
-        alert('Error updating post');
+            const updatedData = {
+                name: productNameInput.value,
+                type: productTypeInput.value,
+                size: productSizeInput.value,
+                weight: productWeightInput.value,
+                content: productContentInput.value
+            };
+
+            try {
+                await updateDoc(doc(db, "posts", postId), updatedData);
+                alert('Post updated successfully!');
+                window.location.href = `detail.html?id=${postId}`; // 수정 후 상세 페이지로 돌아가기
+            } catch (error) {
+                console.error('Error updating post:', error);
+                alert('Error updating post');
+            }
+        });
     }
-});
 
-// 뒤로가기 버튼 클릭 시
-document.getElementById('back-btn').addEventListener('click', () => {
-    window.history.back();
-});
+    if (backButton) {
+        // 뒤로가기 버튼 클릭 시
+        backButton.addEventListener('click', () => {
+            window.history.back();
+        });
+    }
 
-// 페이지 로드 시 게시물 세부 정보 불러오기
-window.addEventListener('DOMContentLoaded', loadPostDetailForEdit);
+    // 페이지 로드 시 게시물 세부 정보 불러오기
+    loadPostDetailForEdit();
+});
