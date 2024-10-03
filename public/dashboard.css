@@ -45,11 +45,11 @@ header {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* 호버 시 그림자 추가 */
 }
 
-/* 검색창을 헤더 아래에 배치 */
+/* 검색창을 헤더 아래 좌측에 배치 */
 #search-container {
     display: flex;
-    justify-content: center;
-    margin-top: 20px;
+    justify-content: flex-start; /* 왼쪽 정렬 */
+    padding: 20px 40px;
 }
 
 #search-input {
