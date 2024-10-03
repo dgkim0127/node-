@@ -73,6 +73,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // 썸네일 선택 확인
+        if (selectedThumbnail === null) {
+            alert('Please select a thumbnail before uploading!');
+            return;
+        }
+
         // 업로드 시작 시 로딩 오버레이 표시
         loadingOverlay.style.display = 'flex';
 
