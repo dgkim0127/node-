@@ -1,3 +1,7 @@
+import { storage, db } from './firebaseConfig.js';
+import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
+import { collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+
 document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('upload-form');
     const mediaFilesInput = document.getElementById('mediaFiles');
@@ -6,13 +10,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const weightInput = document.getElementById('weight');
     const sizeUnitInput = document.getElementById('size-unit');
     const previewGrid = document.getElementById('preview-grid');
-    const loadingOverlay = document.getElementById('loading-overlay');
-    const backButton = document.getElementById('back-btn'); // 뒤로가기 버튼
+    const loadingOverlay = document.getElementById('loading-overlay'); // 로딩 오버레이
 
     let selectedThumbnail = null;
     let mediaURLs = [];
 
-    // 뒤로가기 버튼 클릭 시 이전 페이지로 이동
+    // 뒤로가기 버튼 설정
+    const backButton = document.getElementById('back-btn');
     backButton.addEventListener('click', () => {
         window.history.back(); // 이전 페이지로 이동
     });
@@ -69,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        // 업로드 시작 시 로딩 오버레이 표시
         loadingOverlay.style.display = 'flex';
 
         const productName = productNameInput.value;
@@ -106,6 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Error uploading post:', error);
             alert('Error uploading post');
         } finally {
+            // 업로드 완료 시 로딩 오버레이 숨김
             loadingOverlay.style.display = 'none';
         }
     });
