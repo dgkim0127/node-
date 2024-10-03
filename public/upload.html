@@ -7,18 +7,12 @@
     <link rel="stylesheet" href="dashboard.css">
 </head>
 <body>
-    <!-- 헤더 -->
     <header>
         <h1>Upload New Post</h1>
         <button id="back-btn">Back</button>
     </header>
 
     <section id="upload-section">
-        <!-- 로딩 메시지 추가 -->
-        <div id="loading-overlay" style="display: none;">
-            <div class="loading-message">Uploading... Please wait.</div>
-        </div>
-
         <!-- 미리보기 -->
         <div id="preview-grid"></div>
 
@@ -27,26 +21,9 @@
             <label for="mediaFiles">Media Files (Select at least one image or video):</label>
             <input type="file" id="mediaFiles" accept="image/*,video/*" multiple required>
 
-            <!-- 제품 번호 -->
-            <label for="product-number">Product Number:</label>
-            <div id="product-number-inputs">
-                <select id="prefix">
-                    <option value="">(Optional)</option>
-                    <option value="B">B</option>
-                    <option value="G">G</option>
-                </select>
-                <input type="text" id="number" placeholder="0000" maxlength="4" required>
-                <select id="suffix">
-                    <option value="">(Optional)</option>
-                    <option value="B">B</option>
-                    <option value="N">N</option>
-                    <option value="E">E</option>
-                    <option value="R">R</option>
-                </select>
-                <input type="checkbox" id="q-check">
-                <label for="q-check" id="q-label">Q</label>
-                <input type="text" id="extra" placeholder="00 (Optional)">
-            </div>
+            <!-- 이름 입력 필드 -->
+            <label for="product-name">Name:</label>
+            <input type="text" id="product-name" placeholder="Enter product name" required>
 
             <!-- 종류 선택 (중복 선택 가능) -->
             <label for="type">Type:</label>
