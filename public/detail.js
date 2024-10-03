@@ -83,8 +83,8 @@ const loadPostDetail = async () => {
 
             // 게시물 정보 표시
             postInfoSection.innerHTML = `
-                <p><strong>Product Number:</strong> ${postData.productNumber}</p>
-                <p><strong>Type:</strong> ${postData.type ? postData.type.join(', ') : 'N/A'}</p>
+                <p><strong>Product Number:</strong> ${postData.productNumber || 'N/A'}</p>
+                <p><strong>Type:</strong> ${Array.isArray(postData.type) ? postData.type.join(', ') : postData.type || 'N/A'}</p>
                 <p><strong>Size:</strong> ${postData.size || 'N/A'}</p>
                 <p><strong>Weight:</strong> ${postData.weight || 'N/A'}g</p>
                 <p><strong>Content:</strong> ${postData.content || 'No content available'}</p>
