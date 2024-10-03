@@ -1,16 +1,11 @@
 import { storage, db } from './firebaseConfig.js';
 import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-storage.js";
-import { collection, addDoc, query, where, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { collection, addDoc, getDocs, query, where } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const uploadForm = document.getElementById('upload-form');
-    const prefixInput = document.getElementById('prefix');
-    const numberInput = document.getElementById('number');
-    const suffixInput = document.getElementById('suffix');
-    const qCheckInput = document.getElementById('q-check');
-    const extraInput = document.getElementById('extra');
     const mediaFilesInput = document.getElementById('mediaFiles');
-    const previewGrid = document.getElementById('preview-grid');
+    const productNameInput = document.getElementById('product-name'); // 이름 입력 필드
     const sizeInput = document.getElementById('size');
     const weightInput = document.getElementById('weight');
     const sizeUnitInput = document.getElementById('size-unit');
@@ -18,12 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let selectedThumbnail = null; // 선택한 썸네일을 저장할 변수
     let mediaURLs = [];  // 업로드한 파일 URL을 저장할 배열
-
-    // 뒤로 가기 버튼
-    const backButton = document.getElementById('back-btn');
-    backButton.addEventListener('click', () => {
-        window.history.back();  // 이전 페이지로 이동
-    });
 
     // 미디어 파일 미리보기 (이미지 및 동영상)
     mediaFilesInput.addEventListener('change', (event) => {
@@ -71,29 +60,20 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please upload at least one image or video.');
             return;
         }
-        if (!numberInput.value || !weightInput.value || !sizeInput.value) {
-            alert('Product number, weight, and size are required fields.');
+        if (!productNameInput.value || !weightInput.value || !sizeInput.value) {
+            alert('Name, weight, and size are required fields.');
             return;
         }
 
         // 업로드 시작 시 로딩 오버레이 표시
         loadingOverlay.style.display = 'flex';
 
-        const productNumber = `${prefixInput.value}-${numberInput.value}${suffixInput.value}${qCheckInput.checked ? 'Q' : ''}${extraInput.value ? `-${extraInput.value}` : ''}`;
+        const productName = productNameInput.value;
         const type = Array.from(document.querySelectorAll('#type-container input:checked')).map(el => el.value).join(', ');
         const size = `${sizeInput.value}${sizeUnitInput.value}`;
         const weight = weightInput.value;
         const content = document.getElementById('content').value;
         const files = mediaFilesInput.files;
-
-        // 제품 번호 중복 확인
-        const productQuery = query(collection(db, "posts"), where("productNumber", "==", productNumber));
-        const productSnapshot = await getDocs(productQuery);
-        if (!productSnapshot.empty) {
-            alert('This product number already exists!');
-            loadingOverlay.style.display = 'none'; // 중복 확인 후 로딩 오버레이 숨김
-            return;
-        }
 
         // Firebase Storage에 파일 업로드 및 URL 저장
         mediaURLs = [];
@@ -111,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Firestore에 데이터 저장
         try {
             await addDoc(collection(db, "posts"), {
-                productNumber: productNumber,
+                name: productName, // 품번 대신 이름 저장
                 type: type,
                 size: size,
                 weight: weight,
@@ -131,4 +111,3 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
