@@ -16,9 +16,10 @@ const mainMediaContainer = document.getElementById('main-media-container');
 const thumbnailGallery = document.getElementById('thumbnail-gallery');
 const mediaFilesInput = document.getElementById('mediaFiles');
 const previewGrid = document.getElementById('preview-grid');
+const deleteMediaBtn = document.getElementById('delete-media-btn');
 
 let existingMediaURLs = []; // 기존 미디어 URLs
-let selectedThumbnail = null;
+let selectedMediaIndex = null; // 선택한 미디어 인덱스
 let newMediaURLs = []; // 새로운 미디어 URLs
 
 // Firestore에서 게시물 데이터를 불러와 수정 가능한 폼에 표시하는 함수
@@ -49,9 +50,7 @@ const loadPostDetailForEdit = async () => {
 
             // 썸네일 갤러리 표시
             existingMediaURLs.forEach((mediaURL, index) => {
-                if (index > 0) {
-                    createThumbnail(mediaURL, index);
-                }
+                createThumbnail(mediaURL, index);
             });
         } else {
             postNameElement.textContent = 'Post Not Found';
@@ -88,7 +87,8 @@ const createThumbnail = (mediaURL, index) => {
     imgElement.alt = `Thumbnail ${index}`;
     imgElement.addEventListener('click', () => {
         displayMainMedia(mediaURL);
-        selectedThumbnail = index; // 선택한 썸네일 인덱스 저장
+        selectedMediaIndex = index; // 선택한 미디어 인덱스 저장
+        deleteMediaBtn.style.display = 'block'; // 미디어 선택 시 삭제 버튼 표시
     });
     thumbnailGallery.appendChild(imgElement);
 };
@@ -116,6 +116,28 @@ mediaFilesInput.addEventListener('change', (event) => {
     });
 });
 
+// 미디어 삭제 버튼 클릭 시
+deleteMediaBtn.addEventListener('click', async () => {
+    if (selectedMediaIndex !== null && existingMediaURLs[selectedMediaIndex]) {
+        const mediaURL = existingMediaURLs[selectedMediaIndex];
+
+        // Firebase Storage에서 해당 파일 삭제
+        const storageRef = ref(storage, mediaURL);
+        try {
+            await deleteObject(storageRef);
+            existingMediaURLs.splice(selectedMediaIndex, 1); // 미디어 URL 배열에서 제거
+            selectedMediaIndex = null;
+            deleteMediaBtn.style.display = 'none'; // 삭제 후 버튼 숨김
+            alert('Media deleted successfully!');
+            thumbnailGallery.innerHTML = ''; // 썸네일 갤러리 초기화
+            existingMediaURLs.forEach((mediaURL, index) => createThumbnail(mediaURL, index)); // 갤러리 재구성
+        } catch (error) {
+            console.error('Error deleting media:', error);
+            alert('Error deleting media');
+        }
+    }
+});
+
 // 게시물 수정 폼 제출 처리
 document.addEventListener('DOMContentLoaded', () => {
     const editForm = document.getElementById('edit-form');
@@ -132,6 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 size: productSizeInput.value,
                 weight: productWeightInput.value,
                 content: productContentInput.value,
+                media: existingMediaURLs // 삭제 및 추가된 미디어 반영
             };
 
             // 새로운 미디어 업로드
