@@ -18,12 +18,20 @@ const loadPostDetail = async () => {
     }
 
     try {
+        // Firestore에서 게시물 정보 가져오기
         const postDoc = await getDoc(doc(db, "posts", postId));
         if (postDoc.exists()) {
             const postData = postDoc.data();
-            
+            console.log(postData); // 데이터 로드 확인용 콘솔 로그
+
             // 게시물 이름 설정
             postNameElement.textContent = postData.productNumber || "No Name";
+
+            // 미디어 배열이 없는 경우 기본 메시지 표시
+            if (!postData.media || postData.media.length === 0) {
+                mainMediaContainer.innerHTML = '<p>No media available</p>';
+                return;
+            }
 
             // 메인 동영상 또는 이미지 표시
             const mainMediaURL = postData.media[0]; // 첫 번째 미디어를 메인으로 설정
@@ -76,10 +84,10 @@ const loadPostDetail = async () => {
             // 게시물 정보 표시
             postInfoSection.innerHTML = `
                 <p><strong>Product Number:</strong> ${postData.productNumber}</p>
-                <p><strong>Type:</strong> ${postData.type.join(', ')}</p>
-                <p><strong>Size:</strong> ${postData.size}</p>
-                <p><strong>Weight:</strong> ${postData.weight}g</p>
-                <p><strong>Content:</strong> ${postData.content}</p>
+                <p><strong>Type:</strong> ${postData.type ? postData.type.join(', ') : 'N/A'}</p>
+                <p><strong>Size:</strong> ${postData.size || 'N/A'}</p>
+                <p><strong>Weight:</strong> ${postData.weight || 'N/A'}g</p>
+                <p><strong>Content:</strong> ${postData.content || 'No content available'}</p>
             `;
         } else {
             postNameElement.textContent = 'Post Not Found';
