@@ -4,61 +4,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Post</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="styles.css"> <!-- 연결된 CSS 파일 -->
 </head>
 <body>
-
-    <!-- 헤더 -->
     <header>
-        <h1 id="post-name">Loading...</h1>
-        <button id="back-btn">Back</button>
+        <h1 id="post-name">Loading...</h1> <!-- 게시물 이름 표시 -->
+        <button id="back-btn">Back</button> <!-- 뒤로가기 버튼 -->
     </header>
 
-    <!-- 미디어 수정 섹션 -->
-    <section id="main-media-container">
-        <!-- 선택된 미디어가 여기 표시됨 -->
-    </section>
+    <section id="main-media-container"></section>
+    <div id="thumbnail-gallery"></div>
 
-    <!-- 썸네일 갤러리 -->
-    <section id="thumbnail-gallery">
-        <!-- 미디어의 썸네일이 여기 표시됨 -->
-    </section>
+    <!-- 수정 가능한 폼 섹션 -->
+    <div id="edit-info">
+        <!-- 추가 이미지 버튼 -->
+        <button id="add-media-btn">Add Media</button>
 
-    <!-- 미디어 삭제 버튼 -->
-    <button id="delete-media-btn" style="display: none;">Delete Media</button>
+        <!-- 폼 필드들 -->
+        <label for="product-name">Product Name:</label>
+        <input type="text" id="product-name" value="">
 
-    <!-- 업로드된 미디어 미리보기 섹션 -->
-    <section id="preview-grid">
-        <!-- 업로드된 파일들의 미리보기가 여기 표시됨 -->
-    </section>
+        <label for="product-type">Type:</label>
+        <input type="text" id="product-type" value="">
 
-    <!-- 게시물 수정 섹션 -->
-    <section id="edit-info">
-        <form id="edit-form">
-            <label for="product-name">Product Name</label>
-            <input type="text" id="product-name" placeholder="Enter product name" required>
+        <label for="product-size">Size:</label>
+        <input type="text" id="product-size" value="">
 
-            <label for="product-type">Product Type</label>
-            <input type="text" id="product-type" placeholder="Enter product type" required>
+        <label for="product-weight">Weight:</label>
+        <input type="text" id="product-weight" value="">
 
-            <label for="product-size">Product Size</label>
-            <input type="text" id="product-size" placeholder="Enter product size" required>
+        <label for="product-content">Content:</label>
+        <textarea id="product-content"></textarea>
 
-            <label for="product-weight">Product Weight</label>
-            <input type="text" id="product-weight" placeholder="Enter product weight" required>
+        <!-- 미디어 파일 입력 -->
+        <input type="file" id="mediaFiles" multiple style="display:none;"> <!-- 파일 선택 필드 숨김 -->
 
-            <label for="product-content">Product Content</label>
-            <textarea id="product-content" rows="4" placeholder="Enter product content" required></textarea>
+        <div id="preview-grid"></div> <!-- 미디어 파일 미리보기 -->
 
-            <label for="mediaFiles">Add More Media Files</label>
-            <input type="file" id="mediaFiles" accept="image/*,video/*" multiple>
+        <button id="submit-btn">Save Changes</button>
+        <button id="delete-media-btn" style="display:none;">Delete Media</button>
+    </div>
 
-            <button type="submit">Update Post</button>
-        </form>
-    </section>
-
-    <!-- Firebase 스크립트 및 사용자 스크립트 -->
-    <script type="module" src="firebaseConfig.js"></script>
-    <script type="module" src="edit.js"></script>
+    <script type="module" src="edit.js"></script> <!-- 연결된 JS 파일 -->
 </body>
 </html>
