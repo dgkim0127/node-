@@ -38,8 +38,8 @@ const loadPostDetail = async () => {
             const mediaType = mainMediaURL.split('.').pop().split('?')[0]; // 확장자만 추출
             console.log("Main Media URL: ", mainMediaURL, " | Media Type: ", mediaType); // 콘솔 로그로 확인
 
+            // 동영상일 경우
             if (['mp4', 'webm', 'ogg'].includes(mediaType)) {
-                // 동영상일 경우
                 const videoElement = document.createElement('video');
                 videoElement.src = mainMediaURL;
                 videoElement.controls = true;
@@ -60,35 +60,32 @@ const loadPostDetail = async () => {
 
             // 미리보기 갤러리에 나머지 미디어 추가
             postData.media.forEach((mediaURL, index) => {
-                if (index > 0) {
-                    const mediaType = mediaURL.split('.').pop().split('?')[0]; // 확장자만 추출
-                    console.log(`Thumbnail ${index} | URL: ${mediaURL} | Type: ${mediaType}`); // 썸네일 미디어 타입 확인
-                    const imgElement = document.createElement('img');
-                    imgElement.src = mediaURL;
-                    imgElement.alt = `Thumbnail ${index}`;
-                    imgElement.addEventListener('click', () => {
-                        // 클릭 시 메인 미디어 변경
-                        mainMediaContainer.innerHTML = ''; // 기존 미디어 제거
-                        if (['mp4', 'webm', 'ogg'].includes(mediaType)) {
-                            const newVideoElement = document.createElement('video');
-                            newVideoElement.src = mediaURL;
-                            newVideoElement.controls = true;
-                            newVideoElement.autoplay = true; // 자동 재생
-                            newVideoElement.loop = true; // 무한 반복
-                            newVideoElement.muted = true; // 자동 재생 시 무음 설정
-                            newVideoElement.style.width = '80%'; // 동영상 크기를 80%로 설정 (더 작게)
-                            newVideoElement.style.maxHeight = '400px'; // 최대 높이를 400px로 제한
-                            mainMediaContainer.appendChild(newVideoElement);
-                        } else {
-                            const newImgElement = document.createElement('img');
-                            newImgElement.src = mediaURL;
-                            newImgElement.alt = "Main media image";
-                            newImgElement.style.width = '60%';
-                            mainMediaContainer.appendChild(newImgElement);
-                        }
-                    });
-                    thumbnailGallery.appendChild(imgElement);
-                }
+                const mediaType = mediaURL.split('.').pop().split('?')[0]; // 확장자만 추출
+                const imgElement = document.createElement('img');
+                imgElement.src = mediaURL;
+                imgElement.alt = `Thumbnail ${index}`;
+                imgElement.addEventListener('click', () => {
+                    // 클릭 시 메인 미디어 변경
+                    mainMediaContainer.innerHTML = ''; // 기존 미디어 제거
+                    if (['mp4', 'webm', 'ogg'].includes(mediaType)) {
+                        const newVideoElement = document.createElement('video');
+                        newVideoElement.src = mediaURL;
+                        newVideoElement.controls = true;
+                        newVideoElement.autoplay = true; // 자동 재생
+                        newVideoElement.loop = true; // 무한 반복
+                        newVideoElement.muted = true; // 자동 재생 시 무음 설정
+                        newVideoElement.style.width = '80%'; // 동영상 크기를 80%로 설정 (더 작게)
+                        newVideoElement.style.maxHeight = '400px'; // 최대 높이를 400px로 제한
+                        mainMediaContainer.appendChild(newVideoElement);
+                    } else {
+                        const newImgElement = document.createElement('img');
+                        newImgElement.src = mediaURL;
+                        newImgElement.alt = "Main media image";
+                        newImgElement.style.width = '60%';
+                        mainMediaContainer.appendChild(newImgElement);
+                    }
+                });
+                thumbnailGallery.appendChild(imgElement);
             });
 
             // 게시물 정보 표시
