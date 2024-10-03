@@ -73,9 +73,10 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // 썸네일 선택이 안 되었을 경우 경고
-        if (selectedThumbnail === null) {
-            alert('Please select a thumbnail.');
+        // 중량 값 유효성 검사 (소숫점 2자리 허용)
+        const weight = parseFloat(weightInput.value);
+        if (isNaN(weight) || weight <= 0) {
+            alert('Please enter a valid weight.');
             return;
         }
 
@@ -85,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const productName = productNameInput.value;
         const type = Array.from(document.querySelectorAll('#type-container input:checked')).map(el => el.value).join(', ');
         const size = `${sizeInput.value}${sizeUnitInput.value}`;
-        const weight = weightInput.value;
         const content = document.getElementById('content').value;
         const files = mediaFilesInput.files;
 
@@ -98,16 +98,14 @@ document.addEventListener('DOMContentLoaded', () => {
             mediaURLs.push(downloadURL);
         }
 
-        const thumbnailURL = mediaURLs[selectedThumbnail];
+        const thumbnailURL = mediaURLs[selectedThumbnail] || mediaURLs[0];
 
         try {
-            // Firestore에 데이터 저장
             await addDoc(collection(db, "posts"), {
                 name: productName,
-                productNumber: productName, // 제품명과 품번을 동일하게 사용
                 type: type,
                 size: size,
-                weight: weight,
+                weight: weight.toFixed(2), // 소숫점 2자리로 고정
                 content: content,
                 media: mediaURLs,
                 thumbnail: thumbnailURL,
